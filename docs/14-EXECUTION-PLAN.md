@@ -98,6 +98,8 @@ Chi tiết trong `09-ROADMAP.md`. Sẽ mở rộng tới mức file khi bắt đ
 | [x] | S8-04 | `adRewardSsv` | `ads/adRewardSsv.ts`, `ads/verify.ts` | 5 test bắt buộc (`08` §5) |
 | [x] | S8-07a | `ads_config` + `ad_units` defaults + `merge.mjs` (gộp vào template live, không ghi đè key v1) | `Backend/oneai_backend/remote-config/` | script chạy thử với template giả: giữ key cũ, gộp id thật |
 | [x] | S10-03a | Migration v1→v2 + inventory CLI (`tools/migrate-v1.mjs inventory\|plan\|apply`), idempotent, dry-run mặc định | `src/tools/migrateV1.ts`, `tools/migrate-v1.mjs` | test seed dữ liệu hình v1 → migrate → đọc lại qua handler v2 |
+| [x] | S1-12 | `tools/seed-emulator.mjs` — user demo + note mọi trạng thái cho dev App | `functions-v2/tools/` | |
+| [x] | S10-06a | `scripts/deploy.sh` có chốt chặn + `docs/15-RUNBOOK.md` | | |
 | [ ] | S8-06 | Dart `AdGate` + `AdLedger` | `App/oneai_v2/lib/features/ads/` | ≥30 test |
 
 ---

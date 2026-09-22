@@ -19,6 +19,8 @@ Cập nhật 2026-09-22 (bản 2 — đổi sang **build lại từ đầu**).
 | [`11-OPEN-QUESTIONS.md`](11-OPEN-QUESTIONS.md) | 15 câu chờ Toan chốt, mỗi câu có hạn và mặc định tạm | **đọc trước mỗi sprint** |
 | [`12-AGENT-WORKFLOW.md`](12-AGENT-WORKFLOW.md) | Giao thức watch-build / watch-git | trước khi để agent làm việc |
 | [`13-CONFIG-INVENTORY.md`](13-CONFIG-INVENTORY.md) | Mọi key/id mang sang bản mới + 7 việc bạn phải làm | khi dựng môi trường |
+| [`14-EXECUTION-PLAN.md`](14-EXECUTION-PLAN.md) | Sổ cái task-level, agent tự cập nhật | theo tiến độ từng file |
+| [`15-RUNBOOK.md`](15-RUNBOOK.md) | Deploy, rollback, sự cố, alert, xoá dữ liệu | khi vận hành |
 
 ## Quyết định đã chốt (22/09/2026)
 
