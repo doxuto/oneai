@@ -47,6 +47,12 @@ Ba phương án:
 *Cần biết:* hiện có bao nhiêu user thật và bao nhiêu minute? Nếu dưới vài trăm,
 phương án A là hiển nhiên; nếu con số nhỏ xíu thì B.
 
+**Công cụ đã có (23/09):** `cd Backend/oneai_backend/functions-v2 && npm run build &&
+GOOGLE_CLOUD_PROJECT=minutesai-6715a node tools/migrate-v1.mjs inventory` — chỉ đọc,
+in ra số user / minute / minute có transcript / tag. Và `plan` (dry-run) / `apply`
+cho phương án A, đã test chống emulator với dữ liệu hình v1. Chi phí phương án A
+giờ gần bằng 0 — chỉ còn là chạy lệnh.
+
 **Mặc định tạm:** B. → Ảnh hưởng: S3 và S9-03.
 
 ---
