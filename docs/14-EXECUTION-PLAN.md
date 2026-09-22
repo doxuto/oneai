@@ -42,6 +42,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
+| [x] | S9-05a | `deleteAccount` callable (`confirm:true` → `deletionRequestedAt` → `auth.deleteUser`; `onUserDeleted` dọn dữ liệu) | `users/deleteAccount.ts` | user-not-found → `not-found`; 3 unit + 2 integration test |
 | [x] | S2-00 | Refactor `getMe` sang handler/wrapper + unit test | `users/handler.ts`, `users/getMe.ts`, `test/unit/users.test.ts` | handler test không cần Firestore cho nhánh lỗi |
 | [x] | S2-01 | `createMinute` | `minutes/types.ts`, `minutes/_shared.ts`, `minutes/handler.ts`, `minutes/createMinute.ts` | trả `minuteId` + upload path; doc `status:"uploading"`; `sourceType` ∈ audio\|pdf; `sizeBytes` ≤ 300MB |
 | [x] | S2-02 | `listMinutes` | `minutes/listMinutes.ts` + handler | cursor `[createdAtMillis, id]`; `tagIds` ≤10; sort enum; **thiếu index → ném `failed-precondition`, không trả rỗng** |

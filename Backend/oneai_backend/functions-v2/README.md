@@ -63,11 +63,11 @@ firebase functions:secrets:set REVENUECAT_WEBHOOK_SECRET
 
 Param không bí mật nằm trong `.env` (commit có chủ đích).
 
-## Đã có — 27 function, parity đầy đủ với v1 (trừ YouTube)
+## Đã có — 28 function, parity đầy đủ với v1 (trừ YouTube)
 
 | Nhóm | Function | Loại |
 |---|---|---|
-| users | `getMe` · `onUserCreated` · `onUserDeleted` | callable · v1 auth trigger ×2 |
+| users | `getMe` · `deleteAccount` · `onUserCreated` · `onUserDeleted` | callable ×2 · v1 auth trigger ×2 |
 | minutes | `createMinute` · `listMinutes` · `getMinute` · `updateMinute` · `deleteMinute` · `onMinuteWritten` | callable ×5 · Firestore trigger |
 | tags | `createTag` · `listTags` · `updateTag` · `deleteTag` | callable |
 | transcribe | `startTranscription` · `cancelTranscription` · `processTranscription` | callable ×2 · task worker (2GiB/540s) |
@@ -75,7 +75,7 @@ Param không bí mật nằm trong `.env` (commit có chủ đích).
 | jobs | `sweepOrphanFiles` | schedule 03:00 VN |
 | billing / ads | `revenueCatWebhook` · `adRewardSsv` | onRequest (webhook) |
 
-Test: **137 unit** (chạy mọi nơi) + **105 integration/rules** (chạy qua `npm run test:integration` với emulator).
+Test: **150 unit** (chạy mọi nơi) + **114 integration/rules** (chạy qua `npm run test:integration` với emulator).
 
 ## Cấu trúc test
 
