@@ -22,7 +22,7 @@ trong commit. Khi chốt xong: đổi trạng thái, ghi ngày, ghi quyết đ�
 | OQ-09 | Đăng ký font Roboto? | S8 | **CHƯA CHỐT** |
 | OQ-10 | Đổi route sang `/minutes/:id`? | S6 | **CHƯA CHỐT** |
 | OQ-11 | Interstitial ở nhánh Congratulation | S7 | **CHƯA CHỐT** |
-| OQ-12 | Thêm tiếng Việt? | S8 | **CHƯA CHỐT** |
+| OQ-12 | Thêm tiếng Việt? | S8 | ✅ đã làm sẵn `app_vi.arb` (23/09) — Toan chỉ cần rà bản dịch |
 | OQ-13 | Giữ `contentKind` do LLM đoán? | S3 | **CHƯA CHỐT** |
 | OQ-14 | Nguồn timezone: header hay body? | S4 | **CHƯA CHỐT** |
 | OQ-15 | Có làm push notification? | S8 | **CHƯA CHỐT** |

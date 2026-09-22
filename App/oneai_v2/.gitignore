@@ -37,3 +37,6 @@ reports/
 .build-done
 .git-request
 .git-done
+
+# gen-l10n output
+lib/core/l10n/generated/

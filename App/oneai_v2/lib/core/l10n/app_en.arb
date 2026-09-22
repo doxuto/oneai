@@ -1,0 +1,587 @@
+{
+  "@@locale": "en",
+  "appTitle": "One AI",
+  "@appTitle": {
+    "description": "Title of the application"
+  },
+  "appName": "One AI",
+  "@appName": {
+    "description": "Name of the application"
+  },
+  "oneAi": "One AI",
+  "@oneAi": {
+    "description": "Brand name shown on login page"
+  },
+  "instantNotesFromAudio": "Instant notes from\naudio and video, ",
+  "@instantNotesFromAudio": {
+    "description": "First part of login page tagline"
+  },
+  "doneWithAi": "done\nwith AI",
+  "@doneWithAi": {
+    "description": "Second part of login page tagline"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Text for Google sign-in button"
+  },
+  "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Text for Apple sign-in button"
+  },
+  "previouslySignedInWithApple": "(Previously signed in with Apple)",
+  "@previouslySignedInWithApple": {
+    "description": "Text shown below Apple sign-in button for returning users"
+  },
+  "selectTheme": "Select theme",
+  "@selectTheme": {
+    "description": "Tooltip for the theme selector button"
+  },
+  "systemTheme": "System theme",
+  "@systemTheme": {
+    "description": "Label for system theme option"
+  },
+  "lightTheme": "Light theme",
+  "@lightTheme": {
+    "description": "Label for light theme option"
+  },
+  "darkTheme": "Dark theme",
+  "@darkTheme": {
+    "description": "Label for dark theme option"
+  },
+  "pageNotFound": "Page Not Found",
+  "@pageNotFound": {
+    "description": "Title for the error page when a route is not found"
+  },
+  "premium": "Premium",
+  "@premium": {
+    "description": "Label for premium button"
+  },
+  "createTag": "Create tag",
+  "@createTag": {
+    "description": "Label for creating a new tag"
+  },
+  "pageNotFoundMessage": "Page not found: {path}",
+  "@pageNotFoundMessage": {
+    "description": "Message displayed when a page is not found",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "/unknown"
+      }
+    }
+  },
+  "goHome": "Go Home",
+  "@goHome": {
+    "description": "Label for button to navigate back to home page"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Title for the Settings feature"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Label for close button"
+  },
+  "error": "Error: {message}",
+  "@error": {
+    "description": "Error message format",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Label for retry button"
+  },
+  "upgrade": "Upgrade",
+  "@upgrade": {
+    "description": "Label for upgrade button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Label for back button"
+  },
+  "transcript": "Transcript",
+  "@transcript": {
+    "description": "Label for transcript tab"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Label for chat tab"
+  },
+  "howDidWeDo": "How did we do?",
+  "@howDidWeDo": {
+    "description": "Text for feedback request"
+  },
+  "giveFeedback": "Give Feedback",
+  "@giveFeedback": {
+    "description": "Text for give feedback button"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "Text for share button/tooltip"
+  },
+  "shareNotesAsPdf": "Share Notes as PDF",
+  "@shareNotesAsPdf": {
+    "description": "Label for sharing notes as PDF option"
+  },
+  "errorSharingPdf": "Error sharing PDF. Please try again.",
+  "@errorSharingPdf": {
+    "description": "Error message when PDF sharing fails"
+  },
+  "errorSharingContent": "Error sharing content. Please try again.",
+  "@errorSharingContent": {
+    "description": "Error message when content sharing fails"
+  },
+  "preparingContent": "Preparing content...",
+  "@preparingContent": {
+    "description": "Message shown while preparing content for sharing"
+  },
+  "generatingPdf": "Generating PDF...",
+  "@generatingPdf": {
+    "description": "Message shown while generating a PDF file"
+  },
+  "shareNotesAsText": "Share Notes as Text",
+  "@shareNotesAsText": {
+    "description": "Text for sharing notes as text option"
+  },
+  "shareTranscriptAsPdf": "Share Transcript as PDF",
+  "@shareTranscriptAsPdf": {
+    "description": "Text for sharing transcript as PDF option"
+  },
+  "shareTranscriptAsText": "Share Transcript as Text",
+  "@shareTranscriptAsText": {
+    "description": "Text for sharing transcript as text option"
+  },
+  "shareAudioFile": "Share Audio File",
+  "@shareAudioFile": {
+    "description": "Text for sharing audio file option"
+  },
+  "newNote": "New Note",
+  "@newNote": {
+    "description": "Title for new note bottom sheet"
+  },
+  "autoDetect": "Auto Detect",
+  "@autoDetect": {
+    "description": "Label for auto detect button in new note sheet"
+  },
+  "selected": "selected",
+  "@selected": {
+    "description": "Label indicating that an option is currently selected"
+  },
+  "startAudioRecording": "Start audio recording",
+  "@startAudioRecording": {
+    "description": "Label for starting audio recording option"
+  },
+  "uploadFromFiles": "Upload from files",
+  "@uploadFromFiles": {
+    "description": "Label for uploading from files option"
+  },
+  "bengali": "Bengali",
+  "@bengali": {
+    "description": "Bengali language option"
+  },
+  "bulgarian": "Bulgarian",
+  "@bulgarian": {
+    "description": "Bulgarian language option"
+  },
+  "catalan": "Catalan",
+  "@catalan": {
+    "description": "Catalan language option"
+  },
+  "chinese": "Chinese",
+  "@chinese": {
+    "description": "Chinese language option"
+  },
+  "croatian": "Croatian",
+  "@croatian": {
+    "description": "Croatian language option"
+  },
+  "czech": "Czech",
+  "@czech": {
+    "description": "Czech language option"
+  },
+  "danish": "Danish",
+  "@danish": {
+    "description": "Danish language option"
+  },
+  "dutch": "Dutch",
+  "@dutch": {
+    "description": "Dutch language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "estonian": "Estonian",
+  "@estonian": {
+    "description": "Estonian language option"
+  },
+  "finnish": "Finnish",
+  "@finnish": {
+    "description": "Finnish language option"
+  },
+  "french": "French",
+  "@french": {
+    "description": "French language option"
+  },
+  "german": "German",
+  "@german": {
+    "description": "German language option"
+  },
+  "greek": "Greek",
+  "@greek": {
+    "description": "Greek language option"
+  },
+  "hebrew": "Hebrew",
+  "@hebrew": {
+    "description": "Hebrew language option"
+  },
+  "hindi": "Hindi",
+  "@hindi": {
+    "description": "Hindi language option"
+  },
+  "hungarian": "Hungarian",
+  "@hungarian": {
+    "description": "Hungarian language option"
+  },
+  "indonesian": "Indonesian",
+  "@indonesian": {
+    "description": "Indonesian language option"
+  },
+  "irish": "Irish",
+  "@irish": {
+    "description": "Irish language option"
+  },
+  "spanish": "Spanish",
+  "@spanish": {
+    "description": "Spanish language option"
+  },
+  "japanese": "Japanese",
+  "@japanese": {
+    "description": "Japanese language option"
+  },
+  "korean": "Korean",
+  "@korean": {
+    "description": "Korean language option"
+  },
+  "editName": "Edit Name",
+  "@editName": {
+    "description": "Label for edit name option in popup menu"
+  },
+  "editIcon": "Edit Icon",
+  "@editIcon": {
+    "description": "Label for edit icon option in popup menu"
+  },
+  "manageTags": "Manage Tags",
+  "@manageTags": {
+    "description": "Label for manage tags option in popup menu"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Label for delete option in popup menu"
+  },
+  "confirmDeletion": "Confirm Deletion",
+  "@confirmDeletion": {
+    "description": "Title for the deletion confirmation dialog"
+  },
+  "deleteNoteConfirmation": "Are you sure you want to delete this note? This cannot be undone.",
+  "@deleteNoteConfirmation": {
+    "description": "Message asking for confirmation before deleting a note item"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Label for cancel button in dialogs"
+  },
+  "exit": "Exit",
+  "@exit": {
+    "description": "Label for exit button in dialogs"
+  },
+  "enterNewName": "Enter a new name",
+  "@enterNewName": {
+    "description": "Instruction text for entering a new name in the edit name dialog"
+  },
+  "enterNewIcon": "Enter a new icon",
+  "@enterNewIcon": {
+    "description": "Instruction text for entering a new icon in the edit icon dialog"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Label for save button in dialogs"
+  },
+  "createNewTag": "Create New Tag",
+  "@createNewTag": {
+    "description": "Title for create new tag dialog"
+  },
+  "enterTagName": "Enter a name for your new tag",
+  "@enterTagName": {
+    "description": "Instruction text for entering a new tag name"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Label for create button in dialogs"
+  },
+  "tagName": "Tag name",
+  "@tagName": {
+    "description": "Hint text for tag name input field"
+  },
+  "noNotesYet": "No notes yet",
+  "@noNotesYet": {
+    "description": "Message shown when no notes have been created"
+  },
+  "tapButtonBelowToStart": "Tap the button below to start",
+  "@tapButtonBelowToStart": {
+    "description": "Instruction for user to tap the button to create first note"
+  },
+  "recordingPause": "Recording pause",
+  "@recordingPause": {
+    "description": "Text shown during recording when user can pause"
+  },
+  "recordingContinue": "Recording continue",
+  "@recordingContinue": {
+    "description": "Text for continuing recording"
+  },
+  "tapToStopRecording": "Tap to stop recording...",
+  "@tapToStopRecording": {
+    "description": "Instruction text shown when recording is in progress"
+  },
+  "tapToContinueRecording": "Tap to continue recording",
+  "@tapToContinueRecording": {
+    "description": "Instruction text shown when recording is paused"
+  },
+  "tapToStartRecording": "Tap to start recording",
+  "@tapToStartRecording": {
+    "description": "Instruction text shown when recording is in initial state"
+  },
+  "recordingPaused": "Recording paused",
+  "@recordingPaused": {
+    "description": "Text shown when recording is paused"
+  },
+  "promptAndLanguage": "Prompt & Language",
+  "@promptAndLanguage": {
+    "description": "Button label for prompt and language settings"
+  },
+  "transcribeAndSummarize": "Transcribe & Summarize",
+  "@transcribeAndSummarize": {
+    "description": "Label for transcribe and summarize button"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Title for warning dialog"
+  },
+  "exitRecordingWarning": "Exiting the page will discard your recording. Are you sure?",
+  "@exitRecordingWarning": {
+    "description": "Warning message shown when user attempts to exit during recording"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Label for done button"
+  },
+  "whatAreYouRecording": "What are you recording?",
+  "@whatAreYouRecording": {
+    "description": "Question prompt for recording context"
+  },
+  "recordingContextHint": "This will improve the accuracy and quality of the transcription and notes.",
+  "@recordingContextHint": {
+    "description": "Hint explaining why recording context is important"
+  },
+  "meetingTypeHint": "A marketing strategy meeting...",
+  "@meetingTypeHint": {
+    "description": "Placeholder hint for the recording context input field"
+  },
+  "keywords": "Keywords",
+  "@keywords": {
+    "description": "Label for keywords section in prompt and language sheet"
+  },
+  "keywordsHint": "Specify uncommon acronyms, names, or terms to listen for. Separate with commas.",
+  "@keywordsHint": {
+    "description": "Hint explaining how to use the keywords field"
+  },
+  "keywordsPlaceholder": "KPI, Cache, JSON",
+  "@keywordsPlaceholder": {
+    "description": "Placeholder example for keywords input"
+  },
+  "audioLanguage": "Audio Language",
+  "@audioLanguage": {
+    "description": "Label for audio language selection"
+  },
+  "summaryLanguage": "Summary Language",
+  "@summaryLanguage": {
+    "description": "Label for summary language selection"
+  },
+  "selectFile": "Select file",
+  "@selectFile": {
+    "description": "Label for select file button"
+  },
+  "selectFileDescription": "Select a video or audio file for transcript and notes.",
+  "@selectFileDescription": {
+    "description": "Description text on the file upload screen"
+  },
+  "processingAudio": "Processing Audio",
+  "rename": "Rename",
+  "changeIcon": "Change Icon",
+  "selectIcon": "Select Icon",
+  "audioIsDownloading": "The audio is still being downloaded, please wait a moment.",
+  "audioIsNotReady": "The audio is not ready yet, please wait a moment.",
+  "audioIsStartingDownload": "The audio is starting to download, please wait a moment.",
+  "myNotes": "My Notes",
+  "allTag": "All",
+  "deleteTag": "Delete Tag",
+  "deleteTagConfirm": "Are you sure you want to delete the tag \"{name}\"?",
+  "@deleteTagConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "basicPlanOverview": "Basic Plan Overview",
+  "goPremium": "Go Premium",
+  "sectionNotes": "NOTES",
+  "sectionSupport": "SUPPORT",
+  "sectionLegal": "LEGAL",
+  "sectionAccount": "ACCOUNT",
+  "sectionDangerZone": "DANGER ZONE",
+  "contactUs": "Contact us",
+  "leaveReview": "Leave a review",
+  "privacyPolicy": "Privacy policy",
+  "termsOfService": "Terms of service",
+  "emailLabel": "Email: {email}",
+  "@emailLabel": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "manageSubscription": "Manage subscription",
+  "freeCredits": "Free credits",
+  "unlimited": "Unlimited",
+  "signOut": "Sign out",
+  "deleteAccount": "Delete account",
+  "privacyOptions": "Privacy options",
+  "premiumRequired": "Premium Required",
+  "noFreeCreditsLeft": "You have no free credits left. Please upgrade your plan.",
+  "somethingWentWrong": "Something went wrong, please try later",
+  "earnFreeCreditWhileWaiting": "Earn a Free Credit While You Wait!",
+  "processingExplanation": "Your audio is being processed. This can take a few minutes for longer recordings — you can leave the app and come back.",
+  "watchAdEarnCredit": "Watch Ad & Earn Credit",
+  "showResults": "Show Results",
+  "statusUploading": "Uploading…",
+  "statusQueued": "Waiting to start…",
+  "statusTranscribing": "Transcribing…",
+  "statusSummarizing": "Writing your notes…",
+  "statusReady": "Done",
+  "statusFailed": "Failed",
+  "statusCancelled": "Cancelled",
+  "cancelProcessing": "Cancel",
+  "cancelProcessingConfirm": "Stop processing this recording? Your credit will be returned.",
+  "congratulations": "Congratulation",
+  "congratulationsMessage": "Your first note is ready! If you like One AI, a rating helps us a lot.",
+  "sureIllRateIt": "Sure, I'll rate it",
+  "notNow": "Not now",
+  "summaryTab": "Summary",
+  "transcriptTab": "Transcript",
+  "chatTab": "Chat",
+  "messageHint": "Message...",
+  "watchAdToTranscribe": "Watch Ad to Transcribe",
+  "untitled": "Untitled",
+  "noTagsYet": "No tags created yet",
+  "emojiHint": "e.g. 😊",
+  "singleEmojiOnly": "Please enter a single emoji.",
+  "previouslySignedInWithGoogle": "(Previously signed in with Google)",
+  "chatWelcome": "I'm here to help you with your note. What would you like to know?",
+  "failedToUpdateSpeaker": "Failed to update speaker name",
+  "rewardAdLoading": "Reward ad is already loading, please wait.",
+  "fullscreenAdInProgress": "A fullscreen ad is already in progress, please try again later.",
+  "noRewardedAdsAvailable": "No rewarded ads available at the moment. Please try again later.",
+  "rewardAdDailyLimit": "You have reached today's reward ad limit.",
+  "connectToInternet": "Please connect to the internet and try again.",
+  "rewardOnItsWay": "Thanks! Your credit is on its way.",
+  "rewardReceived": "You received {count} free credit!",
+  "@rewardReceived": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adNotCompleted": "Ad not completed. No credit awarded.",
+  "quotaRemaining": "{remaining} of {limit} free notes today",
+  "@quotaRemaining": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "quotaResetsAt": "Resets at {time}",
+  "@quotaResetsAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "aiDailyLimitReached": "You've reached today's AI limit. It resets at {time}.",
+  "@aiDailyLimitReached": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "updateRequired": "Please update One AI to continue.",
+  "updateNow": "Update now",
+  "noteNotReady": "This note is still being processed.",
+  "noSpeechDetected": "No speech was detected in this recording.",
+  "recordingTooLong": "This recording is longer than your plan allows ({minutes} min).",
+  "@recordingTooLong": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "Upload failed. Check your connection and try again.",
+  "uploadProgress": "Uploading {percent}%",
+  "@uploadProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "quizCorrect": "Correct!",
+  "quizIncorrect": "Not quite — the answer is {answer}.",
+  "@quizIncorrect": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "quizScore": "{score} of {total} correct",
+  "@quizScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flipCard": "Tap to flip",
+  "regenerate": "Regenerate",
+  "renameSpeaker": "Rename speaker",
+  "speakerName": "Speaker name",
+  "detectSpeakers": "Detect speaker names",
+  "notFound": "Not found"
+}
