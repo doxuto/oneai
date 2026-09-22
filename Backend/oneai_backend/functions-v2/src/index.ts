@@ -27,3 +27,7 @@ export { createTag } from "./tags/createTag.js";
 export { listTags } from "./tags/listTags.js";
 export { updateTag } from "./tags/updateTag.js";
 export { deleteTag } from "./tags/deleteTag.js";
+
+export { startTranscription } from "./transcribe/startTranscription.js";
+export { cancelTranscription } from "./transcribe/cancelTranscription.js";
+export { processTranscription } from "./transcribe/processTranscription.js";

@@ -59,17 +59,17 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
 | [x] | S3-00 | Quota module thuần | `quota/quota.ts`, `test/unit/quota.test.ts` | `canConsume(period, plan)`, `consume(tx)`, `refund(tx)`; premium ghi `used` nhưng không chặn |
-| [ ] | S3-01 | `startTranscription` | `transcribe/startTranscription.ts` + handler | transaction: đọc minute + quota → trừ → set `queued` → enqueue; 20 song song với quota 1 → 1 qua |
-| [ ] | S3-02 | `processTranscription` task worker | `transcribe/processTranscription.ts`, `transcribe/pipeline.ts` | `onTaskDispatched` 2GiB/540s retry 3; máy trạng thái `transcribing→summarizing→ready` |
+| [x] | S3-01 | `startTranscription` | `transcribe/startTranscription.ts` + handler | transaction: đọc minute + quota → trừ → set `queued` → enqueue; 20 song song với quota 1 → 1 qua |
+| [x] | S3-02 | `processTranscription` task worker | `transcribe/processTranscription.ts`, `transcribe/pipeline.ts` | `onTaskDispatched` 2GiB/540s retry 3; máy trạng thái `transcribing→summarizing→ready` |
 | [x] | S3-03 | ElevenLabs adapter | `lib/stt/elevenlabs.ts` | timeout 480s < 540s; 429→`resource-exhausted`; 5xx→`unavailable`; fetch native, không axios |
 | [x] | S3-04 | `convertTranscript` + ISO-639-3 | `lib/stt/convert.ts`, `lib/stt/languages.ts` | `startSeconds`/`endSeconds` số; test với fixture ElevenLabs thật |
 | [x] | S3-05 | Summarize prompt loader | `lib/llm/prompts.ts` | `__dirname`; prompt copy vào `src/prompts/`; test load được |
-| [ ] | S3-06 | Failure → refund | trong pipeline | `failed` + `creditRefunded:true`; test kill giữa chừng |
-| [ ] | S3-07 | `cancelTranscription` | `transcribe/cancelTranscription.ts` | chỉ khi `queued`/`transcribing`; refund |
-| [ ] | S3-08 | PDF branch | `lib/pdf/extract.ts` | `pdf-parse`; 20MB |
+| [x] | S3-06 | Failure → refund | trong pipeline | `failed` + `creditRefunded:true`; test kill giữa chừng |
+| [x] | S3-07 | `cancelTranscription` | `transcribe/cancelTranscription.ts` | chỉ khi `queued`/`transcribing`; refund |
+| [x] | S3-08 | PDF branch | `lib/pdf/extract.ts` | `pdf-parse`; 20MB |
 | [ ] | S3-09 | `sweepOrphanFiles` | `jobs/sweepOrphanFiles.ts` | `onSchedule` 03:00 VN; test handler thuần |
-| [ ] | S3-10 | Idempotency `requestId` | trong `startTranscription` | `ref.create()` → code 6 → trả job cũ |
-| [ ] | S3-11 | Transcript ra Storage + preview | pipeline | `transcript.json` ở Storage, `transcriptPreview` ≤2000 |
+| [x] | S3-10 | Idempotency `requestId` | trong `startTranscription` | `ref.create()` → code 6 → trả job cũ |
+| [x] | S3-11 | Transcript ra Storage + preview | pipeline | `transcript.json` ở Storage, `transcriptPreview` ≤2000 |
 
 ## S4 — BE: AI
 
