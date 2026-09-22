@@ -5,7 +5,7 @@ import { clearFirestore, testDb } from "../helpers/emulator.js";
 
 const db = testDb();
 const now = new Date("2026-09-23T03:00:00.000Z"); // 10:00 VN → period 2026-09-23
-const free = { dailyLimit: 1, maxDurationSeconds: 1800 };
+const free = { dailyLimit: 1, maxDurationSeconds: 1800, aiCallsPerDay: 3 };
 
 describe("consumeQuota in a transaction", () => {
   beforeEach(() => clearFirestore());
@@ -48,7 +48,7 @@ describe("consumeQuota in a transaction", () => {
 
   it("premium is counted but never blocked", async () => {
     for (let i = 0; i < 3; i++) {
-      await db.runTransaction((tx) => consumeQuota(tx, db, "u1", "premium", { dailyLimit: 50, maxDurationSeconds: 1 }, now));
+      await db.runTransaction((tx) => consumeQuota(tx, db, "u1", "premium", { dailyLimit: 50, maxDurationSeconds: 1, aiCallsPerDay: 300 }, now));
     }
     expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(3);
   });

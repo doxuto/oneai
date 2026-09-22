@@ -154,3 +154,30 @@ describe("chat", () => {
     await expect(chatHandler({ uid: "u2", signInProvider: "x" }, { client, minuteId: "m1", question: "?" }, makeDeps(fakeLlm(async () => ({}))))).rejects.toMatchObject({ code: "not-found" });
   });
 });
+
+describe("AI daily cap (unitDeps: free = 3 calls/day)", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); await db.doc("users/u1").set({ plan: "free" }); });
+
+  it("the 4th model call today is resource-exhausted with reason:aiDailyLimit; cache hits do not count", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ questions: ["q"] }));
+    const deps = makeDeps(llm);
+    await chatHandler(u1, { client, minuteId: "m1", question: "1" }, deps);
+    await chatHandler(u1, { client, minuteId: "m1", question: "2" }, deps);
+    await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);            // 3rd call
+    await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);            // cached → free
+    await expect(chatHandler(u1, { client, minuteId: "m1", question: "4" }, deps)).rejects.toMatchObject({
+      code: "resource-exhausted", details: { reason: "aiDailyLimit", limit: 3, used: 3 },
+    });
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.aiCalls).toBe(3);
+    expect(llm.calls).toBe(3);
+  });
+
+  it("premium has its own, larger cap", async () => {
+    await db.doc("users/u1").set({ plan: "premium", planExpiresAt: null });
+    await seedReady();
+    const deps = makeDeps(fakeLlm(async () => ({})));
+    for (let i = 0; i < 5; i++) await chatHandler(u1, { client, minuteId: "m1", question: `${i}` }, deps);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.aiCalls).toBe(5);
+  });
+});

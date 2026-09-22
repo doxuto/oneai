@@ -5,8 +5,9 @@ import type { ZodType, ZodTypeDef } from "zod";
 import type { Deps } from "../lib/deps.js";
 import type { LlmClient } from "../lib/llm/types.js";
 import { log } from "../lib/logging.js";
-import { toTranscript } from "../minutes/_shared.js";
-import { loadOwnedMinute } from "../minutes/_shared.js";
+import { loadOwnedMinute, toTranscript } from "../minutes/_shared.js";
+import { consumeAiCall } from "../quota/aiCalls.js";
+import { effectivePlan, type UserDoc } from "../users/_shared.js";
 import type { Transcript } from "../minutes/types.js";
 import { trimTranscript } from "./summarize.js";
 
@@ -71,6 +72,7 @@ export async function generateArtifact<T>(opts: {
       log.warn("artifact.cache_invalid", { uid: opts.uid, kind: opts.kind });
     }
   }
+  await chargeAiCall(opts.deps, opts.uid);
   const { data, model, tokens } = await opts.llm.generateJson<T>({
     name: opts.kind, system: opts.system, prompt: opts.prompt, schema: opts.schema, maxOutputTokens: opts.maxOutputTokens,
   });
@@ -84,4 +86,12 @@ export const promptTranscript = (t: Transcript) => trimTranscript(t.text);
 /** "speaker_0: Hello everyone.\nspeaker_1: Sure." — what the speaker-mapping prompt needs. */
 export function transcriptBySpeaker(t: Transcript): string {
   return trimTranscript(t.segments.map((s) => `${s.speakerId}: ${s.text}`).join("\n"));
+}
+
+/** One model call against the caller's daily AI cap. Throws resource-exhausted at the cap. */
+export async function chargeAiCall(deps: Deps, uid: string): Promise<void> {
+  const now = deps.now();
+  const user = (await deps.db.doc(`users/${uid}`).get()).data() as UserDoc | undefined;
+  const plan = effectivePlan(user ?? {}, now);
+  await consumeAiCall(deps.db, uid, deps.limits[plan], now);
 }

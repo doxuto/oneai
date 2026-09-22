@@ -82,7 +82,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S4-04 | 4 `generate*` với cache `sourceHash` | `ai/generate{ShortQuestions,Quiz,Flashcards,Mindmap}.ts`, `ai/_artifacts.ts` | hit cache không gọi LLM; fail không ghi |
 | [x] | S4-05 | `mapSpeakers` + `renameSpeaker` | `ai/mapSpeakers.ts`, `ai/renameSpeaker.ts` | speakers là artifact; rename không gọi LLM |
 | [x] | S4-06 | `calendarEvents` validate | `ai/_calendar.ts` | zod, không spread body |
-| [x] | S4-07 | Cost: token cap + log | adapter | `tokenCount` trong log mọi call; maxOutputTokens từng loại; transcript trim 120k ký tự |
+| [x] | S4-07 | Cost: token cap + log + **trần AI call/ngày theo user** | adapter, `quota/aiCalls.ts` | `tokenCount` trong log mọi call; maxOutputTokens từng loại; transcript trim 120k ký tự |
 | [x] | S4-08 | Prompts gộp + test | `src/prompts/*.txt`, `test/unit/prompts.test.ts` | 7 prompt, mỗi cái ≥1 test placeholder |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)

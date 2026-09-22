@@ -13,7 +13,7 @@ import {
   CHAT_CONTEXT, CHAT_SYSTEM, FLASHCARDS_PROMPT, MAP_SPEAKERS_PROMPT, MAP_SPEAKERS_SYSTEM, MINDMAP_PROMPT, QUIZ_PROMPT, SHORT_QUESTIONS_PROMPT,
 } from "../prompts/ai.js";
 import { fill } from "../prompts/summarize.js";
-import { artifactRef, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker } from "./_artifacts.js";
+import { artifactRef, chargeAiCall, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker } from "./_artifacts.js";
 import {
   ChatInput, FlashcardsData, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData, RenameSpeakerInput, ShortQuestionsData, SpeakersData,
   type ChatMessage, type ChatOutput, type GenerateOutput, type ListChatMessagesOutput,
@@ -131,6 +131,7 @@ export async function chatHandler(
       .map((d) => d.data() as { role?: string; text?: string })
       .filter((m): m is { role: "user" | "assistant"; text: string } => (m.role === "user" || m.role === "assistant") && typeof m.text === "string");
 
+    await chargeAiCall(deps, uid);
     const userRef = chatCol.doc();
     await userRef.set({ role: "user", text: input.question, createdAt: FieldValue.serverTimestamp() });
 
