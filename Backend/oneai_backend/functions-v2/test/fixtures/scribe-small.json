@@ -1,0 +1,16 @@
+{
+  "language_code": "eng",
+  "language_probability": 0.97,
+  "text": "Hello everyone. Let's start. Sure, go ahead.",
+  "words": [
+    { "text": "Hello", "start": 0.0, "end": 0.42, "type": "word", "speaker_id": "speaker_0" },
+    { "text": " ", "start": 0.42, "end": 0.5, "type": "spacing", "speaker_id": "speaker_0" },
+    { "text": "everyone.", "start": 0.5, "end": 1.1, "type": "word", "speaker_id": "speaker_0" },
+    { "text": "(laughs)", "start": 1.1, "end": 1.6, "type": "audio_event", "speaker_id": "speaker_0" },
+    { "text": "Let's", "start": 1.7, "end": 1.95, "type": "word", "speaker_id": "speaker_0" },
+    { "text": "start.", "start": 2.0, "end": 2.4, "type": "word", "speaker_id": "speaker_0" },
+    { "text": "Sure,", "start": 3.0, "end": 3.3, "type": "word", "speaker_id": 1 },
+    { "text": "go", "start": 3.35, "end": 3.5, "type": "word", "speaker_id": "speaker_1" },
+    { "text": "ahead.", "start": 3.55, "end": "3.9", "type": "word", "speaker_id": "speaker_1" }
+  ]
+}
