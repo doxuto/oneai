@@ -42,3 +42,6 @@ export { generateFlashcards } from "./ai/generateFlashcards.js";
 export { generateMindmap } from "./ai/generateMindmap.js";
 export { mapSpeakers } from "./ai/mapSpeakers.js";
 export { renameSpeaker } from "./ai/renameSpeaker.js";
+
+export { revenueCatWebhook } from "./billing/revenueCatWebhook.js";
+export { adRewardSsv } from "./ads/adRewardSsv.js";
