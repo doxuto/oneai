@@ -1,10 +1,9 @@
 import { defineConfig } from "vitest/config";
 
+/** Unit tests: pure logic, no Firestore. Run anywhere, fast. */
 export default defineConfig({
   test: {
-    include: ["test/**/*.test.ts"],
+    include: ["test/unit/**/*.test.ts"],
     environment: "node",
-    // firebase-testing-pro: the emulator is shared state, so no file parallelism.
-    fileParallelism: false,
   },
 });

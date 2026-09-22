@@ -5,8 +5,12 @@
 #
 #   bash scripts/build-and-test.sh              # v1 check + lint + build + test v2
 #   bash scripts/build-and-test.sh --lint-only  # chỉ eslint + tsc --noEmit
-#   bash scripts/build-and-test.sh --test-only  # chỉ vitest
+#   bash scripts/build-and-test.sh --test-only  # chỉ vitest (unit + integration)
+#   bash scripts/build-and-test.sh --unit-only  # chỉ unit, không cần emulator
 #   bash scripts/build-and-test.sh --v1-check   # chỉ node --check trên functions/
+#
+# Integration test chạy qua `firebase emulators:exec` nếu có firebase CLI;
+# không có thì bỏ qua và ghi chú vào report (unit vẫn chạy).
 #
 # Biến môi trường:
 #   MIN_TESTS=<n>  Fail nếu tổng số test < n (mặc định 0)
@@ -27,8 +31,8 @@ STAMP="$(date +%Y%m%d-%H%M%S)"
 REPORT="$ROOT/reports/$STAMP"
 mkdir -p "$REPORT"
 
-V1_EXIT=0; LINT_EXIT=0; BUILD_EXIT=0; TEST_EXIT=0
-TOTAL=0; PASSED=0; FAILED=0
+V1_EXIT=0; LINT_EXIT=0; BUILD_EXIT=0; TEST_EXIT=0; INT_EXIT=0
+TOTAL=0; PASSED=0; FAILED=0; INT_TOTAL=0; INT_PASSED=0; INT_FAILED=0
 NOTES=""
 
 # ---- v1: chỉ kiểm tra cú pháp, không đụng vào ------------------------------
@@ -61,7 +65,7 @@ if [[ "$MODE" != "__v1only" ]]; then
     fi
 
     if [[ "$MODE" != "--lint-only" ]]; then
-      echo "[build-and-test] vitest…"
+      echo "[build-and-test] vitest (unit)…"
       npx vitest run --reporter=verbose --reporter=json \
         --outputFile="$REPORT/vitest.json" > "$REPORT/test.log" 2>&1; TEST_EXIT=$?
       if [[ -f "$REPORT/vitest.json" ]]; then
@@ -69,6 +73,22 @@ if [[ "$MODE" != "__v1only" ]]; then
           const r = require(process.argv[1]);
           console.log(r.numTotalTests ?? 0, r.numPassedTests ?? 0, r.numFailedTests ?? 0);
         ' "$REPORT/vitest.json" 2>/dev/null || echo "0 0 0")
+      fi
+      if [[ "$MODE" != "--unit-only" ]]; then
+        if command -v firebase >/dev/null 2>&1; then
+          echo "[build-and-test] vitest (integration, emulator)…"
+          firebase emulators:exec --only firestore,auth,storage --project demo-oneai \
+            "npx vitest run -c vitest.integration.config.ts --reporter=verbose --reporter=json --outputFile=$REPORT/vitest-int.json" \
+            > "$REPORT/test-integration.log" 2>&1; INT_EXIT=$?
+          if [[ -f "$REPORT/vitest-int.json" ]]; then
+            read -r INT_TOTAL INT_PASSED INT_FAILED < <(node -e '
+              const r = require(process.argv[1]);
+              console.log(r.numTotalTests ?? 0, r.numPassedTests ?? 0, r.numFailedTests ?? 0);
+            ' "$REPORT/vitest-int.json" 2>/dev/null || echo "0 0 0")
+          fi
+        else
+          NOTES="${NOTES:+$NOTES }Không có firebase CLI → bỏ qua integration test."
+        fi
       fi
       if [[ "$MIN_TESTS" -gt 0 && "$TOTAL" -lt "$MIN_TESTS" ]]; then
         echo "[build-and-test] Chỉ có $TOTAL test (< MIN_TESTS=$MIN_TESTS) → FAIL"
@@ -80,7 +100,7 @@ if [[ "$MODE" != "__v1only" ]]; then
 fi
 
 STATUS="PASS"
-[[ $V1_EXIT -ne 0 || $LINT_EXIT -ne 0 || $BUILD_EXIT -ne 0 || $TEST_EXIT -ne 0 ]] && STATUS="FAIL"
+[[ $V1_EXIT -ne 0 || $LINT_EXIT -ne 0 || $BUILD_EXIT -ne 0 || $TEST_EXIT -ne 0 || $INT_EXIT -ne 0 ]] && STATUS="FAIL"
 
 {
   echo "# Server build & test report — $STAMP"
@@ -88,9 +108,10 @@ STATUS="PASS"
   echo "| | |"
   echo "|---|---|"
   echo "| **Kết quả** | **$STATUS** |"
-  echo "| Exit codes | v1check=$V1_EXIT lint=$LINT_EXIT build=$BUILD_EXIT test=$TEST_EXIT |"
+  echo "| Exit codes | v1check=$V1_EXIT lint=$LINT_EXIT build=$BUILD_EXIT unit=$TEST_EXIT integration=$INT_EXIT |"
   echo "| Mode | ${1:-all} |"
-  echo "| Tests | total $TOTAL · passed $PASSED · failed $FAILED |"
+  echo "| Unit | total $TOTAL · passed $PASSED · failed $FAILED |"
+  echo "| Integration | total $INT_TOTAL · passed $INT_PASSED · failed $INT_FAILED |"
   echo "| Logs | \`$REPORT/\` |"
   [[ -n "$NOTES" ]] && { echo; echo "> $NOTES"; }
   echo
@@ -101,7 +122,7 @@ STATUS="PASS"
   { grep -E "error TS|error |✖" "$REPORT/lint.log" "$REPORT/build.log" 2>/dev/null | head -60; } || true
   echo
   echo "## Test fail"
-  { grep -E "^\s*(✗|×|FAIL|AssertionError|Error:)" "$REPORT/test.log" 2>/dev/null | head -60; } || true
+  { grep -E "^\s*(✗|×|FAIL|AssertionError|Error:)" "$REPORT/test.log" "$REPORT/test-integration.log" 2>/dev/null | head -60; } || true
 } > "$REPORT/summary.md"
 
 ln -sfn "$REPORT" "$ROOT/reports/latest"

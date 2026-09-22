@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compareVersions } from "../src/lib/validate.js";
+import { compareVersions } from "../../src/lib/validate.js";
 
 describe("compareVersions", () => {
   it("orders by major, minor, patch", () => {

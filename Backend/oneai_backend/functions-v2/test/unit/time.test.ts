@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { nextPeriodStart, periodIdFor } from "../src/lib/time.js";
+import { nextPeriodStart, periodIdFor } from "../../src/lib/time.js";
 
 describe("periodIdFor", () => {
   it("uses the Vietnam calendar day, not UTC", () => {

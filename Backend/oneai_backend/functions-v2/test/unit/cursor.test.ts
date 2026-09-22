@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeCursor, encodeCursor } from "../src/lib/cursor.js";
+import { decodeCursor, encodeCursor } from "../../src/lib/cursor.js";
 
 describe("cursor", () => {
   it("round-trips a [millis, id] pair", () => {
