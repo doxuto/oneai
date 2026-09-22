@@ -50,8 +50,8 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S2-06 | Tags CRUD | `tags/types.ts`, `tags/handler.ts`, `tags/{create,list,update,delete}Tag.ts` | `nameLower` unique → `already-exists`; delete gỡ `tagIds` khỏi minutes bằng batch ≤500 |
 | [x] | S2-07 | Trigger `onMinuteWritten` duy trì `minuteCount` (user + tag) | `minutes/onMinuteWritten.ts` | tạo/xoá/đổi tag → count đúng; idempotent theo `event.id` |
 | [x] | S2-08 | Output mapper tường minh | `minutes/_shared.ts` | không có `snap.data()` trả thẳng; `Timestamp` → ISO |
-| [ ] | S2-09 | Contract snapshot test | `test/unit/contract.test.ts` | JSON shape từng output snapshot |
-| [ ] | S2-10 | Rules unit test | `test/rules/firestore.rules.test.ts` | mỗi nhánh allow: pass/wrong-user/unauth |
+| [x] | S2-09 | Contract snapshot test | `test/unit/contract.test.ts` | JSON shape từng output snapshot |
+| [x] | S2-10 | Rules unit test | `test/rules/firestore.rules.test.ts` | mỗi nhánh allow: pass/wrong-user/unauth |
 | [x] | S2-11 | `firestore.indexes.json` khớp query thật | — | mọi query trong `listMinutes` có index |
 
 ## S3 — BE: pipeline transcribe
