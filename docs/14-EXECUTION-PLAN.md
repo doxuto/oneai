@@ -32,7 +32,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 |---|---|---|---|---|
 | [x] | S1-01..04 | Skeleton BE + App | — | 22/09 |
 | [!] | S1-05 | Secrets qua `functions:secrets:set` | — | **Toan chạy** (cần CLI đăng nhập) |
-| [ ] | S1-06 | Emulator config + `test/helpers/emulator.ts` + npm script `test:integration` | `functions-v2/test/helpers/`, `package.json` | `emulators:exec` chạy được trên Mac |
+| [x] | S1-06 | Emulator config + `test/helpers/emulator.ts` + npm script `test:integration` | `functions-v2/test/helpers/`, `package.json` | `emulators:exec` chạy được trên Mac |
 | [ ] | S1-07 | App Check monitor mode | console | **Toan bật** |
 | [!] | S1-08..09 | App nối auth + gọi getMe | `App/oneai_v2/lib/features/auth/` | chặn bởi `flutter create` |
 | [ ] | S1-10 | Deploy v2 lên dev | — | **Toan chạy** `firebase deploy --only functions:v2 -P dev` |
@@ -41,7 +41,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
-| [ ] | S2-00 | Refactor `getMe` sang handler/wrapper + unit test | `users/handler.ts`, `users/getMe.ts`, `test/unit/users.test.ts` | handler test không cần Firestore cho nhánh lỗi |
+| [x] | S2-00 | Refactor `getMe` sang handler/wrapper + unit test | `users/handler.ts`, `users/getMe.ts`, `test/unit/users.test.ts` | handler test không cần Firestore cho nhánh lỗi |
 | [ ] | S2-01 | `createMinute` | `minutes/types.ts`, `minutes/_shared.ts`, `minutes/handler.ts`, `minutes/createMinute.ts` | trả `minuteId` + upload path; doc `status:"uploading"`; `sourceType` ∈ audio\|pdf; `sizeBytes` ≤ 300MB |
 | [ ] | S2-02 | `listMinutes` | `minutes/listMinutes.ts` + handler | cursor `[createdAtMillis, id]`; `tagIds` ≤10; sort enum; **thiếu index → ném `failed-precondition`, không trả rỗng** |
 | [ ] | S2-03 | `getMinute` | `minutes/getMinute.ts` | minute người khác → `not-found`; kèm `summary`, `transcriptPreview`, `speakers`, `artifacts` có sẵn |

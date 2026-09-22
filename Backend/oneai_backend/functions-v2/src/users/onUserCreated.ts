@@ -4,7 +4,7 @@
  */
 import * as functionsV1 from "firebase-functions/v1";
 import { FieldValue } from "firebase-admin/firestore";
-import { db } from "../lib/admin.js";
+import { getDb } from "../lib/admin.js";
 import { log } from "../lib/logging.js";
 import { periodIdFor } from "../lib/time.js";
 import { FREE_DAILY_LIMIT } from "../lib/params.js";
@@ -18,6 +18,7 @@ export const onUserCreated = functionsV1
     const periodId = periodIdFor(now);
     const expiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
+    const db = getDb();
     const batch = db.batch();
     batch.set(db.doc(`users/${uid}`), {
       email: user.email ?? null,

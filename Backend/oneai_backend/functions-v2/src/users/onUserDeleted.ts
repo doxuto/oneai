@@ -1,6 +1,6 @@
 /** v1 auth trigger — marked explicitly. */
 import * as functionsV1 from "firebase-functions/v1";
-import { bucket, db } from "../lib/admin.js";
+import { getBucket, getDb } from "../lib/admin.js";
 import { log } from "../lib/logging.js";
 
 export const onUserDeleted = functionsV1
@@ -8,6 +8,8 @@ export const onUserDeleted = functionsV1
   .auth.user()
   .onDelete(async (user) => {
     const uid = user.uid;
+    const db = getDb();
+    const bucket = getBucket();
     let firestoreOk = true;
     let storageOk = true;
 
