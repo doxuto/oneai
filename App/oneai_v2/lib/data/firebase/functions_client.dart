@@ -35,7 +35,8 @@ class FunctionsClient {
     }
   }
 
-  /// Streaming callable (used by `chat`). Yields each chunk, then the result.
+  /// Streaming callable (used by `chat`). Yields each chunk's data, then the
+  /// final result's data. cloud_functions ≥ 5.2: `ChunkResponse` / `ResultResponse`.
   Stream<Object?> stream(
     String name, [
     Map<String, Object?> data = const {},
@@ -46,7 +47,14 @@ class FunctionsClient {
         ...data,
         'client': client.toJson(),
       });
-      yield* response;
+      await for (final r in response) {
+        switch (r) {
+          case ChunkResponse(:final data):
+            yield data;
+          case ResultResponse(:final data):
+            yield data;
+        }
+      }
     } on FirebaseFunctionsException catch (e) {
       throw ApiFailure.fromFunctions(e);
     }

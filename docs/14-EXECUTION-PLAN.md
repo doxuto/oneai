@@ -87,7 +87,15 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 
-Chi tiết trong `09-ROADMAP.md`. Sẽ mở rộng tới mức file khi bắt đầu S5.
+Viết trước trong lúc chờ, **chưa compile** — lần `.build-request` đầu tiên sẽ dọn lỗi cú pháp nếu có:
+
+| | ID | Task | File | Nghiệm thu |
+|---|---|---|---|---|
+| [~] | S5-04a | Models mirror contract TS: minute, tag, user, ai, transcribe | `lib/data/models/*.dart` | dùng `json_read`, enum khoan dung, `fromFirestore` cho Timestamp |
+| [~] | S5-04b | Repositories: minutes (snapshots + callable), transcription (upload resumable + start/cancel), tags, user (watchQuota), ai (chat stream sealed event) | `lib/data/repositories/*.dart` | client không bao giờ ghi Firestore |
+| [~] | — | `FunctionsClient.stream` map `ChunkResponse`/`ResultResponse` | `lib/data/firebase/functions_client.dart` | |
+
+Chi tiết phần còn lại trong `09-ROADMAP.md`.
 
 ## S8 — Monetization
 
@@ -100,7 +108,7 @@ Chi tiết trong `09-ROADMAP.md`. Sẽ mở rộng tới mức file khi bắt đ
 | [x] | S10-03a | Migration v1→v2 + inventory CLI (`tools/migrate-v1.mjs inventory\|plan\|apply`), idempotent, dry-run mặc định | `src/tools/migrateV1.ts`, `tools/migrate-v1.mjs` | test seed dữ liệu hình v1 → migrate → đọc lại qua handler v2 |
 | [x] | S1-12 | `tools/seed-emulator.mjs` — user demo + note mọi trạng thái cho dev App | `functions-v2/tools/` | |
 | [x] | S10-06a | `scripts/deploy.sh` có chốt chặn + `docs/15-RUNBOOK.md` | | |
-| [ ] | S8-06 | Dart `AdGate` + `AdLedger` | `App/oneai_v2/lib/features/ads/` | ≥30 test |
+| [~] | S8-06 | Dart `AdGate` + `AdLedger` + `AdsConfig` | `App/oneai_v2/lib/features/ads/` | 27 test viết sẵn — **chưa compile** (chờ Flutter) |
 
 ---
 
