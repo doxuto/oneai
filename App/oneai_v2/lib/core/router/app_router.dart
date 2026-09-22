@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:one_ai/core/di/providers.dart';
 import 'package:one_ai/core/router/routes.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
-/// Whether a session exists. Wired to Firebase auth in the auth feature;
-/// overridden in tests.
-final authStateProvider = StreamProvider<bool>((ref) => Stream<bool>.value(false));
-
 final routerProvider = Provider<GoRouter>((ref) {
-  final isSignedIn = ref.watch(authStateProvider).valueOrNull ?? false;
+  // While auth is still resolving on cold start, treat as signed out; the
+  // redirect re-runs when the stream emits because the provider is watched.
+  final isSignedIn = ref.watch(authUserProvider).valueOrNull != null;
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,

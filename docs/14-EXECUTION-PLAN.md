@@ -94,6 +94,7 @@ Viết trước trong lúc chờ, **chưa compile** — lần `.build-request` �
 | [~] | S5-04a | Models mirror contract TS: minute, tag, user, ai, transcribe | `lib/data/models/*.dart` | dùng `json_read`, enum khoan dung, `fromFirestore` cho Timestamp |
 | [~] | S5-04b | Repositories: minutes (snapshots + callable), transcription (upload resumable + start/cancel), tags, user (watchQuota), ai (chat stream sealed event) | `lib/data/repositories/*.dart` | client không bao giờ ghi Firestore |
 | [~] | — | `FunctionsClient.stream` map `ChunkResponse`/`ResultResponse` | `lib/data/firebase/functions_client.dart` | |
+| [x] | S0-07a | Assets chép sẵn (44 SVG + 12 PNG), `Assets` constants, `TranscriptionLanguage` (50 mã), Riverpod composition root `core/di/providers.dart`, bootstrap init Firebase + App Check theo flavor | | **chưa compile** |
 | [x] | S7-04/05 | l10n chuẩn `gen-l10n`: 190 key `en` (162 v1 − demo/YouTube/progress giả + 82 key cho chuỗi cứng cũ), `es` và **`vi`** đủ key | `lib/core/l10n/`, `l10n.yaml` | placeholder khớp 3 file; `context.l10n.*` là cách duy nhất đọc chuỗi |
 
 Chi tiết phần còn lại trong `09-ROADMAP.md`.

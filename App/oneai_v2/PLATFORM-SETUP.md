@@ -107,11 +107,7 @@ Lặp lại cho `oneai-dev` và `oneai-staging` khi hai project đó tồn tại
 
 ## Assets
 
-Chép từ `App/oneai/assets/` sang:
-
-- `assets/icons/` — 44 file SVG
-- `assets/images/` — `app_icon.png`, `splash.png`, `like_button.png`,
-  `dislike_button.png` và các biến thể 1.5x/2.0x/3.0x/4.0x
+✅ Đã chép sẵn (23/09): `assets/icons/` 44 SVG, `assets/images/` 12 PNG.
 
 **Không chép** `assets/fonts/` — bản cũ khai nó dưới `assets:` mà không có mục
 `fonts:`, nên hai file Roboto chưa bao giờ được dùng (OQ-09).
