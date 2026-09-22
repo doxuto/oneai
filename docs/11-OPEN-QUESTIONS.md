@@ -26,6 +26,7 @@ trong commit. Khi chốt xong: đổi trạng thái, ghi ngày, ghi quyết đ�
 | OQ-13 | Giữ `contentKind` do LLM đoán? | S3 | **CHƯA CHỐT** |
 | OQ-14 | Nguồn timezone: header hay body? | S4 | **CHƯA CHỐT** |
 | OQ-15 | Có làm push notification? | S8 | **CHƯA CHỐT** |
+| OQ-16 | Section tóm tắt theo chủ đề hay theo lượt nói? | S4 | **CHƯA CHỐT** — đang dùng mặc định tạm |
 
 ---
 
@@ -238,3 +239,21 @@ Chưa nằm trong roadmap. Nếu có thì thêm vào S8 (+1 tuần: token regist
 `onNoteReady` trigger, quyền, deep link).
 
 **Mặc định tạm:** không làm ở v1.0 của v2. → S8.
+
+---
+
+### OQ-16 — Section của summary: theo chủ đề hay theo lượt nói?
+
+Prompt v1 nói *"mỗi section tương ứng đúng một transcript segment"* — tức mỗi
+lượt nói (speaker turn) là một section. Một buổi họp 1 tiếng có thể có 300
+lượt nói, ra 300 section, mỗi section vài chữ. `MinuteSectionWidget` ở app chỉ
+hiển thị title + bullets, không hiện timeRange, nên section kiểu đó không gắn
+được với transcript và cũng không đọc nổi.
+
+Prompt v2 (`src/prompts/summarize.ts`) chuyển sang **section theo chủ đề**:
+section đầu là Overview, rồi mỗi chủ đề một section theo thứ tự xuất hiện.
+Đây là hành vi tóm tắt chuẩn, nhưng là thay đổi so với bản cũ.
+
+**Mặc định tạm:** theo chủ đề. Nếu Toan muốn giữ per-turn để làm tính năng
+"nhảy tới đoạn transcript", nói lại — khi đó cần thêm `segmentIndex` vào
+section và sửa prompt. → S4-08.
