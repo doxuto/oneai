@@ -1,0 +1,1 @@
+gravador,voz,resumo,produtividade,transcrição,entrevista,ata,ditado,reuniões,automático,inteligente

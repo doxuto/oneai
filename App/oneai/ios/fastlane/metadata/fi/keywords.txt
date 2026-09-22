@@ -1,0 +1,1 @@
+kokousavustaja,palaveriavustaja,litterointi,muistiinpanot,pöytäkirja,yhteenveto,tekoäly,Otter,Noted

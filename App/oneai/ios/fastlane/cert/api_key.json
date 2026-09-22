@@ -1,0 +1,7 @@
+{
+  "key_id": "2378X6R4TM",
+  "issuer_id": "69a6de96-6bd2-47e3-e053-5b8c7c11a4d1",
+  "key": "-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgE+98QnSOxkXR2RqjzTtwGyMNXyu3qF2/+kh9wu433TugCgYIKoZIzj0DAQehRANCAAREt7z5+FQVJ/qwVc+hC+GHO1pGVnMrGaESX7NLdNnf5SQcJ+XgQWNM7zgpUt+2UkFyEywVJmmtgUjOxRMr14Cb\n-----END PRIVATE KEY-----",
+  "duration": 1200, 
+  "in_house": false 
+}

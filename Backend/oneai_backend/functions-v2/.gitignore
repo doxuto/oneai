@@ -1,0 +1,11 @@
+node_modules/
+lib/
+*.log
+.env.local
+.DS_Store
+vitest.config.ts.timestamp-*
+
+# Param không bí mật, commit có chủ đích (firebase-functions-pro/config-and-secrets).
+# Phải phủ định ở ĐÂY vì .gitignore của thư mục cha chặn `.env`, và rule ở tầng
+# sâu hơn mới ghi đè được tầng nông hơn.
+!.env

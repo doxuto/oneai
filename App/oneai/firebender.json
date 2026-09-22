@@ -1,0 +1,14 @@
+{
+  "rules": [
+    "Always use sealed class or abstract class when using Freezed",
+    "Use Freezed to generate Bloc events",
+    "Use Freezed to generate Bloc states",
+    "If there are eol_at_end_of_file issues, or end of file issues, skip it, not need to fix",
+    "Extract all hardcoded texts or strings into arb files",
+    "Do not run flutter gen-l10n to generate localization code, run flutter --no-color pub global run intl_utils:generate",
+    "Prefer using gapW or gapH in lib/ui/core/themes/dimens.dart instead of SizedBox(width) or SizedBox(height) if possible, add gapW and gapH to lib/ui/core/themes/dimens.dart file if not existed",
+    "Prefer using themes defined in the lib/ui/core/themes directory, avoid using direct values for colors, text styles, etc. Prioritize using AppThemeContextExtension for better readability.",
+    "Prioritize using LocalizationExtension for better readability.",
+    "Prioritize using context.read<T>() instead of BlocProvider.of<T>(context) for better readability."
+  ]
+}

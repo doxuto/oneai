@@ -1,0 +1,93 @@
+# =============================================================================
+# One AI — monorepo
+#   App/oneai/                  app cũ (legacy, tham chiếu — xoá sau khi ship v2)
+#   App/oneai_v2/               app mới
+#   Backend/oneai_backend/functions/     backend cũ (legacy, đóng băng)
+#   Backend/oneai_backend/functions-v2/  backend mới
+#   docs/                       tài liệu
+# =============================================================================
+
+# --- Lịch sử git của ba repo cũ, giữ để tham chiếu ---
+_legacy-git/
+
+# --- BÍ MẬT: chặn tuyệt đối, kể cả khi .gitignore con bị sửa ---
+**/.env
+**/.env.local
+**/.env.*.local
+**/service-account*.json
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options*.dart
+**/*.keystore
+**/*.jks
+**/key.properties
+**/*.mobileprovision
+**/*.p8
+**/*.p12
+**/*.cer
+# .env không bí mật của functions-v2 (chỉ chứa param) thì vẫn commit
+!Backend/oneai_backend/functions-v2/.env
+
+# --- OS / IDE ---
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# --- Flutter / Dart ---
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/build/
+**/generated_plugin_registrant.dart
+**/doc/api/
+*.lock.bak
+
+# --- iOS ---
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/xcuserdata/
+**/ios/fastlane/report.xml
+**/ios/fastlane/Preview.html
+**/ios/fastlane/screenshots/
+
+# --- Android ---
+**/android/.gradle/
+**/android/.kotlin/
+**/android/local.properties
+**/android/captures/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/.cxx/
+
+# --- Node / Firebase Functions ---
+**/node_modules/
+**/functions/lib/
+**/functions-v2/lib/
+**/vitest.config.ts.timestamp-*
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+pubsub-debug.log
+**/.firebase/
+
+# --- Giao thức agent (12-AGENT-WORKFLOW.md) ---
+**/reports/
+**/.build-request
+**/.build-done
+**/.git-request
+**/.git-done
+
+# --- Log ---
+*.log

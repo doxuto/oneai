@@ -1,0 +1,1 @@
+transcribir,audio,texto,asistente,ia,reuniones,resumen,notas,voz,grabar,minutas,apuntes,dictado,note

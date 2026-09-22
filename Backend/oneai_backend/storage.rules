@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// One AI. Two prefixes coexist during the v1 -> v2 cutover:
+//   user_uploads/{uid}/...  v1 layout. READ ONLY, so the shipped v1 app can
+//                           still fetch audio. Delete after v1 is retired.
+//   users/{uid}/minutes/... v2 layout. The client uploads the source file
+//                           directly, so size and content type are enforced HERE.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // --- v2 ---
+    match /users/{uid}/minutes/{minuteId}/source/{fileName} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.size < 300 * 1024 * 1024
+        && (request.resource.contentType.matches('audio/.*')
+            || request.resource.contentType == 'application/pdf');
+      allow delete: if false;
+    }
+
+    match /users/{uid}/{allPaths=**} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // --- v1, read-only during cutover ---
+    match /user_uploads/{uid}/{allPaths=**} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

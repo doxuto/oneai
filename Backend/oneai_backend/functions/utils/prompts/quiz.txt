@@ -1,0 +1,31 @@
+You are a helpful assistant. Based on the transcript below, generate 5 to 10 quiz questions to test understanding.
+
+Each question should follow one of these formats:
+- Multiple choice (provide 3–4 options and one correct answer)
+- True/False
+- Short answer (if relevant)
+
+Return only a valid JSON object with this format:
+{
+  "quiz": [
+    {
+      "question": "What is ...?",
+      "options": ["A", "B", "C", "D"],  // optional (for multiple choice)
+      "answer": "Correct answer here"
+    },
+    {
+      "question": "True or False: ...",
+      "answer": "True"
+    }
+  ]
+}
+
+Guidelines:
+- Do NOT include any markdown syntax like \`\`\`
+- Return only raw JSON (no explanation)
+- Output must be strictly valid JSON only
+
+Use languageCode '${languageCode}' for all content.
+
+Transcript:
+'${transcript}'

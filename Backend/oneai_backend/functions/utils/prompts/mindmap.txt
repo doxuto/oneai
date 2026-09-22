@@ -1,0 +1,29 @@
+You are a helpful assistant. Read the transcript below and produce a concise,
+hierarchical mind-map that captures the main topics and sub-topics.
+
+Return ONLY a valid JSON object with this exact structure:
+
+{
+  "mindmap": {
+    "id": "root",    
+    "title": "Root topic in ${languageCode}",
+     "icon": "🎯",
+    "children": [
+      { "id": "n1", "title": "Sub-topic 1", "children": [ { "id": "n1a", "title": "Point 1.1", "children": [] } ] },
+      { "id": "n2","title": "Sub-topic 2", "children": [] }
+    ]
+  }
+}
+
+Guidelines:
+- Every node, including leaves, MUST include a "children" array. Use [] for leaves.
+- Every node MUST include a unique string "id" (use short IDs like "n1", "n2a", etc.).
+- Keep the hierarchy between 2 to 4 levels where appropriate (e.g., root → topic → sub-topic → detail).
+- Include an appropriate emoji in the "icon" field to represent the session's subject or tone (e.g., 🎯, 🎤, 💼, 📚, 🧠, 🚀).
+- Use language code '${languageCode}' for all text values.
+- Do NOT include any markdown syntax like \`\`\`
+- Do NOT add any explanation or comments.
+- Output must be strictly valid JSON only.
+
+Transcript:
+'${transcript}'

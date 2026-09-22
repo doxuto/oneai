@@ -1,0 +1,578 @@
+{
+  "@@locale": "es",
+  "appName": "One AI",
+  "@appName": {
+    "description": "Nombre de la aplicación"
+  },
+  "oneAi": "One AI",
+  "@oneAi": {
+    "description": "Brand name shown on login page"
+  },
+  "instantNotesFromAudio": "Notas instantáneas de\naudio y video, ",
+  "@instantNotesFromAudio": {
+    "description": "First part of login page tagline"
+  },
+  "doneWithAi": "hechas\ncon IA",
+  "@doneWithAi": {
+    "description": "Second part of login page tagline"
+  },
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "@signInWithGoogle": {
+    "description": "Text for Google sign-in button"
+  },
+  "signInWithApple": "Iniciar sesión con Apple",
+  "@signInWithApple": {
+    "description": "Text for Apple sign-in button"
+  },
+  "previouslySignedInWithApple": "(Previamente iniciado sesión con Apple)",
+  "@previouslySignedInWithApple": {
+    "description": "Text shown below Apple sign-in button for returning users"
+  },
+  "welcomeMessage": "Bienvenido a nuestra aplicación",
+  "@welcomeMessage": {
+    "description": "Mensaje de bienvenida mostrado en la página de inicio de sesión"
+  },
+  "appTitle": "One AI",
+  "@appTitle": {
+    "description": "Title of the application"
+  },
+  "selectTheme": "Seleccionar tema",
+  "@selectTheme": {
+    "description": "Tooltip for the theme selector button"
+  },
+  "systemTheme": "Tema del sistema",
+  "@systemTheme": {
+    "description": "Label for system theme option"
+  },
+  "lightTheme": "Tema claro",
+  "@lightTheme": {
+    "description": "Label for light theme option"
+  },
+  "darkTheme": "Tema oscuro",
+  "@darkTheme": {
+    "description": "Label for dark theme option"
+  },
+  "pageNotFound": "Página no encontrada",
+  "@pageNotFound": {
+    "description": "Title for the error page when a route is not found"
+  },
+  "premium": "Premium",
+  "@premium": {
+    "description": "Label for premium button"
+  },
+  "createTag": "Crear etiqueta",
+  "@createTag": {
+    "description": "Label for creating a new tag"
+  },
+  "greetingNotes": "Notas de saludo",
+  "@greetingNotes": {
+    "description": "Title for greeting notes item"
+  },
+  "pageNotFoundMessage": "Página no encontrada: {path}",
+  "@pageNotFoundMessage": {
+    "description": "Message displayed when a page is not found",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "/unknown"
+      }
+    }
+  },
+  "goHome": "Ir al Inicio",
+  "@goHome": {
+    "description": "Label for button to navigate back to home page"
+  },
+  "mvvmBlocDemo": "MVVM + BLoC Demostración",
+  "@mvvmBlocDemo": {
+    "description": "Title for the MVVM + BLoC demo app"
+  },
+  "flutterMvvmBlocDemo": "Flutter MVVM BLoC Demostración",
+  "@flutterMvvmBlocDemo": {
+    "description": "Heading text for the demo app"
+  },
+  "usersAndPosts": "Usuarios y Publicaciones",
+  "@usersAndPosts": {
+    "description": "Title for the Users and Posts feature"
+  },
+  "usersAndPostsDesc": "Ver usuarios y sus publicaciones con gestión de estados de carga.",
+  "@usersAndPostsDesc": {
+    "description": "Description for the Users and Posts feature"
+  },
+  "settings": "Configuración",
+  "@settings": {
+    "description": "Title for the Settings feature"
+  },
+  "settingsDesc": "Opciones de configuración de la aplicación.",
+  "@settingsDesc": {
+    "description": "Description for the Settings feature"
+  },
+  "categories": "Categorías",
+  "@categories": {
+    "description": "Title for the Categories feature"
+  },
+  "categoriesDesc": "Navegar por contenido por categorías.",
+  "@categoriesDesc": {
+    "description": "Description for the Categories feature"
+  },
+  "featureComingSoon": "¡Función {title} próximamente!",
+  "@featureComingSoon": {
+    "description": "Message shown when a feature is not yet implemented",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Settings"
+      }
+    }
+  },
+  "settingsComingSoon": "Configuración - Próximamente",
+  "@settingsComingSoon": {
+    "description": "Message shown on the settings placeholder screen"
+  },
+  "categoriesComingSoon": "Categorías - Próximamente",
+  "@categoriesComingSoon": {
+    "description": "Message shown on the categories placeholder screen"
+  },
+  "loadingStatistics": "Estadísticas de Carga",
+  "@loadingStatistics": {
+    "description": "Title for the loading statistics dialog"
+  },
+  "totalOperations": "Operaciones totales: {count}",
+  "@totalOperations": {
+    "description": "Text showing total operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "completed": "Completadas: {count}",
+  "@completed": {
+    "description": "Text showing completed operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "inProgress": "En progreso: {count}",
+  "@inProgress": {
+    "description": "Text showing in-progress operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "averageDuration": "Duración promedio: {duration}ms",
+  "@averageDuration": {
+    "description": "Text showing average duration of operations",
+    "placeholders": {
+      "duration": {
+        "type": "String",
+        "example": "150"
+      }
+    }
+  },
+  "close": "Cerrar",
+  "@close": {
+    "description": "Label for close button"
+  },
+  "users": "Usuarios",
+  "@users": {
+    "description": "Label for users section"
+  },
+  "noUsersFound": "No se encontraron usuarios",
+  "@noUsersFound": {
+    "description": "Message shown when no users are available"
+  },
+  "posts": "Publicaciones",
+  "@posts": {
+    "description": "Label for posts section"
+  },
+  "selectUserToViewPosts": "Selecciona un usuario para ver publicaciones",
+  "@selectUserToViewPosts": {
+    "description": "Message shown when no user is selected to view posts"
+  },
+  "error": "Error: {message}",
+  "@error": {
+    "description": "Error message format",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  "retry": "Reintentar",
+  "@retry": {
+    "description": "Label for retry button"
+  },
+  "attempt": "Intento {count}",
+  "@attempt": {
+    "description": "Text showing attempt count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "loadingStatisticsTooltip": "Estadísticas de Carga",
+  "@loadingStatisticsTooltip": {
+    "description": "Tooltip for the loading statistics button"
+  },
+  "resetLoadingStatesTooltip": "Reiniciar Estados de Carga",
+  "@resetLoadingStatesTooltip": {
+    "description": "Tooltip for the reset loading states button"
+  },
+  "comments": "Comentarios",
+  "@comments": {
+    "description": "Label for comments section in post detail"
+  },
+  "commentsPlaceholder": "Los comentarios se cargarían aquí en una aplicación real",
+  "@commentsPlaceholder": {
+    "description": "Placeholder text when no comments are loaded"
+  },
+  "userId": "ID de Usuario: {id}",
+  "@userId": {
+    "description": "Label showing user ID",
+    "placeholders": {
+      "id": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "postId": "ID de Publicación: {id}",
+  "@postId": {
+    "description": "Label showing post ID",
+    "placeholders": {
+      "id": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "upgrade": "Mejorar",
+  "@upgrade": {
+    "description": "Label for upgrade button"
+  },
+  "registered": "Registrado",
+  "@registered": {
+    "description": "Label for registered button"
+  },
+  "back": "Atrás",
+  "@back": {
+    "description": "Label for back button"
+  },
+  "transcript": "Transcripción",
+  "@transcript": {
+    "description": "Label for transcript tab"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Label for chat tab"
+  },
+  "openingAndKeyHighlight": "Apertura y Puntos Clave",
+  "@openingAndKeyHighlight": {
+    "description": "Title for opening and key highlight section"
+  },
+  "productRoadmapReview": "Revisión de Hoja de Ruta",
+  "@productRoadmapReview": {
+    "description": "Title for product roadmap review section"
+  },
+  "featureUpdatesAndReleases": "Actualizaciones y Lanzamientos",
+  "@featureUpdatesAndReleases": {
+    "description": "Title for feature updates and releases section"
+  },
+  "breakTime": "Descanso",
+  "@breakTime": {
+    "description": "Title for break section"
+  },
+  "marketAndCompetitorInsights": "Análisis de Mercado y Competencia",
+  "@marketAndCompetitorInsights": {
+    "description": "Title for market and competitor insights section"
+  },
+  "teamUpdatesAndActionItems": "Actualización del Equipo y Plan de Acción",
+  "@teamUpdatesAndActionItems": {
+    "description": "Title for team updates and action items section"
+  },
+  "qAndAAndNextSteps": "Preguntas y Próximos Pasos",
+  "@qAndAAndNextSteps": {
+    "description": "Title for Q&A and next steps section"
+  },
+  "howDidWeDo": "¿Cómo lo hicimos?",
+  "@howDidWeDo": {
+    "description": "Text for feedback request"
+  },
+  "giveFeedback": "Dar Opinión",
+  "@giveFeedback": {
+    "description": "Text for give feedback button"
+  },
+  "tabComingSoon": "contenido de pestaña próximamente",
+  "@tabComingSoon": {
+    "description": "Text shown for tabs that are not yet implemented"
+  },
+  "share": "Compartir",
+  "@share": {
+    "description": "Text for share button/tooltip"
+  },
+  "shareNotesAsPdf": "Compartir notas como PDF",
+  "@shareNotesAsPdf": {
+    "description": "Label for sharing notes as PDF option"
+  },
+  "errorSharingPdf": "Error al compartir PDF. Inténtalo de nuevo.",
+  "@errorSharingPdf": {
+    "description": "Error message when PDF sharing fails"
+  },
+  "errorSharingContent": "Error al compartir contenido. Inténtalo de nuevo.",
+  "@errorSharingContent": {
+    "description": "Error message when content sharing fails"
+  },
+  "preparingContent": "Preparando contenido...",
+  "@preparingContent": {
+    "description": "Message shown while preparing content for sharing"
+  },
+  "generatingPdf": "Generando PDF...",
+  "@generatingPdf": {
+    "description": "Message shown while generating a PDF file"
+  },
+  "shareNotesAsText": "Compartir notas como texto",
+  "@shareNotesAsText": {
+    "description": "Text for sharing notes as text option"
+  },
+  "shareTranscriptAsPdf": "Compartir transcripción como PDF",
+  "@shareTranscriptAsPdf": {
+    "description": "Text for sharing transcript as PDF option"
+  },
+  "shareTranscriptAsText": "Compartir transcripción como texto",
+  "@shareTranscriptAsText": {
+    "description": "Text for sharing transcript as text option"
+  },
+  "shareAudioFile": "Compartir archivo de audio",
+  "@shareAudioFile": {
+    "description": "Text for sharing audio file option"
+  },
+  "newNote": "Nueva Nota",
+  "@newNote": {
+    "description": "Title for new note bottom sheet"
+  },
+  "autoDetect": "Detección automática",
+  "@autoDetect": {
+    "description": "Label for auto detect button in new note sheet"
+  },
+  "selected": "seleccionado",
+  "@selected": {
+    "description": "Label indicating that an option is currently selected"
+  },
+  "startAudioRecording": "Iniciar grabación de audio",
+  "@startAudioRecording": {
+    "description": "Label for starting audio recording option"
+  },
+  "uploadFromFiles": "Cargar desde archivos",
+  "@uploadFromFiles": {
+    "description": "Label for uploading from files option"
+  },
+  "youTubeVideo": "Video de YouTube",
+  "@youTubeVideo": {
+    "description": "Label for YouTube video option"
+  },
+  "bengali": "Bengalí",
+  "@bengali": {
+    "description": "Bengali language option"
+  },
+  "bulgarian": "Búlgaro",
+  "@bulgarian": {
+    "description": "Bulgarian language option"
+  },
+  "catalan": "Catalán",
+  "@catalan": {
+    "description": "Catalan language option"
+  },
+  "chinese": "Chino",
+  "@chinese": {
+    "description": "Chinese language option"
+  },
+  "croatian": "Croata",
+  "@croatian": {
+    "description": "Croatian language option"
+  },
+  "czech": "Checo",
+  "@czech": {
+    "description": "Czech language option"
+  },
+  "danish": "Danés",
+  "@danish": {
+    "description": "Danish language option"
+  },
+  "dutch": "Holandés",
+  "@dutch": {
+    "description": "Dutch language option"
+  },
+  "english": "Inglés",
+  "@english": {
+    "description": "English language option"
+  },
+  "estonian": "Estonio",
+  "@estonian": {
+    "description": "Estonian language option"
+  },
+  "finnish": "Finlandés",
+  "@finnish": {
+    "description": "Finnish language option"
+  },
+  "french": "Francés",
+  "@french": {
+    "description": "French language option"
+  },
+  "german": "Alemán",
+  "@german": {
+    "description": "German language option"
+  },
+  "greek": "Griego",
+  "@greek": {
+    "description": "Greek language option"
+  },
+  "hebrew": "Hebreo",
+  "@hebrew": {
+    "description": "Hebrew language option"
+  },
+  "hindi": "Hindi",
+  "@hindi": {
+    "description": "Hindi language option"
+  },
+  "hungarian": "Húngaro",
+  "@hungarian": {
+    "description": "Hungarian language option"
+  },
+  "indonesian": "Indonesio",
+  "@indonesian": {
+    "description": "Indonesian language option"
+  },
+  "irish": "Irlandés",
+  "@irish": {
+    "description": "Irish language option"
+  },
+  "editName": "Editar Nombre",
+  "@editName": {
+    "description": "Label for edit name option in popup menu"
+  },
+  "editIcon": "Editar Icono",
+  "@editIcon": {
+    "description": "Label for edit icon option in popup menu"
+  },
+  "manageTags": "Administrar Etiquetas",
+  "@manageTags": {
+    "description": "Label for manage tags option in popup menu"
+  },
+  "delete": "Eliminar",
+  "@delete": {
+    "description": "Label for delete option in popup menu"
+  },
+  "confirmDeletion": "Confirmar Eliminación",
+  "@confirmDeletion": {
+    "description": "Title for the deletion confirmation dialog"
+  },
+  "deleteNoteConfirmation": "¿Estás seguro de que deseas eliminar esta nota? Esta acción no se puede deshacer.",
+  "@deleteNoteConfirmation": {
+    "description": "Message asking for confirmation before deleting a note item"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Label for cancel button in dialogs"
+  },
+  "enterNewName": "Ingresa un nuevo nombre",
+  "@enterNewName": {
+    "description": "Instruction text for entering a new name in the edit name dialog"
+  },
+  "enterNewIcon": "Ingresa un nuevo icono",
+  "@enterNewIcon": {
+    "description": "Instruction text for entering a new icon in the edit icon dialog"
+  },
+  "save": "Guardar",
+  "@save": {
+    "description": "Label for save button in dialogs"
+  },
+  "createNewTag": "Crear Nueva Etiqueta",
+  "@createNewTag": {
+    "description": "Title for create new tag dialog"
+  },
+  "enterTagName": "Ingresa un nombre para tu nueva etiqueta",
+  "@enterTagName": {
+    "description": "Instruction text for entering a new tag name"
+  },
+  "create": "Crear",
+  "@create": {
+    "description": "Label for create button in dialogs"
+  },
+  "tagName": "Nombre de etiqueta",
+  "@tagName": {
+    "description": "Hint text for tag name input field"
+  },
+  "noNotesYet": "No hay notas aún",
+  "@noNotesYet": {
+    "description": "Message shown when no notes have been created"
+  },
+  "tapButtonBelowToStart": "Toca el botón de abajo para empezar",
+  "@tapButtonBelowToStart": {
+    "description": "Instruction for user to tap the button to create first note"
+  },
+  "recordingPause": "Grabando pausa",
+  "@recordingPause": {
+    "description": "Text shown during recording when user can pause"
+  },
+  "recordingContinue": "Continuar grabación",
+  "@recordingContinue": {
+    "description": "Text for continuing recording"
+  },
+  "tapToStopRecording": "Toca para detener la grabación...",
+  "@tapToStopRecording": {
+    "description": "Instruction text shown when recording is in progress"
+  },
+  "tapToContinueRecording": "Toca para continuar la grabación",
+  "@tapToContinueRecording": {
+    "description": "Instruction text shown when recording is paused"
+  },
+  "tapToStartRecording": "Toca para comenzar la grabación",
+  "@tapToStartRecording": {
+    "description": "Instruction text shown when recording is in initial state"
+  },
+  "recordingPaused": "Grabación pausada",
+  "@recordingPaused": {
+    "description": "Text shown when recording is paused"
+  },
+  "promptAndLanguage": "Mensaje e Idioma",
+  "@promptAndLanguage": {
+    "description": "Button label for prompt and language settings"
+  },
+  "transcribeAndSummarize": "Transcribir y Resumir",
+  "@transcribeAndSummarize": {
+    "description": "Label for transcribe and summarize button"
+  },
+  "selectFile": "Seleccionar archivo",
+  "@selectFile": {
+    "description": "Label for select file button"
+  },
+  "selectFileDescription": "Seleccione un archivo de video o audio para transcripción y notas.",
+  "@selectFileDescription": {
+    "description": "Description text on the file upload screen"
+  },
+  "youtubeVideoScreenTitle": "Video de YouTube",
+  "youtubeUrlHint": "Introduzca URL de YouTube",
+  "youtubeUrlErrorMessage": "Por favor introduzca una URL de YouTube válida",
+  "processingAudio": "Procesando Audio",
+  "transcribing": "Transcribiendo",
+  "identifyingSpeakers": "Identificando Hablantes",
+  "takingNotes": "Tomando Notas",
+  "finishingTouches": "Toques Finales",
+  "recordingProcessingMessage": "Para grabaciones más largas, esto podría tardar un minuto o dos.\nNo abandone la página.",
+  "rename": "Rename",
+  "changeIcon": "Change Icon",
+  "selectIcon": "Select Icon",
+  "audioIsDownloading": "The audio is still being downloaded, please wait a moment.",
+  "audioIsNotReady": "The audio is not ready yet, please wait a moment.",
+  "audioIsStartingDownload": "The audio is starting to download, please wait a moment."
+}

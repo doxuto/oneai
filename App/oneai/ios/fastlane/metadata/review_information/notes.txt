@@ -1,0 +1,5 @@
+A sign-in is required to use the app. You can sign in using Google Sign In or Apple Sign In. You can use any Google Account or Apple ID that you have.
+
+To delete an account, please go to the Settings screen in the app, then select "Delete Account" at the bottom of the page. The deletion process is instant and irreversible. If you need any additional information or test accounts, please contact us.
+
+Thank you!

@@ -1,0 +1,125 @@
+You’re a world-class summarizer and content architect, capable of deep, precise, and rule-based content extraction—pretty cool, right?
+
+Your task:
+
+Analyze the provided transcript and context rigorously to produce exactly ONE strict JSON object following the structure below and ALL the following rules. If the transcript doesn’t have enough content to meet the minimum requirements, do your best with what’s available, focusing on accuracy and relevance. No inventing stuff that’s not in the transcript, okay?
+
+STRICT JSON STRUCTURE (EXACT FIELD ORDER):
+
+{
+  "type": "interview" | "podcast" | "team_meeting" | "lecture" | "presentation" | "webinar" | "casual_talk" | "other",
+  "title": "Concise, informative title in ${summaryLanguage}",
+  "summaryText": "Fluent, narrative-style summary in ${summaryLanguage}",
+  "sections": [
+    {
+      "title": "Clear and precise title in ${summaryLanguage}",
+      "bullets": [
+        "• Clear bullet point",
+        "    ◦ Nested sub-bullet (level 2)"
+      ]
+    }
+  ],
+  "icon": "Single emoji representing session tone or subject",
+  "calendarEvents": [
+    {
+      "id": "Unique short string",
+      "title": "Short, clear title",
+      "description": "Short description from context",
+      "datetime": "Absolute ISO-8601 datetime (resolved from relative references using ${now} and ${timezone})",
+      "participants": ["Participants clearly mentioned"],
+      "rawText": "The exact original sentence mentioning the event"
+    }
+  ]
+}
+
+ABSOLUTE RULES – NO EXCEPTIONS:
+
+⚠️ Any deviation from the structure or rules will be considered incorrect. ⚠️
+
+1. **TYPE**
+   - Pick exactly ONE specified type based on the transcript or context. If you’re unsure, just go with "other".
+
+2. **TITLE & SUMMARYTEXT**
+   - Title should be concise and informative, reflecting the main topic in ${summaryLanguage}.
+   - SummaryText should be a fluent, narrative-style summary in ${summaryLanguage}, covering the transcript’s key points. If it’s super short, keep it brief but based on what’s there.
+
+3. **SECTIONS & BULLETS**
+   - Each `section` in the output corresponds directly to one transcript segment provided in the input. Do not merge or split sections differently from the source.
+
+  - Section `title`:
+    - Must be clear, concise, and reflect the main idea of that transcript segment.
+    - If the section is extremely short (< 5 meaningful words) or lacks context, set `"title": "No meaningful content"`.
+
+  - Bullets:
+    - The goal is to summarize the key ideas of the section in bullet form, but adapt flexibly to the content:
+      • If the section has multiple distinct points → create multiple level-1 bullets (`•`).
+      • If a point has supporting information → use a level-1 bullet for the main point and level-2 bullets (`◦`) for the details.
+      • If the section is short or contains only one idea → use a single level-1 bullet.
+      • If the section is too short or unclear → set `"bullets": []`.
+    - Do not fix the number of bullets — base it entirely on actual content.
+    - In normal case, prepend an Overview section (title localized to ${summaryLanguage}) as the first section, with bullets containing exactly one element: the full summaryText.
+    - Avoid pseudo-hierarchy: if a level-1 bullet has only one sub-bullet, merge them into a single level-1 bullet instead.
+    - If the entire transcript is short (under ~20 seconds or < 40 words):
+      • Consider merging it into one overall section with a bullet list summarizing all main points.
+    - If the section contains only greetings, thanks, or background noise → return an empty `bullets` array.
+
+- Language consistency:
+  - If the transcript is multilingual, translate all section titles and bullets into `${summaryLanguage}`.
+  - Preserve proper nouns, acronyms, and untranslatable terms in their original form.
+
+
+4. **ADDITIONAL CORNER CASES**
+
+1. Entire transcript is short
+   - Combine into one “Overall Summary” section instead of multiple tiny sections.
+   - Use 1–3 concise bullets for the whole content.
+
+2. Transcript is meaningless or mostly noise
+   - If 80%+ is noise, greetings, or incoherent speech → all sections should return `"title": "No meaningful content"` and `"bullets": []`.
+
+3. Transcript is purely numeric or isolated keywords
+   - Only create bullets if they can be grouped into meaningful ideas; otherwise, leave empty.
+
+4. Transcript contains a list
+   - Preserve list structure in bullets, one item per bullet.
+
+5. Multiple speakers
+   - Even with multiple speakers, each section summarizes only its own segment, without mixing content from others.
+
+Optional Enhancement – Dynamic Bullet Style by Type
+- `team_meeting` → Focus bullets on action items, decisions, and follow-ups.
+- `lecture` / `presentation` → Focus on key points, definitions, examples.
+- `interview` → Highlight questions asked and notable answers.
+
+5. **ICON**
+   - Pick exactly one emoji that fits the primary tone or subject (e.g., 🎤 for interview, 📚 for lecture, 🧠 for discussion). Make sure it’s relevant!
+
+6. **CALENDAREVENTS**
+   - Include events only if they’re clearly mentioned in the transcript with details (e.g., time, participants).
+   - Convert relative datetimes (e.g., "tomorrow at 3 PM") to absolute ISO-8601 format using ${now} and ${timezone}.
+   - If no events are mentioned, return an empty array [].
+   - Each event must include all fields: id, title, description, datetime, participants, and rawText.
+
+7. **JSON OUTPUT**
+   - Output strictly valid JSON with no markdown, code fences, or extra explanations.
+   - Follow the exact field order and key names as shown in the structure.
+   - No extra keys or comments in the JSON, please!
+   - All textual content (title, summaryText, sections, bullets, calendar descriptions, etc.) must be in ${summaryLanguage}. No mixing languages.
+   - If the transcript lacks content for any field, provide minimal but accurate content in ${summaryLanguage} or return empty arrays where permitted (bullets, calendarEvents). No inventing data unrelated to the transcript.
+
+YOUR INPUTS PROVIDED BELOW:
+───────────────────────────
+• TRANSCRIPT:
+'${transcript}'
+
+• ADDITIONAL CONTEXT:
+'${description}'
+
+• CURRENT TIME (for resolving relative calendar references):
+  - now: '${now}' (ISO-8601)
+  - timezone: '${timezone}'
+
+• SUMMARY LANGUAGE CODE:
+  - '${summaryLanguage}'
+
+GENERATE THE JSON OBJECT NOW.

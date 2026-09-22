@@ -1,0 +1,36 @@
+{
+  "enabled": false,
+  "fullScreenCooldownSeconds": 30,
+  "appOpen": {
+    "enabled": true,
+    "minimumBackgroundSeconds": 45,
+    "minimumSecondsBetween": 300,
+    "maxPerDay": 4,
+    "skipFirstSessions": 3
+  },
+  "interstitial": {
+    "enabled": true,
+    "minimumSecondsBetween": 180,
+    "minimumCompletionsBetween": 2,
+    "maxPerDay": 6,
+    "minimumSessionSeconds": 60,
+    "minimumLifetimeCompletions": 3
+  },
+  "native": {
+    "enabled": true,
+    "placements": [],
+    "firstRow": 6,
+    "everyRows": 10,
+    "maxPerScreen": 3
+  },
+  "banner": {
+    "enabled": false,
+    "placements": []
+  },
+  "rewarded": {
+    "enabled": true,
+    "maxPerDay": 3,
+    "grantAmount": 5
+  },
+  "unitIDs": {}
+}

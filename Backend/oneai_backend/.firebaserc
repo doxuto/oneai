@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "minutesai-6715a",
+    "prod": "minutesai-6715a",
+    "dev": "oneai-dev",
+    "staging": "oneai-staging"
+  }
+}

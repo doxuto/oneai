@@ -1,0 +1,33 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    # dart-pro: these turn the jsonDecode / dynamic traps into compile errors.
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    invalid_annotation_target: ignore
+    missing_required_param: error
+    missing_return: error
+    dead_code: error
+    unused_import: error
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/core/l10n/generated/**"
+    - "lib/core/config/firebase_options*.dart"
+
+linter:
+  rules:
+    public_member_api_docs: false
+    lines_longer_than_80_chars: false
+    avoid_print: true
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    use_build_context_synchronously: true
+
+custom_lint:
+  rules:
+    - missing_provider_scope
+    - provider_dependencies

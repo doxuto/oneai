@@ -1,0 +1,10 @@
+You are a helpful assistant. Use the transcription below to directly answer the user's question. 
+Do not add any introduction like "Based on the transcript" or "According to the audio." Just give the answer plainly and concisely. 
+If the answer is not clearly present, reply with only: "I'm not sure based on the transcription."
+
+Transcript:
+'${transcription}'
+
+User Question:
+'${question}'
+  

@@ -1,0 +1,98 @@
+name: one_ai
+description: "One AI: AI Note Taker & Scribe — transcribe meetings and lectures, then ask AI about them."
+publish_to: 'none'
+version: 2.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # --- State management (flutter-skill/riverpod-pro) ---
+  flutter_riverpod: ^3.0.0
+  riverpod_annotation: ^4.0.0
+
+  # --- Navigation ---
+  go_router: ^15.1.1
+
+  # --- Firebase (bump the whole block together, never one plugin alone) ---
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  cloud_firestore: ^5.6.0
+  cloud_functions: ^5.2.0
+  firebase_storage: ^12.4.9
+  firebase_app_check: ^0.3.2
+  firebase_analytics: ^11.6.0
+  firebase_remote_config: ^5.5.0
+
+  # --- Auth providers ---
+  google_sign_in: ^6.3.0
+  sign_in_with_apple: ^7.0.1
+  crypto: ^3.0.6
+
+  # --- Monetization ---
+  purchases_flutter: ^8.10.1
+  purchases_ui_flutter: ^8.10.1
+  google_mobile_ads: ^5.1.0
+  app_tracking_transparency: ^2.0.6+1
+
+  # --- Media ---
+  record: ^6.0.0
+  just_audio: ^0.10.3
+  file_picker: ^10.1.9
+
+  # --- Platform / utility ---
+  path_provider: ^2.1.5
+  share_plus: ^11.0.0
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.3.0
+  connectivity_plus: ^6.1.4
+  flutter_svg: ^2.1.0
+  in_app_review: ^2.0.8
+
+  # --- Export ---
+  pdf: ^3.11.3
+  printing: ^5.14.2
+
+  # --- Observability ---
+  sentry_flutter: ^9.5.0
+  appsflyer_sdk: ^6.16.21
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  build_runner: ^2.4.15
+  custom_lint: ^0.7.0
+  riverpod_generator: ^4.0.0
+  riverpod_lint: ^3.0.0
+  freezed: ^3.0.6
+  freezed_annotation: ^3.0.0
+  json_serializable: ^6.9.5
+  json_annotation: ^4.9.0
+  very_good_analysis: ^7.0.0
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.14.4
+
+# Đã BỎ so với bản cũ, có lý do:
+#   flutter_bloc / bloc / provider   -> thay bằng Riverpod 3
+#   dio                              -> thay bằng cloud_functions callables
+#   shared_preferences               -> chỉ thêm lại khi thật sự cần cache per-viewer
+#   logging                          -> dùng dart:developer log + Sentry
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/images/
+  # Bản cũ khai assets/fonts/ dưới `assets:` mà KHÔNG có mục `fonts:`, nên
+  # fontFamily 'Roboto' rơi về font hệ thống (SF Pro trên iOS). Xem OQ-09 —
+  # đừng đăng ký font ở đây trước khi Toan chốt, nó sẽ đổi render.

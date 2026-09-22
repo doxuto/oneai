@@ -1,0 +1,24 @@
+You are a helpful assistant. Your task is to extract flashcards from the transcript below.
+
+Each flashcard should have:
+- A clear and concise question
+- A direct and informative answer
+
+Return a JSON object like this:
+{
+  "flashcards": [
+    { "question": "What is ...?", "answer": "..." },
+    { "question": "...", "answer": "..." }
+  ]
+}
+
+Guidelines:
+- Do NOT include any markdown syntax like \`\`\`
+- Return only raw JSON (no explanation)
+- Output must be strictly valid JSON only
+
+
+Use languageCode '${languageCode}' for the content. Create 5–10 flashcards that cover the most important ideas or facts.
+
+Transcript:
+'${transcript}'

@@ -1,0 +1,666 @@
+{
+  "@@locale": "en",
+  "appTitle": "One AI",
+  "@appTitle": {
+    "description": "Title of the application"
+  },
+  "welcomeMessage": "Welcome to our app",
+  "@welcomeMessage": {
+    "description": "Welcome message shown on the login page"
+  },
+  "appName": "One AI",
+  "@appName": {
+    "description": "Name of the application"
+  },
+  "oneAi": "One AI",
+  "@oneAi": {
+    "description": "Brand name shown on login page"
+  },
+  "instantNotesFromAudio": "Instant notes from\naudio and video, ",
+  "@instantNotesFromAudio": {
+    "description": "First part of login page tagline"
+  },
+  "doneWithAi": "done\nwith AI",
+  "@doneWithAi": {
+    "description": "Second part of login page tagline"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Text for Google sign-in button"
+  },
+  "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Text for Apple sign-in button"
+  },
+  "previouslySignedInWithApple": "(Previously signed in with Apple)",
+  "@previouslySignedInWithApple": {
+    "description": "Text shown below Apple sign-in button for returning users"
+  },
+  "selectTheme": "Select theme",
+  "@selectTheme": {
+    "description": "Tooltip for the theme selector button"
+  },
+  "systemTheme": "System theme",
+  "@systemTheme": {
+    "description": "Label for system theme option"
+  },
+  "lightTheme": "Light theme",
+  "@lightTheme": {
+    "description": "Label for light theme option"
+  },
+  "darkTheme": "Dark theme",
+  "@darkTheme": {
+    "description": "Label for dark theme option"
+  },
+  "pageNotFound": "Page Not Found",
+  "@pageNotFound": {
+    "description": "Title for the error page when a route is not found"
+  },
+  "premium": "Premium",
+  "@premium": {
+    "description": "Label for premium button"
+  },
+  "createTag": "Create tag",
+  "@createTag": {
+    "description": "Label for creating a new tag"
+  },
+  "greetingNotes": "Greeting Notes",
+  "@greetingNotes": {
+    "description": "Title for greeting notes item"
+  },
+  "pageNotFoundMessage": "Page not found: {path}",
+  "@pageNotFoundMessage": {
+    "description": "Message displayed when a page is not found",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "/unknown"
+      }
+    }
+  },
+  "goHome": "Go Home",
+  "@goHome": {
+    "description": "Label for button to navigate back to home page"
+  },
+  "mvvmBlocDemo": "MVVM + BLoC Demo",
+  "@mvvmBlocDemo": {
+    "description": "Title for the MVVM + BLoC demo app"
+  },
+  "flutterMvvmBlocDemo": "Flutter MVVM BLoC Demo",
+  "@flutterMvvmBlocDemo": {
+    "description": "Heading text for the demo app"
+  },
+  "usersAndPosts": "Users & Posts",
+  "@usersAndPosts": {
+    "description": "Title for the Users and Posts feature"
+  },
+  "usersAndPostsDesc": "View users and their posts with loading state management.",
+  "@usersAndPostsDesc": {
+    "description": "Description for the Users and Posts feature"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Title for the Settings feature"
+  },
+  "settingsDesc": "App settings and configuration options.",
+  "@settingsDesc": {
+    "description": "Description for the Settings feature"
+  },
+  "categories": "Categories",
+  "@categories": {
+    "description": "Title for the Categories feature"
+  },
+  "categoriesDesc": "Browse content by categories.",
+  "@categoriesDesc": {
+    "description": "Description for the Categories feature"
+  },
+  "featureComingSoon": "{title} feature coming soon!",
+  "@featureComingSoon": {
+    "description": "Message shown when a feature is not yet implemented",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Settings"
+      }
+    }
+  },
+  "settingsComingSoon": "Settings - Coming Soon",
+  "@settingsComingSoon": {
+    "description": "Message shown on the settings placeholder screen"
+  },
+  "categoriesComingSoon": "Categories - Coming Soon",
+  "@categoriesComingSoon": {
+    "description": "Message shown on the categories placeholder screen"
+  },
+  "loadingStatistics": "Loading Statistics",
+  "@loadingStatistics": {
+    "description": "Title for the loading statistics dialog"
+  },
+  "totalOperations": "Total operations: {count}",
+  "@totalOperations": {
+    "description": "Text showing total operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "completed": "Completed: {count}",
+  "@completed": {
+    "description": "Text showing completed operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "inProgress": "In progress: {count}",
+  "@inProgress": {
+    "description": "Text showing in-progress operations count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "averageDuration": "Average duration: {duration}ms",
+  "@averageDuration": {
+    "description": "Text showing average duration of operations",
+    "placeholders": {
+      "duration": {
+        "type": "String",
+        "example": "150"
+      }
+    }
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Label for close button"
+  },
+  "users": "Users",
+  "@users": {
+    "description": "Label for users section"
+  },
+  "noUsersFound": "No users found",
+  "@noUsersFound": {
+    "description": "Message shown when no users are available"
+  },
+  "posts": "Posts",
+  "@posts": {
+    "description": "Label for posts section"
+  },
+  "selectUserToViewPosts": "Select a user to view posts",
+  "@selectUserToViewPosts": {
+    "description": "Message shown when no user is selected to view posts"
+  },
+  "error": "Error: {message}",
+  "@error": {
+    "description": "Error message format",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Network error"
+      }
+    }
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Label for retry button"
+  },
+  "attempt": "Attempt {count}",
+  "@attempt": {
+    "description": "Text showing attempt count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "loadingStatisticsTooltip": "Loading Statistics",
+  "@loadingStatisticsTooltip": {
+    "description": "Tooltip for the loading statistics button"
+  },
+  "resetLoadingStatesTooltip": "Reset Loading States",
+  "@resetLoadingStatesTooltip": {
+    "description": "Tooltip for the reset loading states button"
+  },
+  "comments": "Comments",
+  "@comments": {
+    "description": "Label for comments section in post detail"
+  },
+  "commentsPlaceholder": "Comments would load here in a real app",
+  "@commentsPlaceholder": {
+    "description": "Placeholder text when no comments are loaded"
+  },
+  "userId": "User ID: {id}",
+  "@userId": {
+    "description": "Label showing user ID",
+    "placeholders": {
+      "id": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "postId": "Post ID: {id}",
+  "@postId": {
+    "description": "Label showing post ID",
+    "placeholders": {
+      "id": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "upgrade": "Upgrade",
+  "@upgrade": {
+    "description": "Label for upgrade button"
+  },
+  "registered": "Registered",
+  "@registered": {
+    "description": "Label for registered button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Label for back button"
+  },
+  "transcript": "Transcript",
+  "@transcript": {
+    "description": "Label for transcript tab"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Label for chat tab"
+  },
+  "openingAndKeyHighlight": "Opening & Key Highlight",
+  "@openingAndKeyHighlight": {
+    "description": "Title for opening and key highlight section"
+  },
+  "productRoadmapReview": "Product Roadmap Review",
+  "@productRoadmapReview": {
+    "description": "Title for product roadmap review section"
+  },
+  "featureUpdatesAndReleases": "Feature Updates & Releases",
+  "@featureUpdatesAndReleases": {
+    "description": "Title for feature updates and releases section"
+  },
+  "breakTime": "Break",
+  "@breakTime": {
+    "description": "Title for break section"
+  },
+  "marketAndCompetitorInsights": "Market & Competitor Insights",
+  "@marketAndCompetitorInsights": {
+    "description": "Title for market and competitor insights section"
+  },
+  "teamUpdatesAndActionItems": "Team Updates & Action Items",
+  "@teamUpdatesAndActionItems": {
+    "description": "Title for team updates and action items section"
+  },
+  "qAndAAndNextSteps": "Q&A & Next Steps",
+  "@qAndAAndNextSteps": {
+    "description": "Title for Q&A and next steps section"
+  },
+  "howDidWeDo": "How did we do?",
+  "@howDidWeDo": {
+    "description": "Text for feedback request"
+  },
+  "giveFeedback": "Give Feedback",
+  "@giveFeedback": {
+    "description": "Text for give feedback button"
+  },
+  "tabComingSoon": "tab content coming soon",
+  "@tabComingSoon": {
+    "description": "Text shown for tabs that are not yet implemented"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "Text for share button/tooltip"
+  },
+  "shareNotesAsPdf": "Share Notes as PDF",
+  "@shareNotesAsPdf": {
+    "description": "Label for sharing notes as PDF option"
+  },
+  "errorSharingPdf": "Error sharing PDF. Please try again.",
+  "@errorSharingPdf": {
+    "description": "Error message when PDF sharing fails"
+  },
+  "errorSharingContent": "Error sharing content. Please try again.",
+  "@errorSharingContent": {
+    "description": "Error message when content sharing fails"
+  },
+  "preparingContent": "Preparing content...",
+  "@preparingContent": {
+    "description": "Message shown while preparing content for sharing"
+  },
+  "generatingPdf": "Generating PDF...",
+  "@generatingPdf": {
+    "description": "Message shown while generating a PDF file"
+  },
+  "shareNotesAsText": "Share Notes as Text",
+  "@shareNotesAsText": {
+    "description": "Text for sharing notes as text option"
+  },
+  "shareTranscriptAsPdf": "Share Transcript as PDF",
+  "@shareTranscriptAsPdf": {
+    "description": "Text for sharing transcript as PDF option"
+  },
+  "shareTranscriptAsText": "Share Transcript as Text",
+  "@shareTranscriptAsText": {
+    "description": "Text for sharing transcript as text option"
+  },
+  "shareAudioFile": "Share Audio File",
+  "@shareAudioFile": {
+    "description": "Text for sharing audio file option"
+  },
+  "newNote": "New Note",
+  "@newNote": {
+    "description": "Title for new note bottom sheet"
+  },
+  "autoDetect": "Auto Detect",
+  "@autoDetect": {
+    "description": "Label for auto detect button in new note sheet"
+  },
+  "selected": "selected",
+  "@selected": {
+    "description": "Label indicating that an option is currently selected"
+  },
+  "startAudioRecording": "Start audio recording",
+  "@startAudioRecording": {
+    "description": "Label for starting audio recording option"
+  },
+  "uploadFromFiles": "Upload from files",
+  "@uploadFromFiles": {
+    "description": "Label for uploading from files option"
+  },
+  "youTubeVideo": "YouTube Video",
+  "@youTubeVideo": {
+    "description": "Label for YouTube video option"
+  },
+  "bengali": "Bengali",
+  "@bengali": {
+    "description": "Bengali language option"
+  },
+  "bulgarian": "Bulgarian",
+  "@bulgarian": {
+    "description": "Bulgarian language option"
+  },
+  "catalan": "Catalan",
+  "@catalan": {
+    "description": "Catalan language option"
+  },
+  "chinese": "Chinese",
+  "@chinese": {
+    "description": "Chinese language option"
+  },
+  "croatian": "Croatian",
+  "@croatian": {
+    "description": "Croatian language option"
+  },
+  "czech": "Czech",
+  "@czech": {
+    "description": "Czech language option"
+  },
+  "danish": "Danish",
+  "@danish": {
+    "description": "Danish language option"
+  },
+  "dutch": "Dutch",
+  "@dutch": {
+    "description": "Dutch language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "estonian": "Estonian",
+  "@estonian": {
+    "description": "Estonian language option"
+  },
+  "finnish": "Finnish",
+  "@finnish": {
+    "description": "Finnish language option"
+  },
+  "french": "French",
+  "@french": {
+    "description": "French language option"
+  },
+  "german": "German",
+  "@german": {
+    "description": "German language option"
+  },
+  "greek": "Greek",
+  "@greek": {
+    "description": "Greek language option"
+  },
+  "hebrew": "Hebrew",
+  "@hebrew": {
+    "description": "Hebrew language option"
+  },
+  "hindi": "Hindi",
+  "@hindi": {
+    "description": "Hindi language option"
+  },
+  "hungarian": "Hungarian",
+  "@hungarian": {
+    "description": "Hungarian language option"
+  },
+  "indonesian": "Indonesian",
+  "@indonesian": {
+    "description": "Indonesian language option"
+  },
+  "irish": "Irish",
+  "@irish": {
+    "description": "Irish language option"
+  },
+  "spanish": "Spanish",
+  "@spanish": {
+    "description": "Spanish language option"
+  },
+  "japanese": "Japanese",
+  "@japanese": {
+    "description": "Japanese language option"
+  },
+  "korean": "Korean",
+  "@korean": {
+    "description": "Korean language option"
+  },
+  "editName": "Edit Name",
+  "@editName": {
+    "description": "Label for edit name option in popup menu"
+  },
+  "editIcon": "Edit Icon",
+  "@editIcon": {
+    "description": "Label for edit icon option in popup menu"
+  },
+  "manageTags": "Manage Tags",
+  "@manageTags": {
+    "description": "Label for manage tags option in popup menu"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Label for delete option in popup menu"
+  },
+  "confirmDeletion": "Confirm Deletion",
+  "@confirmDeletion": {
+    "description": "Title for the deletion confirmation dialog"
+  },
+  "deleteNoteConfirmation": "Are you sure you want to delete this note? This cannot be undone.",
+  "@deleteNoteConfirmation": {
+    "description": "Message asking for confirmation before deleting a note item"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Label for cancel button in dialogs"
+  },
+  "exit": "Exit",
+  "@exit": {
+    "description": "Label for exit button in dialogs"
+  },
+  "enterNewName": "Enter a new name",
+  "@enterNewName": {
+    "description": "Instruction text for entering a new name in the edit name dialog"
+  },
+  "enterNewIcon": "Enter a new icon",
+  "@enterNewIcon": {
+    "description": "Instruction text for entering a new icon in the edit icon dialog"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Label for save button in dialogs"
+  },
+  "createNewTag": "Create New Tag",
+  "@createNewTag": {
+    "description": "Title for create new tag dialog"
+  },
+  "enterTagName": "Enter a name for your new tag",
+  "@enterTagName": {
+    "description": "Instruction text for entering a new tag name"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Label for create button in dialogs"
+  },
+  "tagName": "Tag name",
+  "@tagName": {
+    "description": "Hint text for tag name input field"
+  },
+  "noNotesYet": "No notes yet",
+  "@noNotesYet": {
+    "description": "Message shown when no notes have been created"
+  },
+  "tapButtonBelowToStart": "Tap the button below to start",
+  "@tapButtonBelowToStart": {
+    "description": "Instruction for user to tap the button to create first note"
+  },
+  "recordingPause": "Recording pause",
+  "@recordingPause": {
+    "description": "Text shown during recording when user can pause"
+  },
+  "recordingContinue": "Recording continue",
+  "@recordingContinue": {
+    "description": "Text for continuing recording"
+  },
+  "tapToStopRecording": "Tap to stop recording...",
+  "@tapToStopRecording": {
+    "description": "Instruction text shown when recording is in progress"
+  },
+  "tapToContinueRecording": "Tap to continue recording",
+  "@tapToContinueRecording": {
+    "description": "Instruction text shown when recording is paused"
+  },
+  "tapToStartRecording": "Tap to start recording",
+  "@tapToStartRecording": {
+    "description": "Instruction text shown when recording is in initial state"
+  },
+  "recordingPaused": "Recording paused",
+  "@recordingPaused": {
+    "description": "Text shown when recording is paused"
+  },
+  "promptAndLanguage": "Prompt & Language",
+  "@promptAndLanguage": {
+    "description": "Button label for prompt and language settings"
+  },
+  "transcribeAndSummarize": "Transcribe & Summarize",
+  "@transcribeAndSummarize": {
+    "description": "Label for transcribe and summarize button"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Title for warning dialog"
+  },
+  "exitRecordingWarning": "Exiting the page will discard your recording. Are you sure?",
+  "@exitRecordingWarning": {
+    "description": "Warning message shown when user attempts to exit during recording"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Label for done button"
+  },
+  "whatAreYouRecording": "What are you recording?",
+  "@whatAreYouRecording": {
+    "description": "Question prompt for recording context"
+  },
+  "recordingContextHint": "This will improve the accuracy and quality of the transcription and notes.",
+  "@recordingContextHint": {
+    "description": "Hint explaining why recording context is important"
+  },
+  "meetingTypeHint": "A marketing strategy meeting...",
+  "@meetingTypeHint": {
+    "description": "Placeholder hint for the recording context input field"
+  },
+  "keywords": "Keywords",
+  "@keywords": {
+    "description": "Label for keywords section in prompt and language sheet"
+  },
+  "keywordsHint": "Specify uncommon acronyms, names, or terms to listen for. Separate with commas.",
+  "@keywordsHint": {
+    "description": "Hint explaining how to use the keywords field"
+  },
+  "keywordsPlaceholder": "KPI, Cache, JSON",
+  "@keywordsPlaceholder": {
+    "description": "Placeholder example for keywords input"
+  },
+  "audioLanguage": "Audio Language",
+  "@audioLanguage": {
+    "description": "Label for audio language selection"
+  },
+  "summaryLanguage": "Summary Language",
+  "@summaryLanguage": {
+    "description": "Label for summary language selection"
+  },
+  "selectFile": "Select file",
+  "@selectFile": {
+    "description": "Label for select file button"
+  },
+  "selectFileDescription": "Select a video or audio file for transcript and notes.",
+  "@selectFileDescription": {
+    "description": "Description text on the file upload screen"
+  },
+  "youtubeVideoNotes": "YouTube video notes",
+  "@youtubeVideoNotes": {
+    "description": "Title for YouTube video notes screen"
+  },
+  "pasteYoutubeLink": "Paste a YouTube link for transcript & notes:",
+  "@pasteYoutubeLink": {
+    "description": "Instruction text for pasting YouTube link"
+  },
+  "tapToPaste": "Tap to Paste",
+  "@tapToPaste": {
+    "description": "Text for paste button"
+  },
+  "youtubeUnsupportedFormats": "YouTube Shorts, Live, private, and unlisted videos are not supported. For these formats, use direct file upload",
+  "@youtubeUnsupportedFormats": {
+    "description": "Text explaining unsupported YouTube formats"
+  },
+  "youtubeUnsupportedFormatsLinkText": "direct file upload",
+  "@youtubeUnsupportedFormatsLinkText": {
+    "description": "Link text in the unsupported formats message"
+  },
+  "youtubeUnsupportedFormatsPeriod": ".",
+  "@youtubeUnsupportedFormatsPeriod": {
+    "description": "Period at the end of unsupported formats message"
+  },
+  "youtubeShortsPrefixText": "YouTube Shorts, Live, private, and unlisted videos are not supported. For these formats, use ",
+  "@youtubeShortsPrefixText": {
+    "description": "Prefix text explaining unsupported YouTube formats"
+  },
+  "youtubeVideoScreenTitle": "YouTube Video",
+  "youtubeUrlHint": "Enter YouTube URL",
+  "youtubeUrlErrorMessage": "Please enter a valid YouTube URL",
+  "processingAudio": "Processing Audio",
+  "transcribing": "Transcribing",
+  "identifyingSpeakers": "Identifying Speakers",
+  "takingNotes": "Taking Notes",
+  "finishingTouches": "Finishing Touches",
+  "recordingProcessingMessage": "For longer recordings, this might take a minute or two.\nDon't leave the page.",
+  "rename": "Rename",
+  "changeIcon": "Change Icon",
+  "selectIcon": "Select Icon",
+  "audioIsDownloading": "The audio is still being downloaded, please wait a moment.",
+  "audioIsNotReady": "The audio is not ready yet, please wait a moment.",
+  "audioIsStartingDownload": "The audio is starting to download, please wait a moment."
+}

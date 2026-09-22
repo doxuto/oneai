@@ -1,0 +1,76 @@
+# ios/fastlane/Fastfile
+
+def copy_metadata_file(file_name)
+  fastfile_directory = __dir__
+  source_path = File.join(fastfile_directory, "metadata/en-US", file_name)
+
+  unless File.exist?(source_path)
+    UI.important("⚠️  Skipping: source file '#{file_name}' not found in en-US.")
+    return
+  end
+
+  UI.message("📖 Copying file '#{file_name}'...")
+  content = File.read(source_path)
+
+  metadata_directory = File.join(fastfile_directory, "metadata")
+  Dir.glob("#{metadata_directory}/*").each do |lang_path|
+    next unless File.directory?(lang_path)
+    next if lang_path.end_with?('/en-US')
+
+    target_path = File.join(lang_path, file_name)
+    File.write(target_path, content)
+  end
+  UI.success("✅  Finished copying '#{file_name}'.")
+end
+
+desc "Copy privacy URL from en-US to all other languages"
+lane :sync_metadata_from_en_us do
+  UI.header("Starting metadata sync from en-US")
+
+  copy_metadata_file("privacy_url.txt")
+  # copy_metadata_file("release_notes.txt")
+  # copy_metadata_file("support_url.txt")
+  #copy_metadata_file("marketing_url.txt")
+
+
+  UI.success("🚀 Sync complete!")
+end
+
+desc "Upload all local metadata to App Store Connect"
+lane :upload_metadata_to_store do
+  # Authenticate using the configured API Key
+  app_store_connect_api_key(
+    key_id: "2378X6R4TM",
+    issuer_id: "69a6de96-6bd2-47e3-e053-5b8c7c11a4d1",
+    key_filepath: "./fastlane/cert/AuthKey_2378X6R4TM.p8"
+  )
+
+  # Upload action, metadata only
+  upload_to_app_store(
+    skip_screenshots: true,       # Skip uploading screenshots
+    skip_binary_upload: true,     # Skip uploading .ipa file
+    force: true,                  # Run without asking for confirmation
+    precheck_include_in_app_purchases: false,
+    metadata_path: "./fastlane/metadata"
+  )
+
+  UI.success("✅ Metadata has been successfully uploaded to App Store Connect!")
+end
+
+# --- NEW LANE TO DOWNLOAD METADATA ---
+desc "Download all metadata from the App Store"
+lane :download_metadata_from_store do
+  # UI.header("Starting metadata download from App Store Connect")
+  
+  # # Authenticate using API Key
+  # app_store_connect_api_key(
+  #   key_id: "2378X6R4TM",
+  #   issuer_id: "69a6de96-6bd2-47e3-e053-5b8c7c11a4d1",
+  #   key_filepath: "./fastlane/cert/AuthKey_2378X6R4TM.p8"
+  # )
+
+  # Download metadata action
+  # fastlane deliver download_metadata --api_key_path='./fastlane/cert/api_key.json'
+
+  # UI.success("✅ Metadata downloaded successfully!")
+end

@@ -1,0 +1,10 @@
+You are a helpful assistant. Based on the transcription below, generate 5 short, relevant, and clear questions someone might ask to better understand or recall the content. Return only a JSON object with this format:
+
+{
+  "short_questions": ["...", "...", "..."]
+}
+
+Use '${languageCode}' for the questions.
+
+Transcription:
+${transcription}

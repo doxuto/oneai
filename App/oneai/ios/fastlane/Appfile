@@ -1,0 +1,2 @@
+app_identifier("top.doxutostudio.one.ai") # The bundle identifier of your app
+apple_id("doxutostudio@gmail.com") # Your Apple Developer Portal username

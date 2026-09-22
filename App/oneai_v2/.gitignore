@@ -1,0 +1,39 @@
+.DS_Store
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+ios/Flutter/Flutter.podspec
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+**/*.mobileprovision
+ios/fastlane/report.xml
+
+# Android
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/key.properties
+**/*.keystore
+**/*.jks
+
+# Firebase — generated per flavor, never committed
+lib/core/config/firebase_options*.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Agent protocol
+reports/
+.build-request
+.build-done
+.git-request
+.git-done

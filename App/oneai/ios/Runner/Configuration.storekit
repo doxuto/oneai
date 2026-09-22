@@ -1,0 +1,186 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "2D4AF954",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6743523150",
+    "_developerTeamID" : "TWPJ8HX59J",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 771823095.16763902,
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21699891",
+      "localizations" : [
+
+      ],
+      "name" : "One AI Unlimited Access",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "59.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6746735791",
+          "introductoryOffer" : {
+            "internalID" : "07D7F6F3",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlimited access all features & 100% ad-free!",
+              "displayName" : "Unlimited Access & Ad-Free",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "top.doxutostudio.oneai.sixmonths",
+          "recurringSubscriptionPeriod" : "P6M",
+          "referenceName" : "Unlimited Access & Ad-Free For Six Months",
+          "subscriptionGroupID" : "21699891",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6746735700",
+          "introductoryOffer" : {
+            "internalID" : "BB871276",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlimited access all features & 100% ad-free!",
+              "displayName" : "Unlimited Access & Ad-Free",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "top.doxutostudio.oneai.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Unlimited Access & Ad-Free Weekly",
+          "subscriptionGroupID" : "21699891",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "99.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6746735771",
+          "introductoryOffer" : {
+            "internalID" : "48E8909B",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlimited access all features & 100% ad-free!",
+              "displayName" : "Unlimited Access & Ad-Free ",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "top.doxutostudio.oneai.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Unlimited Access & Ad-Free Yearly",
+          "subscriptionGroupID" : "21699891",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

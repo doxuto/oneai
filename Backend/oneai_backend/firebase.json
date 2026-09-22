@@ -1,0 +1,54 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs20",
+      "memory": "2GB",
+      "timeoutSeconds": 120,
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".env",
+        ".env.*",
+        "service-account.json",
+        "*.log",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local",
+        ".DS_Store",
+        ".idea"
+      ]
+    },
+    {
+      "source": "functions-v2",
+      "codebase": "v2",
+      "runtime": "nodejs22",
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint", "npm --prefix \"$RESOURCE_DIR\" run build"],
+      "ignore": [
+        "node_modules",
+        ".git",
+        "src",
+        "test",
+        ".env.local",
+        "*.log",
+        ".DS_Store"
+      ]
+    }
+  ],
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "singleProjectMode": true,
+    "auth": { "port": 9099 },
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8080 },
+    "storage": { "port": 9199 },
+    "ui": { "enabled": true }
+  }
+}

@@ -1,0 +1,204 @@
+2. Minutes Management API
+GET /api/v1/minutes
+Purpose: Retrieves a list of all minute items belonging to the authenticated user.
+- Response: 
+  [
+    {
+      "id": "string",
+      "title": "string",
+      "timestamp": "string",
+      "duration": "string",
+      "iconAsset": "icon_id",
+      "tags": ["tag1", "tag2", "tag3"]
+    }
+  ]
+
+- Query Parameters:
+page: Page number for pagination default: 1
+limit: Number of items per page default: 20
+sort: Sort field default: "timestamp:desc"
+tags: Comma-separated list of tags to filter by e.g., "work,important,meeting"
+search: Text search term for filtering by title
+startDate: Filter minutes from this date
+endDate: Filter minutes until this date
+
+GET /api/v1/minutes/:id
+Purpose: Retrieves detailed information about a specific meeting minute.
+- Response: {
+    id: string,
+    title: string,
+    date: string,
+    duration: string,
+    sections: [
+      {
+        timeRange: string,
+        title: string,
+        bulletPoints: string[]
+      }
+    ]
+  }
+
+PATCH /api/v1/minutes/:id
+Purpose: Updates metadata or content of an existing meeting minute.
+- Request: 
+  {
+    "title": "string", // optional
+    "iconAsset": "icon_id", // optional
+    "tags": ["tag1", "tag2", "tag3"] // optional
+  }
+
+- Response:
+  {
+    "id": "string",
+    "title": "string",
+    "timestamp": "string",
+    "duration": "string",
+    "iconAsset": "icon_id",
+    "tags": ["tag1", "tag2", "tag3"]
+  }
+
+
+DELETE /api/v1/minutes/:id
+Purpose: Removes a meeting minute record.
+- Response: { success: boolean }
+
+3. Transcription API
+POST /api/v1/transcription/audio
+Purpose: Uploads an audio file for transcription processing.
+- Request: 
+  // Multipart form data
+  {
+    "file": [binary audio data],
+    "audioLanguage": "en-US", // Language code for the audio content
+    "summaryLanguage": "en-US", // Language code for the generated summary
+    "keywords": ["KPI", "A1"], // optional
+    "description": "describe what audio recording" // optional
+  }
+
+- Response: { taskId: string }
+
+POST /api/v1/transcription/youtube
+Purpose: Processes YouTube video audio for transcription.
+- Request: 
+  {
+    "youtubeUrl": "https://youtube.com/watch?v=example",
+    "audioLanguage": "en-US", // Language code for the audio content
+    "summaryLanguage": "en-US", // Language code for the generated summary
+  }
+
+- Response: { taskId: string }
+
+GET /api/v1/transcription/:taskId/status
+Purpose: Checks the status of an ongoing transcription task.
+- Response: {
+    status: "processing" | "completed" | "failed",
+    progress: number,
+    currentStep: string
+  }
+
+GET /api/v1/transcription/:taskId/result
+Purpose: Retrieves the completed transcription results.
+- Response: {
+    title: string,
+    date: string,
+    duration: string,
+    transcript: {
+      messages: [
+        {
+          speakerId: number,
+          speakerName: string,
+          timestamp: string,
+          message: string
+        }
+      ]
+    },
+    meetingMinute: {
+      title: string,
+      date: string,
+      duration: string,
+      sections: [
+        {
+          timeRange: string,
+          title: string,
+          bulletPoints: string[]
+        }
+      ]
+    }
+  }
+
+`GET /api/v1/minutes/:id/transcript`
+Purpose: Retrieves the full transcript associated with a specific meeting minute.
+- Response:
+  {
+    "minuteId": "string",
+    "title": "string",
+    "date": "string",
+    "duration": "string",
+    "audioLanguage": "en-US",
+    "transcript": {
+      "messages": [
+        {
+          "speakerId": 1,
+          "speakerName": "string",
+          "timestamp": "string", // timestamp in format "MM:SS"
+          "message": "string"
+        },
+        {
+          "speakerId": 2,
+          "speakerName": "string",
+          "timestamp": "string",
+          "message": "string"
+        }
+      ]
+    }
+  }
+
+
+4. Tags API
+GET /api/v1/tags
+Purpose: Retrieves all tags created by the user for organizing minutes.
+- Response: [{ id: string, name: string }]
+
+POST /api/v1/tags
+Purpose: Creates a new tag for organizing minutes.
+- Request: { name: string }
+- Response: { id: string, name: string }
+
+DELETE /api/v1/tags/:id
+Purpose: Removes a tag but not the associated minutes.
+- Response: { success: boolean }
+
+5. Chat API
+GET /api/v1/minutes/:id/chat
+Purpose: Retrieves chat history for a specific meeting minute.
+- Response: {
+    messages: [
+      {
+        message: string,
+        senderType: "bot" | "user",
+        timestamp: string
+      }
+    ]
+  }
+
+POST /api/v1/minutes/:id/chat
+Purpose: Sends a message to the AI assistant about a specific meeting minute.
+- Request: { message: string }
+- Response: {
+    message: string,
+    senderType: "bot",
+    timestamp: string
+  }
+
+
+# users/{uid}
+# ├── name: "John Doe"
+# ├── email: "john@example.com"
+# └── ... (profile info)
+# ├── meetings/{meetingId}
+# │   ├── title: "Sprint Review"
+# │   └── summary: "..."
+# ├── notes/{noteId}
+# │   └── ...
+# ├── keywords/{tagId}
+# │   └── ...

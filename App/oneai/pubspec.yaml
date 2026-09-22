@@ -1,0 +1,176 @@
+name: codebase_ai
+description: "A new Flutter codebase project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.4+16
+
+environment:
+  sdk: ^3.7.2
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  google_mobile_ads: ^5.1.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+
+  # Network
+  dio: ^5.8.0+1
+
+  # State management
+  flutter_bloc: ^9.1.1
+  bloc: any
+  provider: any
+
+  # Navigation
+  go_router: ^15.1.1
+
+  # Data class generation
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+
+  # Utility
+  logging: ^1.3.0
+  shared_preferences: ^2.5.3
+  flutter_svg: ^2.1.0
+  pdf: ^3.11.3
+  path_provider: ^2.1.5
+  share_plus: ^11.0.0
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.3.0
+  # Firebase
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  firebase_storage: ^12.4.9
+  google_sign_in: ^6.3.0
+  sign_in_with_apple: ^7.0.1
+  crypto: ^3.0.6
+  sentry_flutter: ^9.5.0
+  record: ^6.0.0
+  file_picker: ^10.1.9
+  printing: ^5.14.2
+  just_audio: ^0.10.3
+
+  # Analytics.
+  appsflyer_sdk: ^6.16.21
+
+  # In-app review
+  in_app_review: ^2.0.8
+  purchases_flutter: ^8.10.1
+  purchases_ui_flutter: ^8.10.1
+  firebase_analytics: ^11.6.0
+  firebase_remote_config: ^5.5.0
+  connectivity_plus: ^6.1.4
+  app_tracking_transparency: ^2.0.6+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation
+  build_runner: ^2.4.15
+  freezed: ^3.0.6
+  json_serializable: ^6.9.5
+  analyzer: ^7.4.4
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^5.0.0
+
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: "^0.14.4"
+
+dependency_overrides:
+  freezed_annotation: ^3.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  generate: true
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/
+    - assets/fonts/
+
+flutter_intl:
+  enabled: true
+  class_name: AppLocalizations
+  main_locale: en
+  arb_dir: lib/ui/core/localization/l10n
+  output_dir: lib/ui/core/localization/generated
+#  use_deferred_loading: false # Optional. Must be set to true to generate localization code that is loaded with deferred loading. Default: false
+#
+#  localizely: # Optional settings if you use Localizely platform. Read more: https://localizely.com/blog/flutter-localization-step-by-step/?tab=automated-using-flutter-intl
+#    project_id: # Configured manually or through 'Connect to Localizely' command. Get it from the https://app.localizely.com/projects page.
+#    branch: # Configured manually. Get it from the "Branches" page on the Localizely platform, in case branching is enabled and you want to use a non-main branch.
+#    upload_overwrite: # Set to true if you want to overwrite translations with upload. Default: false
+#    upload_as_reviewed: # Set to true if you want to mark uploaded translations as reviewed. Default: false
+#    upload_tag_added: # Optional list of tags to add to new translations with upload (e.g. ['new', 'New translation']). Default: []
+#    upload_tag_updated: # Optional list of tags to add to updated translations with upload (e.g. ['updated', 'Updated translation']). Default: []
+#    upload_tag_removed: # Optional list of tags to add to removed translations with upload (e.g. ['removed', 'Removed translation']). Default: []
+#    download_empty_as: # Set to empty|main|skip, to configure how empty translations should be exported from the Localizely platform. Default: empty
+#    download_include_tags: # Optional list of tags to be downloaded (e.g. ['include', 'Include key']). If not set, all string keys will be considered for download. Default: []
+#    download_exclude_tags: # Optional list of tags to be excluded from download (e.g. ['exclude', 'Exclude key']). If not set, all string keys will be considered for download. Default: []
+#    ota_enabled: # Set to true if you want to use Localizely Over-the-air functionality. Default: false
+
+# Rename getAppName, getBundleId
+# Use https://pub.dev/packages/rename
+
+# Create splash screen
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/splash.png
+  android_12:
+    color: "#ffffff"
+
+# Create app icon
+# flutter pub get
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/images/app_icon.png"
+  android: true # can specify file name here e.g. "ic_launcher"
+  ios: true # can specify file name here e.g. "My-Launcher-Icon"
+  adaptive_icon_background: "#ffffff" # only available for Android 8.0 devices and above
+  adaptive_icon_foreground: "assets/images/app_icon.png" # only available for Android 8.0 devices and above
+  adaptive_icon_foreground_inset: 16 # only available for Android 8.0 devices and above
+  adaptive_icon_monochrome: "assets/images/app_icon.png" # only available for Android 13 devices and above
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  background_color_ios: "#ffffff"

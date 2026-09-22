@@ -1,0 +1,31 @@
+{
+  "name": "oneai-functions-v2",
+  "description": "One AI — Cloud Functions v2 (TypeScript)",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "engines": { "node": "22" },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint src test --max-warnings 0 && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "serve": "npm run build && firebase emulators:start --only functions,firestore,auth,storage",
+    "shell": "npm run build && firebase functions:shell",
+    "logs": "firebase functions:log --only v2"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.3.0",
+    "firebase-functions": "^6.5.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

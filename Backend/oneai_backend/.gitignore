@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+functions/node_modules/
+
+# Environment files
+.env
+functions/.env
+
+# Firebase debug logs
+firebase-debug.log
+firestore-debug.log
+functions/firebase-debug.log
+functions/firestore-debug.log
+
+# Service account keys
+service-account.json
+functions/service-account.json
+
+# IDE/editor
+.vscode/
+functions/.vscode/
+
+# Logs
+*.log
+
+# Optional
+*.local
+reports/
+.build-request
+.build-done
+.git-request
+.git-done

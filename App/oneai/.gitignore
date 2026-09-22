@@ -1,0 +1,212 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.classpath
+.project
+.settings/
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+**/build/
+/windows/flutter/ephemeral/
+**/generated_plugin_registrant.*
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.config.dart
+*.gr.dart
+*.reflectable.dart
+*.gen.dart
+*.chopper.dart
+*.inject.dart
+*.inject.summary
+*.injectable.dart
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+# **/android/key.properties
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+
+# iOS/XCode related
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Coverage
+coverage/
+/coverage/
+/test/coverage/
+.test_coverage.dart
+
+# Web related
+lib/generated_plugin_registrant.dart
+**/web/**/service-worker.js
+**/web/**/*.map
+**/web/assets/NOTICES*
+
+# Exceptions to above rules.
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# macOS
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral
+**/macos/Pods/
+
+# Windows
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/out/
+
+# Linux
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+
+# FVM
+.fvm/flutter_sdk
+.fvm/fvm_config.json
+
+# Mason
+.mason/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# IDE related
+*.lock
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Android Studio
+/.navigation/
+.externalNativeBuild
+.cxx/
+.gradle/
+local.properties
+
+# Flutter version manager
+.fvm/
+
+# Flutter Intl
+*.intl.dart
+
+# dartdoc
+/doc/api/
+
+# fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+**/fastlane/readme.md
+
+# Firebase
+#.firebase/
+#**/google-services.json
+#**/GoogleService-Info.plist
+
+# Enviroment variables
+#.env
+#.env.*
+#*.env
+
+# Generated icons
+**/lib/gen/
+**/lib/generated/
+**/lib/gen_l10n/
+
+# Signing & keystore
+#key.properties
+#**/*.keystore
+#**/*.jks
+#*.p12
+#*.pem
+#*.mobileprovision
+
+# Platform specific
+#**/android/app/src/main/jniLibs/
+#**/android/app/src/*/res/
+#**/android/app/src/*/assets/
+
+# Logs
+*.log.*
+reports/
+.build-request
+.build-done
+.git-request
+.git-done
