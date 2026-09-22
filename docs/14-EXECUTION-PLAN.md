@@ -75,7 +75,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
-| [~] | S4-01 | LLM interface + OpenAI (Gemini còn lại) | `lib/llm/{types,openai,gemini,index}.ts` | `generate(prompt, schema)` trả object đã validate; chọn vendor qua param |
+| [x] | S4-01 | LLM interface + OpenAI + Gemini | `lib/llm/{types,openai,gemini,index}.ts` | `generate(prompt, schema)` trả object đã validate; chọn vendor qua param |
 | [x] | S4-02 | Structured output | trong adapter | zod schema → JSON schema → `response_format`; sai → `unavailable`, không cache |
 | [ ] | S4-03 | `chat` streaming + `chat/` subcollection + `listChatMessages` | `ai/chat.ts`, `ai/listChatMessages.ts` | `acceptsStreaming` → `sendChunk({delta})`; lưu cả 2 message |
 | [ ] | S4-04 | 4 `generate*` với cache `sourceHash` | `ai/generate{ShortQuestions,Quiz,Flashcards,Mindmap}.ts`, `ai/_artifacts.ts` | hit cache không gọi LLM; fail không ghi |

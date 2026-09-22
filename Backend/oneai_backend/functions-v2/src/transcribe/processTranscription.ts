@@ -1,7 +1,7 @@
 import { onTaskDispatched } from "firebase-functions/v2/tasks";
 import { liveDeps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
-import { ELEVENLABS_API_KEY, OPENAI_API_KEY } from "../lib/params.js";
+import { ELEVENLABS_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY } from "../lib/params.js";
 import { runPipeline } from "./pipeline.js";
 import { TaskPayload } from "./types.js";
 
@@ -17,7 +17,7 @@ export const processTranscription = onTaskDispatched(
     memory: "2GiB",
     timeoutSeconds: 540,
     maxInstances: 10,
-    secrets: [ELEVENLABS_API_KEY, OPENAI_API_KEY],
+    secrets: [ELEVENLABS_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY],
     retryConfig: { maxAttempts: MAX_ATTEMPTS, minBackoffSeconds: 30, maxBackoffSeconds: 300 },
     rateLimits: { maxConcurrentDispatches: 10 },
   },
