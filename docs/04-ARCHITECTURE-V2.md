@@ -243,7 +243,7 @@ toàn bộ view model nên không tiết kiệm được gì.
 
 ---
 
-## ADR-008 — Thư mục mới song song, không ghi đè
+## ADR-008 — Monorepo một repo, thư mục v2 song song với legacy
 
 `App/oneai_v2/` và `Backend/oneai_backend/functions-v2/` nằm cạnh bản cũ.
 
@@ -254,18 +254,32 @@ tra được, nhưng "mở song song hai cửa sổ" thì không.
 **Vì sao không tạo repo mới:** phải set up lại CI, secrets, quyền truy cập, và
 mất luôn lịch sử chung của hai nửa.
 
-**Hệ quả.** Hai bản cùng nằm cạnh nhau trong workspace tới khi ship.
+**Hệ quả.** Cả bốn nửa nằm trong **một repo duy nhất** — `doxuto/oneai`,
+branch `main` (Toan gộp ngày 23/09).
 
-| | Repo | Trạng thái |
+| Thư mục | Vai trò | Deploy |
 |---|---|---|
-| `App/oneai/` | `doxutostudio/oneai` | cũ, chỉ đọc |
-| `App/oneai_v2/` | **`doxutostudio/oneai_v2`** (branch `main`) | đang viết |
-| `Backend/oneai_backend/functions/` | `doxutostudio/oneai_backend`, codebase `default` | cũ, đóng băng |
-| `Backend/oneai_backend/functions-v2/` | cùng repo, codebase `v2` | đang viết |
+| `App/oneai/` | legacy, chỉ đọc | — |
+| `App/oneai_v2/` | app đang viết | store |
+| `Backend/oneai_backend/functions/` | legacy, đóng băng | codebase `default` |
+| `Backend/oneai_backend/functions-v2/` | backend đang viết | codebase `v2` |
+| `docs/` · `.claude/skills/` | tài liệu + ruleset | — |
 
-App tách repo vì nó viết lại hoàn toàn; backend ở chung repo vì hai codebase
-chia nhau `firebase.json`, `firestore.rules` và `storage.rules`.
+Trước 23/09 mỗi nửa là một repo riêng (`doxutostudio/oneai`,
+`doxutostudio/oneai_backend`, và `doxutostudio/oneai_v2` mới tạo). Lịch sử của
+ba repo đó nằm ở `_legacy-git/` — **đổi tên chứ không xoá**, khôi phục bằng một
+lệnh `mv` (xem `_legacy-git/README.md`).
 
-Dọn ở S10-12: `App/oneai/` xoá sau khi `oneai_v2` lên store và ổn định 7 ngày;
+**Vì sao monorepo hợp ở đây:** contract giữa app và backend đổi cùng nhau, nên
+một commit sửa được cả hai nửa và CI kiểm được cả hai; `docs/` và
+`.claude/skills/` phục vụ cả hai; và trong suốt S2–S7 cần mở legacy cạnh v2 để
+đối chiếu hành vi.
+
+**Cái mất:** `git log` trộn hai nửa (lọc bằng `-- App/` hoặc `-- Backend/`), và
+watcher phải giới hạn `git add` vào thư mục của mình — đã làm trong
+`scripts/watch-git.sh`.
+
+Dọn ở S10-12: xoá `App/oneai/` sau khi v2 lên store và ổn định 7 ngày;
 `functions/` gỡ bằng `firebase functions:delete` codebase `default`, sớm nhất
-30 ngày sau phát hành khi >95% user đã lên bản mới.
+30 ngày sau phát hành khi >95% user đã lên bản mới. Cả hai thành một commit
+sạch vì chúng đã được repo root theo dõi.

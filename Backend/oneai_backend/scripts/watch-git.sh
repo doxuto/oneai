@@ -12,6 +12,10 @@
 #
 # Kết quả ghi vào `.git-done` để agent đọc lại. File request bị xoá sau khi xử lý.
 #
+# PHẠM VI: workspace là MỘT repo ở thư mục gốc, nên `git add` được giới hạn vào
+# đúng thư mục chứa script này. Commit từ tab App không quét sang Backend và
+# ngược lại. Muốn commit cả workspace thì dùng `#cmd:` với đường dẫn tường minh.
+#
 # LƯU Ý: `push` nằm trong danh sách cho phép. Bỏ nó khỏi $ALLOWED nếu bạn muốn
 # tự tay đẩy code.
 # =============================================================================
@@ -43,8 +47,8 @@ while true; do
           echo "exit=126"
         fi
       else
-        echo "\$ git add -A && git commit -F .git-request"
-        git add -A 2>&1
+        echo "\$ git add -A -- $PROJECT_DIR && git commit -F .git-request"
+        git add -A -- "$PROJECT_DIR" 2>&1
         git commit -F "$REQ" 2>&1
         echo "exit=$?"
         git log -1 --oneline 2>&1

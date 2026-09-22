@@ -1,16 +1,10 @@
 # One AI v2 — Flutter app
 
-**Repo:** `git@github.com:doxutostudio/oneai_v2.git` (branch `main`)
+Một phần của monorepo **`doxuto/oneai`** (branch `main`) — thư mục này không
+có repo riêng. Commit từ thư mục gốc, hoặc qua `scripts/watch-git.sh` (nó tự
+giới hạn `git add` vào đúng `App/oneai_v2/`).
 
-Viết lại từ đầu. `App/oneai/` (bản cũ) là repo riêng `doxutostudio/oneai`, giữ
-nguyên để tra cứu, xoá sau khi ship.
-
-Lần push đầu (agent không ra được SSH, phải chạy từ terminal của bạn):
-
-```bash
-# tạo repo rỗng doxutostudio/oneai_v2 trên GitHub trước, đừng tick README
-cd App/oneai_v2 && git push -u origin main
-```
+Viết lại từ đầu. `App/oneai/` (bản cũ) nằm cạnh để tra cứu, xoá ở mốc M7.
 
 | | |
 |---|---|

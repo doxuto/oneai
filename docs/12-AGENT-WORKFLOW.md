@@ -21,11 +21,24 @@ Backend/oneai_backend/scripts/
 ## Chạy 1 lần, để mở (4 tab Terminal)
 
 ```bash
-cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/App/oneai            && bash scripts/watch-build.sh
-cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/App/oneai            && bash scripts/watch-git.sh
+cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/App/oneai_v2          && bash scripts/watch-build.sh
+cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/App/oneai_v2          && bash scripts/watch-git.sh
 cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/Backend/oneai_backend && bash scripts/watch-build.sh
 cd /Volumes/DOXUTO_SSDBOX/workspace/oneai/Backend/oneai_backend && bash scripts/watch-git.sh
 ```
+
+> Trỏ vào `oneai_v2`, không phải `oneai`. `App/oneai/scripts/` vẫn còn nhưng
+> chỉ dùng nếu cần build lại bản legacy để đối chiếu.
+
+**Phạm vi trong monorepo.** Workspace là một repo ở thư mục gốc, nên cả hai
+watcher `watch-git` đều thao tác trên repo đó. Để tab App không commit nhầm
+thay đổi của Backend, `git add` được giới hạn vào thư mục chứa script:
+
+```bash
+git add -A -- "$PROJECT_DIR"
+```
+
+Muốn commit cả workspace trong một lần thì dùng `#cmd:` với đường dẫn tường minh.
 
 ## Giao thức
 
@@ -89,5 +102,6 @@ biến `ALLOWED` trong `watch-git.sh`.
 
 ## Báo cáo
 
-`reports/` bị gitignore. Mỗi lần chạy sinh `reports/<yyyymmdd-HHMMSS>/` gồm
+`reports/`, `.build-request`, `.build-done`, `.git-request`, `.git-done` đều bị
+gitignore ở repo gốc. Mỗi lần chạy sinh `reports/<yyyymmdd-HHMMSS>/` gồm
 `summary.md` + log từng bước, và `reports/latest` là symlink tới lần mới nhất.

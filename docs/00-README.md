@@ -25,7 +25,7 @@ Cập nhật 2026-09-22 (bản 2 — đổi sang **build lại từ đầu**).
 | | |
 |---|---|
 | **Cách làm** | **Build lại từ đầu cả hai phía.** Bỏ hết thư viện và code cũ; chỉ mang sang config (xem `13-CONFIG-INVENTORY.md`) |
-| **Vị trí** | Thư mục mới song song: `App/oneai_v2/` và `Backend/oneai_backend/functions-v2/`. Bản cũ giữ nguyên để tra cứu |
+| **Vị trí** | Một repo `doxuto/oneai`. Code mới ở `App/oneai_v2/` và `Backend/oneai_backend/functions-v2/`; legacy giữ nguyên để tra cứu, xoá ở M7 |
 | **Backend** | TypeScript + Cloud Functions v2 `onCall` + zod, codebase `v2` deploy độc lập |
 | **Backend v1** | Đóng băng, không sửa. Gỡ sớm nhất 30 ngày sau phát hành |
 | **App state** | **Riverpod 3** (theo `flutter-skill/riverpod-pro`). Bỏ `flutter_bloc`, `provider`, `dio` |
@@ -43,7 +43,8 @@ Cập nhật 2026-09-22 (bản 2 — đổi sang **build lại từ đầu**).
 2. Mở 4 tab watcher theo `12-AGENT-WORKFLOW.md`.
 3. Chạy S0: **huỷ SOCKS proxy credential ở phía nhà cung cấp** (**S0-03 — làm
    ngay**; code đã gỡ nhưng git history vẫn giữ).
-4. Chạy `flutter create` trong `App/oneai_v2/` theo README ở đó.
+4. Chạy `flutter create` trong `App/oneai_v2/` theo README ở đó, rồi áp dụng
+   `App/oneai_v2/PLATFORM-SETUP.md`.
 5. Vào S1.
 
 ## Điều quan trọng nhất
