@@ -34,6 +34,7 @@ dependencies:
   google_sign_in: ^6.3.0
   sign_in_with_apple: ^7.0.1
   crypto: ^3.0.6
+  shared_preferences: ^2.5.3 # only per-device hints (last login method)
 
   # --- Monetization ---
   purchases_flutter: ^8.10.1
@@ -86,7 +87,6 @@ dev_dependencies:
 # Đã BỎ so với bản cũ, có lý do:
 #   flutter_bloc / bloc / provider   -> thay bằng Riverpod 3
 #   dio                              -> thay bằng cloud_functions callables
-#   shared_preferences               -> chỉ thêm lại khi thật sự cần cache per-viewer
 #   logging                          -> dùng dart:developer log + Sentry
 
 flutter:

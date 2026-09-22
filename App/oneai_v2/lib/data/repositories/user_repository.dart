@@ -13,6 +13,11 @@ class UserRepository {
 
   Future<Me> me() async => Me.fromJson(await _fns.call('getMe'));
 
+  /// Irreversible. The server deletes the Auth user; `onUserDeleted` then wipes
+  /// Firestore + Storage. `confirm` is a literal `true` in the schema so a
+  /// mis-wired button cannot delete anything by accident.
+  Future<void> deleteAccount() => _fns.call('deleteAccount', {'confirm': true});
+
   /// Live view of today's quota — updates the moment an SSV reward lands or a
   /// transcription is charged, so the credits pill never needs a manual refresh.
   Stream<Quota?> watchQuota(String uid, {required String periodId, required int fallbackLimit, required DateTime resetAt}) =>

@@ -34,7 +34,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [!] | S1-05 | Secrets qua `functions:secrets:set` | — | **Toan chạy** (cần CLI đăng nhập) |
 | [x] | S1-06 | Emulator config + `test/helpers/emulator.ts` + npm script `test:integration` | `functions-v2/test/helpers/`, `package.json` | `emulators:exec` chạy được trên Mac |
 | [ ] | S1-07 | App Check monitor mode | console | **Toan bật** |
-| [!] | S1-08..09 | App nối auth + gọi getMe | `App/oneai_v2/lib/features/auth/` | chặn bởi `flutter create` |
+| [~] | S1-08..09 | Auth: `AuthService` (Google + Apple, nonce CSPRNG — v1 nonce là 1 ký tự lặp), `SignInFailure` sealed (cancel im lặng), `LoginMethodStore` (key `LOGIN_METHOD` như v1), `BillingIdentity` (RevenueCat logIn/logOut best-effort), `AuthController` Notifier (signIn/signOut/deleteAccount qua callable rồi signOut local) | `App/oneai_v2/lib/features/auth/`, `test/unit/auth/` (18 test) | **viết xong, chưa compile** — chờ Flutter; Apple chỉ hiện trên iOS như v1 |
 | [x] | S1-11 | GitHub Actions: backend (lint/unit/build → emulator integration → v1 syntax) + app (analyze/test) | `.github/workflows/*.yml` | badge xanh khi push |
 | [ ] | S1-10 | Deploy v2 lên dev | — | **Toan chạy** `firebase deploy --only functions:v2 -P dev` |
 
