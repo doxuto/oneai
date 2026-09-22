@@ -84,6 +84,7 @@ describe("summarizeTranscript", () => {
     let seenPrompt = "";
     const llm: LlmClient = {
       vendor: "openai",
+      streamText: async () => { throw new Error("unused"); },
       async generateJson(req) {
         seenPrompt = req.prompt;
         return { data: SummarizeOutput.parse(good) as never, model: "m", tokens: { input: 1, output: 1 } };

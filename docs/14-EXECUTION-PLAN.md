@@ -77,12 +77,12 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 |---|---|---|---|---|
 | [x] | S4-01 | LLM interface + OpenAI + Gemini | `lib/llm/{types,openai,gemini,index}.ts` | `generate(prompt, schema)` trả object đã validate; chọn vendor qua param |
 | [x] | S4-02 | Structured output | trong adapter | zod schema → JSON schema → `response_format`; sai → `unavailable`, không cache |
-| [ ] | S4-03 | `chat` streaming + `chat/` subcollection + `listChatMessages` | `ai/chat.ts`, `ai/listChatMessages.ts` | `acceptsStreaming` → `sendChunk({delta})`; lưu cả 2 message |
-| [ ] | S4-04 | 4 `generate*` với cache `sourceHash` | `ai/generate{ShortQuestions,Quiz,Flashcards,Mindmap}.ts`, `ai/_artifacts.ts` | hit cache không gọi LLM; fail không ghi |
-| [ ] | S4-05 | `mapSpeakers` + `renameSpeaker` | `ai/mapSpeakers.ts`, `ai/renameSpeaker.ts` | speakers là artifact; rename không gọi LLM |
-| [ ] | S4-06 | `calendarEvents` validate | `ai/_calendar.ts` | zod, không spread body |
-| [ ] | S4-07 | Cost: token cap + log | adapter | `tokenCount` trong log mọi call |
-| [ ] | S4-08 | Prompts gộp + test | `src/prompts/*.txt`, `test/unit/prompts.test.ts` | 7 prompt, mỗi cái ≥1 test placeholder |
+| [x] | S4-03 | `chat` streaming + `chat/` subcollection + `listChatMessages` | `ai/chat.ts`, `ai/listChatMessages.ts` | `acceptsStreaming` → `sendChunk({delta})`; lưu cả 2 message |
+| [x] | S4-04 | 4 `generate*` với cache `sourceHash` | `ai/generate{ShortQuestions,Quiz,Flashcards,Mindmap}.ts`, `ai/_artifacts.ts` | hit cache không gọi LLM; fail không ghi |
+| [x] | S4-05 | `mapSpeakers` + `renameSpeaker` | `ai/mapSpeakers.ts`, `ai/renameSpeaker.ts` | speakers là artifact; rename không gọi LLM |
+| [x] | S4-06 | `calendarEvents` validate | `ai/_calendar.ts` | zod, không spread body |
+| [x] | S4-07 | Cost: token cap + log | adapter | `tokenCount` trong log mọi call; maxOutputTokens từng loại; transcript trim 120k ký tự |
+| [x] | S4-08 | Prompts gộp + test | `src/prompts/*.txt`, `test/unit/prompts.test.ts` | 7 prompt, mỗi cái ≥1 test placeholder |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

@@ -1,0 +1,105 @@
+import { describe, expect, it } from "vitest";
+import { openAiClient } from "../../src/lib/llm/openai.js";
+import { geminiClient } from "../../src/lib/llm/gemini.js";
+import { sseData } from "../../src/lib/llm/sse.js";
+import { unitDeps } from "../../src/lib/deps.js";
+import { chatHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
+import { CHAT_SYSTEM, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
+import { fill } from "../../src/prompts/summarize.js";
+
+const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
+const caller = { uid: "u1", signInProvider: "google.com" };
+
+function stream(lines: string[]): ReadableStream<Uint8Array> {
+  const enc = new TextEncoder();
+  return new ReadableStream({ start(c) { for (const l of lines) c.enqueue(enc.encode(l)); c.close(); } });
+}
+
+describe("sseData", () => {
+  it("yields data payloads across chunk boundaries and ignores other lines", async () => {
+    const out: string[] = [];
+    for await (const d of sseData(stream(["event: x\ndata: {\"a\":1}\n\nda", "ta: [DONE]\n"]))) out.push(d);
+    expect(out).toEqual(['{"a":1}', "[DONE]"]);
+  });
+});
+
+describe("openAiClient.streamText", () => {
+  it("emits deltas in order, returns the full text and usage", async () => {
+    const ev = (o: unknown) => `data: ${JSON.stringify(o)}\n`;
+    const body = [
+      ev({ model: "gpt-x", choices: [{ delta: { content: "Hel" } }] }),
+      ev({ choices: [{ delta: { content: "lo" } }] }),
+      ev({ choices: [{ delta: {} }], usage: { prompt_tokens: 7, completion_tokens: 2 } }),
+      "data: [DONE]\n",
+    ];
+    const fetchImpl: typeof fetch = async () => new Response(stream(body), { status: 200 });
+    const deltas: string[] = [];
+    const out = await openAiClient({ apiKey: "k", model: "m", timeoutMs: 5000, fetchImpl }).streamText({ name: "t", prompt: "p", maxOutputTokens: 10 }, (d) => deltas.push(d));
+    expect(deltas).toEqual(["Hel", "lo"]);
+    expect(out).toEqual({ text: "Hello", model: "gpt-x", tokens: { input: 7, output: 2 } });
+  });
+  it("an empty stream is unavailable", async () => {
+    const fetchImpl: typeof fetch = async () => new Response(stream(["data: [DONE]\n"]), { status: 200 });
+    await expect(openAiClient({ apiKey: "k", model: "m", timeoutMs: 5000, fetchImpl }).streamText({ name: "t", prompt: "p", maxOutputTokens: 10 }, () => undefined)).rejects.toMatchObject({ code: "unavailable" });
+  });
+  it("passes history as prior messages", async () => {
+    let body: { messages: { role: string; content: string }[] } | undefined;
+    const fetchImpl: typeof fetch = async (_u, init) => { body = JSON.parse(String(init?.body)); return new Response(stream(['data: {"choices":[{"delta":{"content":"ok"}}]}\n', "data: [DONE]\n"]), { status: 200 }); };
+    await openAiClient({ apiKey: "k", model: "m", timeoutMs: 5000, fetchImpl }).streamText({ name: "t", system: "s", history: [{ role: "user", text: "a" }, { role: "assistant", text: "b" }], prompt: "c", maxOutputTokens: 10 }, () => undefined);
+    expect(body?.messages.map((m) => m.role)).toEqual(["system", "user", "assistant", "user"]);
+  });
+});
+
+describe("geminiClient.streamText", () => {
+  it("emits deltas and maps assistant→model in history", async () => {
+    let body: { contents: { role: string }[] } | undefined;
+    const ev = (o: unknown) => `data: ${JSON.stringify(o)}\n`;
+    const fetchImpl: typeof fetch = async (_u, init) => {
+      body = JSON.parse(String(init?.body));
+      return new Response(stream([ev({ candidates: [{ content: { parts: [{ text: "Hi" }] } }] }), ev({ candidates: [{ content: { parts: [{ text: "!" }] } }], usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 1 } })]), { status: 200 });
+    };
+    const deltas: string[] = [];
+    const out = await geminiClient({ apiKey: "k", model: "g", timeoutMs: 5000, fetchImpl }).streamText({ name: "t", history: [{ role: "assistant", text: "x" }], prompt: "p", maxOutputTokens: 10 }, (d) => deltas.push(d));
+    expect(out.text).toBe("Hi!");
+    expect(deltas).toEqual(["Hi", "!"]);
+    expect(body?.contents.map((c) => c.role)).toEqual(["model", "user"]);
+  });
+});
+
+describe("schemas", () => {
+  it("QuizData rejects an answerIndex outside the options", () => {
+    expect(QuizData.safeParse({ items: [{ question: "q", options: ["a", "b"], answerIndex: 2 }] }).success).toBe(false);
+    expect(QuizData.safeParse({ items: [{ question: "q", options: ["a", "b"], answerIndex: 1 }] }).success).toBe(true);
+  });
+  it("MindmapData is depth-limited and fills missing children with []", () => {
+    const p = MindmapData.parse({ root: { id: "r", title: "T", icon: "🎯", children: [{ id: "n1", title: "A" }] } });
+    expect(p.root.children[0]?.children).toEqual([]);
+    expect(MindmapData.safeParse({ root: { id: "r", title: "T", icon: "🎯", children: [] } }).success).toBe(false);
+  });
+  it("SpeakersData only accepts speaker_N ids", () => {
+    expect(SpeakersData.safeParse({ speakers: [{ id: "bob", label: "Bob" }] }).success).toBe(false);
+    expect(SpeakersData.safeParse({ speakers: [{ id: "speaker_2", label: "Bob" }] }).success).toBe(true);
+  });
+});
+
+describe("prompts", () => {
+  it("every template fills without a leftover placeholder", () => {
+    expect(fill(QUIZ_PROMPT, { transcript: "t", languageCode: "vi" })).not.toContain("{{");
+    expect(fill(MAP_SPEAKERS_PROMPT, { speakerIds: "speaker_0", transcript: "t" })).not.toContain("{{");
+    expect(fill(CHAT_SYSTEM, { languageCode: "en" })).toContain("'en'");
+  });
+});
+
+describe("handlers — validation", () => {
+  const deps = unitDeps();
+  it("chat: question over 2000 chars is invalid-argument", async () => {
+    await expect(chatHandler(caller, { client, minuteId: "m1", question: "x".repeat(2001) }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("generateQuiz: languageCode defaults to en; unknown keys rejected", async () => {
+    await expect(generateQuizHandler(caller, { client, minuteId: "m1", summaryText: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("renameSpeaker: speakerId must be speaker_N (v1 accepted any string as a Firestore field name)", async () => {
+    await expect(renameSpeakerHandler(caller, { client, minuteId: "m1", speakerId: "__proto__", name: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+});

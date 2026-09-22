@@ -1,0 +1,156 @@
+/** Runs under `npm run test:integration`. */
+import { getStorage } from "firebase-admin/storage";
+import { Timestamp } from "firebase-admin/firestore";
+import { beforeEach, describe, expect, it } from "vitest";
+import { HttpsError } from "firebase-functions/v2/https";
+import { chatHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { unitDeps, type Deps } from "../../src/lib/deps.js";
+import type { LlmClient } from "../../src/lib/llm/types.js";
+import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
+
+const db = testDb();
+const bucket = getStorage().bucket("demo-oneai.appspot.com");
+const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
+const u1 = { uid: "u1", signInProvider: "google.com" };
+
+const transcript = {
+  durationSeconds: 10, languageCode: "eng", languageProbability: 0.9, text: "Hi, I'm Ana. Sure, thanks Ana.",
+  segments: [
+    { startSeconds: 0, endSeconds: 4, text: "Hi, I'm Ana.", speakerId: "speaker_0", speakerLabel: "Speaker 1" },
+    { startSeconds: 5, endSeconds: 10, text: "Sure, thanks Ana.", speakerId: "speaker_1", speakerLabel: "Speaker 2" },
+  ],
+};
+
+function fakeLlm(json: () => Promise<unknown>, textDeltas: string[] = ["An", "swer"]): LlmClient & { calls: number } {
+  const c = {
+    vendor: "openai" as const, calls: 0,
+    async generateJson() { c.calls++; return { data: (await json()) as never, model: "fake", tokens: { input: 1, output: 1 } }; },
+    async streamText(_req: unknown, onDelta: (d: string) => void) { c.calls++; for (const d of textDeltas) onDelta(d); return { text: textDeltas.join(""), model: "fake", tokens: { input: 2, output: 2 } }; },
+  };
+  return c;
+}
+function makeDeps(llm: LlmClient): Deps {
+  return unitDeps({ db, bucket: bucket as Deps["bucket"], now: fixedNow(), services: { llm } });
+}
+async function seedReady(id = "m1", t: unknown = transcript) {
+  await bucket.file(`users/u1/minutes/${id}/transcript.json`).save(JSON.stringify(t), { resumable: false });
+  await db.doc(`users/u1/minutes/${id}`).set({ title: "a", status: "ready", sourceType: "audio", transcriptPath: `users/u1/minutes/${id}/transcript.json`, tagIds: [], createdAt: Timestamp.now(), updatedAt: Timestamp.now() });
+}
+
+describe("generate* with artifact cache", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("first call generates and stores; second call is served from cache without the model", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ questions: ["Who is Ana?"] }));
+    const deps = makeDeps(llm);
+    const a = await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(a).toEqual({ data: { questions: ["Who is Ana?"] }, cached: false });
+    const b = await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(b.cached).toBe(true);
+    expect(llm.calls).toBe(1);
+    expect((await db.doc("users/u1/minutes/m1/artifacts/shortQuestions").get()).data()).toMatchObject({ kind: "shortQuestions", model: "fake" });
+  });
+
+  it("a changed transcript invalidates the cache", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ questions: ["q"] }));
+    const deps = makeDeps(llm);
+    await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);
+    await seedReady("m1", { ...transcript, text: "different" });
+    const b = await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(b.cached).toBe(false);
+    expect(llm.calls).toBe(2);
+  });
+
+  it("force:true regenerates", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ questions: ["q"] }));
+    const deps = makeDeps(llm);
+    await generateShortQuestionsHandler(u1, { client, minuteId: "m1" }, deps);
+    await generateShortQuestionsHandler(u1, { client, minuteId: "m1", force: true }, deps);
+    expect(llm.calls).toBe(2);
+  });
+
+  it("a failed generation writes nothing, so the next call tries again", async () => {
+    await seedReady();
+    let n = 0;
+    const llm = fakeLlm(async () => { if (n++ === 0) throw new HttpsError("unavailable", "bad shape"); return { items: [{ question: "q", options: ["a", "b"], answerIndex: 0 }] }; });
+    const deps = makeDeps(llm);
+    await expect(generateQuizHandler(u1, { client, minuteId: "m1" }, deps)).rejects.toMatchObject({ code: "unavailable" });
+    expect((await db.doc("users/u1/minutes/m1/artifacts/quiz").get()).exists).toBe(false);
+    const ok = await generateQuizHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(ok.cached).toBe(false);
+    expect(ok.data.items[0]?.answerIndex).toBe(0);
+  });
+
+  it("refuses a note that is not ready", async () => {
+    await db.doc("users/u1/minutes/m1").set({ status: "transcribing", createdAt: Timestamp.now() });
+    await expect(generateQuizHandler(u1, { client, minuteId: "m1" }, makeDeps(fakeLlm(async () => ({}))))).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "notReady" } });
+  });
+});
+
+describe("speakers", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("mapSpeakers returns every id exactly once, filling gaps the model left", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ speakers: [{ id: "speaker_0", label: "Ana" }] })); // model forgot speaker_1
+    const out = await mapSpeakersHandler(u1, { client, minuteId: "m1" }, makeDeps(llm));
+    expect(out.data.speakers).toEqual([{ id: "speaker_0", label: "Ana" }, { id: "speaker_1", label: "speaker_1" }]);
+    expect((await db.doc("users/u1/minutes/m1/artifacts/speakers").get()).data()?.data.speakers).toHaveLength(2);
+  });
+
+  it("a single-speaker note needs no model call", async () => {
+    await seedReady("m1", { ...transcript, segments: [transcript.segments[0]] });
+    const llm = fakeLlm(async () => ({}));
+    const out = await mapSpeakersHandler(u1, { client, minuteId: "m1" }, makeDeps(llm));
+    expect(out.data.speakers).toEqual([{ id: "speaker_0", label: "Speaker 1" }]);
+    expect(llm.calls).toBe(0);
+  });
+
+  it("renameSpeaker updates without the model and survives when no artifact exists yet", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({}));
+    const deps = makeDeps(llm);
+    const out = await renameSpeakerHandler(u1, { client, minuteId: "m1", speakerId: "speaker_1", name: "  Bob " }, deps);
+    expect(out.data.speakers).toEqual([{ id: "speaker_1", label: "Bob" }]);
+    expect(llm.calls).toBe(0);
+  });
+});
+
+describe("chat", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("streams deltas, persists both turns, and lists them in order with a cursor", async () => {
+    await seedReady();
+    const deps = makeDeps(fakeLlm(async () => ({}), ["An", "swer"]));
+    const deltas: string[] = [];
+    const out = await chatHandler(u1, { client, minuteId: "m1", question: "Who spoke?" }, deps, (d) => deltas.push(d));
+    expect(deltas).toEqual(["An", "swer"]);
+    expect(out.answer).toBe("Answer");
+
+    const list = await listChatMessagesHandler(u1, { client, minuteId: "m1", limit: 1 }, deps);
+    expect(list.items.map((m) => m.role)).toEqual(["user"]);
+    expect(list.nextCursor).not.toBeNull();
+    const rest = await listChatMessagesHandler(u1, { client, minuteId: "m1", limit: 1, cursor: list.nextCursor! }, deps);
+    expect(rest.items.map((m) => [m.role, m.text])).toEqual([["assistant", "Answer"]]);
+    expect(rest.nextCursor).toBeNull();
+  });
+
+  it("feeds prior turns back as history", async () => {
+    await seedReady();
+    let seenHistory: unknown;
+    const llm: LlmClient = { vendor: "openai", generateJson: async () => { throw new Error("unused"); },
+      async streamText(req, onDelta) { seenHistory = req.history; onDelta("ok"); return { text: "ok", model: "f", tokens: { input: 0, output: 0 } }; } };
+    const deps = makeDeps(llm);
+    await chatHandler(u1, { client, minuteId: "m1", question: "first" }, deps);
+    await chatHandler(u1, { client, minuteId: "m1", question: "second" }, deps);
+    expect(seenHistory).toEqual([{ role: "user", text: "first" }, { role: "assistant", text: "ok" }]);
+  });
+
+  it("chat on another user's note is not-found", async () => {
+    await seedReady();
+    await expect(chatHandler({ uid: "u2", signInProvider: "x" }, { client, minuteId: "m1", question: "?" }, makeDeps(fakeLlm(async () => ({}))))).rejects.toMatchObject({ code: "not-found" });
+  });
+});

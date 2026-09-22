@@ -33,7 +33,7 @@ function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<ElevenLabsRe
     services: {
       enqueue: async (_q, p) => { if (over.failEnqueue) throw new Error("queue down"); enqueued.push(p); },
       stt: { transcribe: over.stt ?? (async () => scribe) },
-      llmHeavy: { vendor: "openai", generateJson: async () => ({ data: (await (over.llm ?? (async () => goodSummary))()) as never, model: "fake", tokens: { input: 1, output: 1 } }) },
+      llmHeavy: { vendor: "openai", streamText: async () => { throw new Error("unused"); }, generateJson: async () => ({ data: (await (over.llm ?? (async () => goodSummary))()) as never, model: "fake", tokens: { input: 1, output: 1 } }) },
       audioDurationSeconds: async () => over.duration === undefined ? 3.9 : over.duration,
       pdfText: async (b) => Buffer.from(b).toString("utf8"),
     },

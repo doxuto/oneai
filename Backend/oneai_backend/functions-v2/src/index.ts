@@ -33,3 +33,12 @@ export { cancelTranscription } from "./transcribe/cancelTranscription.js";
 export { processTranscription } from "./transcribe/processTranscription.js";
 
 export { sweepOrphanFiles } from "./jobs/sweepOrphanFiles.js";
+
+export { chat } from "./ai/chat.js";
+export { listChatMessages } from "./ai/listChatMessages.js";
+export { generateShortQuestions } from "./ai/generateShortQuestions.js";
+export { generateQuiz } from "./ai/generateQuiz.js";
+export { generateFlashcards } from "./ai/generateFlashcards.js";
+export { generateMindmap } from "./ai/generateMindmap.js";
+export { mapSpeakers } from "./ai/mapSpeakers.js";
+export { renameSpeaker } from "./ai/renameSpeaker.js";
