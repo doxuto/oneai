@@ -58,7 +58,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
-| [ ] | S3-00 | Quota module thuần | `quota/quota.ts`, `test/unit/quota.test.ts` | `canConsume(period, plan)`, `consume(tx)`, `refund(tx)`; premium ghi `used` nhưng không chặn |
+| [x] | S3-00 | Quota module thuần | `quota/quota.ts`, `test/unit/quota.test.ts` | `canConsume(period, plan)`, `consume(tx)`, `refund(tx)`; premium ghi `used` nhưng không chặn |
 | [ ] | S3-01 | `startTranscription` | `transcribe/startTranscription.ts` + handler | transaction: đọc minute + quota → trừ → set `queued` → enqueue; 20 song song với quota 1 → 1 qua |
 | [ ] | S3-02 | `processTranscription` task worker | `transcribe/processTranscription.ts`, `transcribe/pipeline.ts` | `onTaskDispatched` 2GiB/540s retry 3; máy trạng thái `transcribing→summarizing→ready` |
 | [ ] | S3-03 | ElevenLabs adapter | `lib/stt/elevenlabs.ts` | timeout 480s < 540s; 429→`resource-exhausted`; 5xx→`unavailable`; fetch native, không axios |
