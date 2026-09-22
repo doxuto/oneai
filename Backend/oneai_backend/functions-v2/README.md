@@ -63,12 +63,39 @@ firebase functions:secrets:set REVENUECAT_WEBHOOK_SECRET
 
 Param không bí mật nằm trong `.env` (commit có chủ đích).
 
-## Đã có
+## Đã có — 27 function, parity đầy đủ với v1 (trừ YouTube)
 
-| Function | Loại | Trạng thái |
+| Nhóm | Function | Loại |
 |---|---|---|
-| `getMe` | callable | ✅ |
-| `onUserCreated` | v1 auth trigger | ✅ |
-| `onUserDeleted` | v1 auth trigger | ✅ |
+| users | `getMe` · `onUserCreated` · `onUserDeleted` | callable · v1 auth trigger ×2 |
+| minutes | `createMinute` · `listMinutes` · `getMinute` · `updateMinute` · `deleteMinute` · `onMinuteWritten` | callable ×5 · Firestore trigger |
+| tags | `createTag` · `listTags` · `updateTag` · `deleteTag` | callable |
+| transcribe | `startTranscription` · `cancelTranscription` · `processTranscription` | callable ×2 · task worker (2GiB/540s) |
+| ai | `chat` (streaming) · `listChatMessages` · `generateShortQuestions` · `generateQuiz` · `generateFlashcards` · `generateMindmap` · `mapSpeakers` · `renameSpeaker` | callable |
+| jobs | `sweepOrphanFiles` | schedule 03:00 VN |
+| billing / ads | `revenueCatWebhook` · `adRewardSsv` | onRequest (webhook) |
 
-Phần còn lại theo `docs/09-ROADMAP.md` (S3–S5).
+Test: **137 unit** (chạy mọi nơi) + **105 integration/rules** (chạy qua `npm run test:integration` với emulator).
+
+## Cấu trúc test
+
+```
+test/unit/           logic thuần, fake fetch cho STT/LLM — `npm test`
+test/integration/    handler chống emulator thật, fake STT/LLM — `npm run test:integration`
+test/rules/          firestore.rules qua web SDK — cùng lệnh trên
+test/helpers/        emulator.ts (testDb, clearFirestore, waitFor), ssv.ts (ký P-256 thật)
+test/fixtures/       scribe-small.json — response ElevenLabs thật thu gọn
+```
+
+Mỗi callable = `handler.ts` (hàm thuần `(caller, raw, deps)`) + wrapper `onCall`.
+`Deps` mang `db`, `bucket`, `now`, giới hạn gói, và `services` (STT, LLM ×2, enqueue, đo
+thời lượng, PDF) — tất cả lazy trong prod, fake trong test.
+
+## Việc còn lại phía backend (cần Toan)
+
+1. `firebase functions:secrets:set` ×4 (xem trên).
+2. Bật **TTL policy** trên field `expiresAt` cho collection group `quota` và collection `adRewards`
+   (Firestore console → TTL). Quota theo ngày và ledger SSV tự dọn nhờ đó — không có job reset.
+3. Deploy: `firebase deploy --only functions:v2 -P dev`, rồi đăng ký URL `adRewardSsv` trong
+   AdMob console (SSV của rewarded unit) và URL `revenueCatWebhook` trong RevenueCat.
+4. Chạy `npm run test:integration` trên Mac một lần để xác nhận 105 test emulator xanh.

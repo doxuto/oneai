@@ -151,7 +151,7 @@ interface Transcript {
 
 | Callable | Input | Output |
 |---|---|---|
-| `startTranscription` | `{client, minuteId, audioLanguage ="auto", summaryLanguage, keywords?: string[] ≤20, description? ≤500, timezone}` | `{minuteId, status}` |
+| `startTranscription` | `{client, minuteId, requestId: uuid, audioLanguage ="auto", summaryLanguage, keywords: string[] ≤20 =[], description? ≤500, timezone: IANA, durationSeconds?}` | `{minuteId, status, duplicate: boolean}` — cùng `requestId` gọi lại → `duplicate:true`, không trừ quota lần 2 |
 | `cancelTranscription` | `{client, minuteId}` | `{}` |
 | `processTranscription` | **task worker**, không phải callable | — |
 
@@ -167,14 +167,17 @@ là stub hardcode "Demo Meeting" (audit §1).
 
 | Callable | Input | Output |
 |---|---|---|
-| `chat` ⚡streaming | `{client, minuteId, question ≤2000, languageCode ="en"}` | stream `{delta}` → `{answer, messageId}` |
-| `listChatMessages` | `{client, minuteId, limit, cursor?}` | `{items: ChatMessage[], nextCursor}` |
-| `generateShortQuestions` | `{client, minuteId, languageCode}` | `{questions: string[]}` |
-| `generateQuiz` | `{client, minuteId, languageCode}` | `{items: {question, options: string[], answerIndex: number}[]}` |
-| `generateFlashcards` | `{client, minuteId, languageCode}` | `{items: {question, answer}[]}` |
-| `generateMindmap` | `{client, minuteId, languageCode}` | `{root: MindmapNode}` |
-| `mapSpeakers` | `{client, minuteId}` | `{speakers: {id, label}[]}` |
-| `renameSpeaker` | `{client, minuteId, speakerId, name ≤60}` | `{speakers: {id, label}[]}` |
+| `chat` ⚡streaming | `{client, minuteId, question ≤2000, languageCode ="en"}` | stream `{delta}` → `{answer, messageId}`. Lưu cả 2 lượt; 8 lượt gần nhất làm ngữ cảnh |
+| `listChatMessages` | `{client, minuteId, limit ≤100 =50, cursor?}` | `{items: {id, role, text, createdAt}[], nextCursor}` |
+| `generateShortQuestions` | `{client, minuteId, languageCode ="en", force =false}` | `{data: {questions: string[]}, cached: boolean}` |
+| `generateQuiz` | như trên | `{data: {items: {question, options: string[2..4], answerIndex}[]}, cached}` |
+| `generateFlashcards` | như trên | `{data: {items: {question, answer}[]}, cached}` |
+| `generateMindmap` | như trên | `{data: {root: {id, title, icon, children: [{id, title, children: [{id, title, children: [{id,title}]}]}]}}, cached}` — sâu tối đa 4 |
+| `mapSpeakers` | `{client, minuteId, force =false}` | `{data: {speakers: {id, label}[]}, cached}` — mọi `speaker_N` có mặt đúng 1 lần |
+| `renameSpeaker` | `{client, minuteId, speakerId: /^speaker_\d+$/, name ≤60}` | `{data: {speakers}, cached:false}` — không gọi LLM |
+
+Mọi tính năng AI yêu cầu minute `status:"ready"`; ngược lại `failed-precondition` + `reason:"notReady"`.
+`cached:true` nghĩa là artifact có `sourceHash` khớp transcript hiện tại; transcript đổi → tự sinh lại.
 
 **Ba thứ phải sửa so với v1:**
 
