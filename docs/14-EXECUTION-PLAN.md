@@ -35,6 +35,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S1-06 | Emulator config + `test/helpers/emulator.ts` + npm script `test:integration` | `functions-v2/test/helpers/`, `package.json` | `emulators:exec` chạy được trên Mac |
 | [ ] | S1-07 | App Check monitor mode | console | **Toan bật** |
 | [!] | S1-08..09 | App nối auth + gọi getMe | `App/oneai_v2/lib/features/auth/` | chặn bởi `flutter create` |
+| [x] | S1-11 | GitHub Actions: backend (lint/unit/build → emulator integration → v1 syntax) + app (analyze/test) | `.github/workflows/*.yml` | badge xanh khi push |
 | [ ] | S1-10 | Deploy v2 lên dev | — | **Toan chạy** `firebase deploy --only functions:v2 -P dev` |
 
 ## S2 — BE: data model + CRUD

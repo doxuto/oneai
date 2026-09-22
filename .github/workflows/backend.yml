@@ -1,0 +1,80 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths: ["Backend/**", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["Backend/**", ".github/workflows/backend.yml"]
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: Backend/oneai_backend/functions-v2
+
+jobs:
+  unit:
+    name: lint + unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Backend/oneai_backend/functions-v2/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  integration:
+    name: emulator integration + rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Backend/oneai_backend/functions-v2/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: cache emulator jars
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ runner.os }}-v1
+      - run: npm ci --no-audit --no-fund
+      - run: npm i -g firebase-tools@14
+      - run: npm run test:integration
+      - name: upload emulator logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-logs
+          path: |
+            Backend/oneai_backend/*-debug.log
+            Backend/oneai_backend/functions-v2/*-debug.log
+          if-no-files-found: ignore
+
+  v1-syntax:
+    name: legacy v1 still parses
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: node --check every v1 file
+        working-directory: Backend/oneai_backend/functions
+        run: find . -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n1 node --check

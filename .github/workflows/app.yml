@@ -1,0 +1,33 @@
+name: app
+
+on:
+  push:
+    branches: [main]
+    paths: ["App/oneai_v2/**", ".github/workflows/app.yml"]
+  pull_request:
+    paths: ["App/oneai_v2/**", ".github/workflows/app.yml"]
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: App/oneai_v2
+
+jobs:
+  analyze-test:
+    name: analyze + test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: platform folders are generated locally; CI only needs pubspec + lib + test
+        run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test --reporter expanded
