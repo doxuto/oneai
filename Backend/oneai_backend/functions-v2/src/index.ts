@@ -15,3 +15,9 @@ setGlobalOptions({
 export { getMe } from "./users/getMe.js";
 export { onUserCreated } from "./users/onUserCreated.js";
 export { onUserDeleted } from "./users/onUserDeleted.js";
+
+export { createMinute } from "./minutes/createMinute.js";
+export { listMinutes } from "./minutes/listMinutes.js";
+export { getMinute } from "./minutes/getMinute.js";
+export { updateMinute } from "./minutes/updateMinute.js";
+export { deleteMinute } from "./minutes/deleteMinute.js";

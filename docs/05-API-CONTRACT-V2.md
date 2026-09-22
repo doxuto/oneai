@@ -98,8 +98,8 @@ file, tên file = tên export.
 
 | Callable | Input | Output |
 |---|---|---|
-| `createMinute` | `{client, sourceType: "audio"\|"pdf", fileName, sizeBytes}` | `{minuteId, upload: {url, path, expiresAt}}` |
-| `listMinutes` | `{client, limit: 1..50 =20, cursor?, tagIds?: string[] ≤10, query?: string ≤100, sort: "createdAtDesc"\|"titleAsc" ="createdAtDesc"}` | `{items: MinuteSummary[], nextCursor: string\|null}` |
+| `createMinute` | `{client, sourceType: "audio"\|"pdf", fileName, sizeBytes, contentType}` | `{minuteId, upload: {path, contentType, maxSizeBytes}}` — client upload thẳng bằng Firebase Storage SDK, rules kiểm size/type |
+| `listMinutes` | `{client, limit: 1..50 =20, cursor?, tagIds?: string[] ≤10, sort: "createdAtDesc"\|"titleAsc" ="createdAtDesc"}` | `{items: MinuteSummary[], nextCursor: string\|null}` — không có `query` (OQ-07: lọc client-side) |
 | `getMinute` | `{client, minuteId}` | `{minute: MinuteDetail}` |
 | `updateMinute` | `{client, minuteId, title?, iconEmoji?, tagIds?}` | `{minute: MinuteSummary}` |
 | `deleteMinute` | `{client, minuteId}` | `{}` |
@@ -121,8 +121,12 @@ interface MinuteSummary {
 interface MinuteDetail extends MinuteSummary {
   summary: Summary | null;
   transcript: Transcript | null;
-  audioUrl: string | null;           // signed URL, hết hạn 1h
+  sourcePath: string | null;         // path Storage; client tự lấy download URL bằng auth của mình
+  speakers: { id: string; label: string }[];
   failure: { code: string; message: string } | null;
+  description: string | null;
+  keywords: string[];
+  summaryLanguage: string | null;
 }
 
 interface Summary {

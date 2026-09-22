@@ -42,17 +42,17 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | | ID | Task | File | Nghiệm thu |
 |---|---|---|---|---|
 | [x] | S2-00 | Refactor `getMe` sang handler/wrapper + unit test | `users/handler.ts`, `users/getMe.ts`, `test/unit/users.test.ts` | handler test không cần Firestore cho nhánh lỗi |
-| [ ] | S2-01 | `createMinute` | `minutes/types.ts`, `minutes/_shared.ts`, `minutes/handler.ts`, `minutes/createMinute.ts` | trả `minuteId` + upload path; doc `status:"uploading"`; `sourceType` ∈ audio\|pdf; `sizeBytes` ≤ 300MB |
-| [ ] | S2-02 | `listMinutes` | `minutes/listMinutes.ts` + handler | cursor `[createdAtMillis, id]`; `tagIds` ≤10; sort enum; **thiếu index → ném `failed-precondition`, không trả rỗng** |
-| [ ] | S2-03 | `getMinute` | `minutes/getMinute.ts` | minute người khác → `not-found`; kèm `summary`, `transcriptPreview`, `speakers`, `artifacts` có sẵn |
-| [ ] | S2-04 | `updateMinute` | `minutes/updateMinute.ts` | chỉ `title`\|`iconEmoji`\|`tagIds`; `tagIds` phải tồn tại dưới `users/{uid}/tags`; rỗng → `invalid-argument` |
-| [ ] | S2-05 | `deleteMinute` | `minutes/deleteMinute.ts` | `recursiveDelete` + `deleteFiles(prefix)`; idempotent (xoá 2 lần → lần 2 `not-found`) |
+| [x] | S2-01 | `createMinute` | `minutes/types.ts`, `minutes/_shared.ts`, `minutes/handler.ts`, `minutes/createMinute.ts` | trả `minuteId` + upload path; doc `status:"uploading"`; `sourceType` ∈ audio\|pdf; `sizeBytes` ≤ 300MB |
+| [x] | S2-02 | `listMinutes` | `minutes/listMinutes.ts` + handler | cursor `[createdAtMillis, id]`; `tagIds` ≤10; sort enum; **thiếu index → ném `failed-precondition`, không trả rỗng** |
+| [x] | S2-03 | `getMinute` | `minutes/getMinute.ts` | minute người khác → `not-found`; kèm `summary`, `transcriptPreview`, `speakers`, `artifacts` có sẵn |
+| [x] | S2-04 | `updateMinute` | `minutes/updateMinute.ts` | chỉ `title`\|`iconEmoji`\|`tagIds`; `tagIds` phải tồn tại dưới `users/{uid}/tags`; rỗng → `invalid-argument` |
+| [x] | S2-05 | `deleteMinute` | `minutes/deleteMinute.ts` | `recursiveDelete` + `deleteFiles(prefix)`; idempotent (xoá 2 lần → lần 2 `not-found`) |
 | [ ] | S2-06 | Tags CRUD | `tags/types.ts`, `tags/handler.ts`, `tags/{create,list,update,delete}Tag.ts` | `nameLower` unique → `already-exists`; delete gỡ `tagIds` khỏi minutes bằng batch ≤500 |
 | [ ] | S2-07 | Trigger `onMinuteWritten` duy trì `minuteCount` (user + tag) | `minutes/onMinuteWritten.ts` | tạo/xoá/đổi tag → count đúng; idempotent theo `event.id` |
-| [ ] | S2-08 | Output mapper tường minh | `minutes/_shared.ts` | không có `snap.data()` trả thẳng; `Timestamp` → ISO |
+| [x] | S2-08 | Output mapper tường minh | `minutes/_shared.ts` | không có `snap.data()` trả thẳng; `Timestamp` → ISO |
 | [ ] | S2-09 | Contract snapshot test | `test/unit/contract.test.ts` | JSON shape từng output snapshot |
 | [ ] | S2-10 | Rules unit test | `test/rules/firestore.rules.test.ts` | mỗi nhánh allow: pass/wrong-user/unauth |
-| [ ] | S2-11 | `firestore.indexes.json` khớp query thật | — | mọi query trong `listMinutes` có index |
+| [x] | S2-11 | `firestore.indexes.json` khớp query thật | — | mọi query trong `listMinutes` có index |
 
 ## S3 — BE: pipeline transcribe
 
