@@ -1,0 +1,8 @@
+{
+  "_comment": "Real unit ids live ONLY in Remote Config. These are Google's public TEST ids; the app uses them in debug builds and whenever a key is missing, so a dev can never click a live ad.",
+  "banner":              { "android": "ca-app-pub-3940256099942544/6300978111", "ios": "ca-app-pub-3940256099942544/2934735716" },
+  "interstitial":        { "android": "ca-app-pub-3940256099942544/1033173712", "ios": "ca-app-pub-3940256099942544/4411468910" },
+  "rewarded":            { "android": "ca-app-pub-3940256099942544/5224354917", "ios": "ca-app-pub-3940256099942544/1712485313" },
+  "appOpen":             { "android": "ca-app-pub-3940256099942544/9257395921", "ios": "ca-app-pub-3940256099942544/5575463023" },
+  "native":              { "android": "ca-app-pub-3940256099942544/2247696110", "ios": "ca-app-pub-3940256099942544/3986624511" }
+}

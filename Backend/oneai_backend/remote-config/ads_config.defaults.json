@@ -1,0 +1,36 @@
+{
+  "enabled": false,
+  "fullScreenCooldownSeconds": 30,
+  "appOpen": {
+    "enabled": true,
+    "minimumBackgroundSeconds": 45,
+    "minimumSecondsBetween": 300,
+    "maxPerDay": 4,
+    "skipFirstSessions": 3
+  },
+  "interstitial": {
+    "enabled": true,
+    "minimumSecondsBetween": 180,
+    "minimumCompletionsBetween": 2,
+    "minimumLifetimeCompletions": 3,
+    "minimumSessionSeconds": 30,
+    "maxPerDay": 8,
+    "placements": ["summaryEnter", "summaryExit", "afterShare", "settingsExit"]
+  },
+  "rewarded": {
+    "enabled": true,
+    "maxPerDay": 5
+  },
+  "banner": {
+    "enabled": true,
+    "refreshSeconds": 60,
+    "placements": ["summaryTab"]
+  },
+  "native": {
+    "enabled": false,
+    "firstRow": 6,
+    "everyRows": 10,
+    "maxPerScreen": 3,
+    "placements": ["minutesList"]
+  }
+}

@@ -30,3 +30,6 @@ reports/
 .build-done
 .git-request
 .git-done
+remote-config/current.json
+remote-config/merged.json
+remoteconfig.template.json

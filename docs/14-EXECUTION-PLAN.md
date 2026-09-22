@@ -96,6 +96,7 @@ Chi tiết trong `09-ROADMAP.md`. Sẽ mở rộng tới mức file khi bắt đ
 | [x] | S8-01 | ~~`resetDailyQuota`~~ **không cần** — quota là doc theo ngày, tạo khi dùng lần đầu, TTL dọn | — | Toan bật TTL policy trên field `expiresAt` của collection group `quota` và `adRewards` (console/gcloud, không phải code) |
 | [x] | S8-02 | `revenueCatWebhook` | `billing/revenueCatWebhook.ts` | `timingSafeEqual`; `app_user_id` là uid thật; `set(merge)`; `planExpiresAt` |
 | [x] | S8-04 | `adRewardSsv` | `ads/adRewardSsv.ts`, `ads/verify.ts` | 5 test bắt buộc (`08` §5) |
+| [x] | S8-07a | `ads_config` + `ad_units` defaults + `merge.mjs` (gộp vào template live, không ghi đè key v1) | `Backend/oneai_backend/remote-config/` | script chạy thử với template giả: giữ key cũ, gộp id thật |
 | [ ] | S8-06 | Dart `AdGate` + `AdLedger` | `App/oneai_v2/lib/features/ads/` | ≥30 test |
 
 ---
