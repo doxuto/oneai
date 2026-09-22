@@ -13,6 +13,7 @@ setGlobalOptions({
 });
 
 export { getMe } from "./users/getMe.js";
+export { deleteAccount } from "./users/deleteAccount.js";
 export { onUserCreated } from "./users/onUserCreated.js";
 export { onUserDeleted } from "./users/onUserDeleted.js";
 

@@ -82,3 +82,15 @@ describe("toUserOutput", () => {
     expect(toUserOutput("u1", { email: 42 }, new Date()).email).toBeNull();
   });
 });
+
+describe("deleteAccountHandler", () => {
+  it("requires confirm:true, literally", async () => {
+    const { deleteAccountHandler } = await import("../../src/users/deleteAccount.js");
+    await expect(deleteAccountHandler(caller, { client, confirm: false }, unitDeps(), async () => undefined)).rejects.toMatchObject({ code: "invalid-argument" });
+    await expect(deleteAccountHandler(caller, { client }, unitDeps(), async () => undefined)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("unauthenticated first", async () => {
+    const { deleteAccountHandler } = await import("../../src/users/deleteAccount.js");
+    await expect(deleteAccountHandler(undefined, { client, confirm: true }, unitDeps(), async () => undefined)).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+});

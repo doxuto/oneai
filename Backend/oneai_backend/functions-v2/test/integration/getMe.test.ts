@@ -63,3 +63,28 @@ describe("getMeHandler", () => {
     });
   });
 });
+
+describe("deleteAccountHandler", () => {
+  beforeEach(() => clearFirestore());
+
+  it("marks the profile, then deletes the auth user (which triggers the data wipe)", async () => {
+    const { deleteAccountHandler } = await import("../../src/users/deleteAccount.js");
+    await db.doc("users/u1").set({ plan: "free" });
+    const deleted: string[] = [];
+    await deleteAccountHandler(caller, { client, confirm: true }, deps, async (uid) => { deleted.push(uid); });
+    expect(deleted).toEqual(["u1"]);
+    expect((await db.doc("users/u1").get()).data()?.deletionRequestedAt).toBeDefined();
+  });
+
+  it("only ever deletes the caller", async () => {
+    const { deleteAccountHandler } = await import("../../src/users/deleteAccount.js");
+    const deleted: string[] = [];
+    await deleteAccountHandler({ uid: "u2", signInProvider: "apple.com" }, { client, confirm: true }, deps, async (uid) => { deleted.push(uid); });
+    expect(deleted).toEqual(["u2"]);
+  });
+
+  it("an already-deleted auth user is not-found", async () => {
+    const { deleteAccountHandler } = await import("../../src/users/deleteAccount.js");
+    await expect(deleteAccountHandler(caller, { client, confirm: true }, deps, async () => { throw Object.assign(new Error("x"), { code: "auth/user-not-found" }); })).rejects.toMatchObject({ code: "not-found" });
+  });
+});
