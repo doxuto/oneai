@@ -6,19 +6,24 @@ Lập 2026-09-22. Giả định **1 dev + agent**, sprint 1–3 tuần.
 > **dựng lại sạch cả hai phía trong thư mục mới, Riverpod 3, parity đầy đủ.**
 > Tài liệu này thay thế bản cũ hoàn toàn.
 
-| Sprint | Tên | Dài | Từ → đến |
-|---|---|---|---|
-| **S0** | Nền móng, secrets, môi trường | 1 tuần | 23/09 → 29/09 |
-| **S1** | Skeleton BE + App | 2 tuần | 30/09 → 13/10 |
-| **S2** | BE: data model + CRUD | 2 tuần | 14/10 → 27/10 |
-| **S3** | BE: pipeline transcribe bất đồng bộ | 2 tuần | 28/10 → 10/11 |
-| **S4** | BE: tính năng AI | 2 tuần | 11/11 → 24/11 |
-| **S5** | App: auth + home + danh sách note | 2 tuần | 25/11 → 08/12 |
-| **S6** | App: tạo note → xử lý → xem kết quả | 3 tuần | 09/12 → 29/12 |
-| **S7** | App: tag, settings, l10n, share/PDF | 2 tuần | 30/12 → 12/01/27 |
-| **S8** | Monetization: quota + ads + SSV | 2 tuần | 13/01 → 26/01 |
-| **S9** | Parity sweep + chất lượng | 2 tuần | 27/01 → 09/02 |
-| **S10** | Phát hành | 2 tuần | 10/02 → 23/02/27 |
+**Tiến độ 23/09** — backend S1–S4 và hai `onRequest` của S8 đã xong trong một
+ngày nhờ automation (27 function, 137 unit + 105 integration test). Lịch
+dưới đây giữ nguyên cho phía App; phía backend còn lại chỉ là việc console
+(secrets, TTL, deploy). Chi tiết từng task: `14-EXECUTION-PLAN.md`.
+
+| Sprint | Tên | Dài | Từ → đến | Trạng thái |
+|---|---|---|---|---|
+| **S0** | Nền móng, secrets, môi trường | 1 tuần | 23/09 → 29/09 | 🔶 chờ Toan (T1–T7) |
+| **S1** | Skeleton BE + App | 2 tuần | 30/09 → 13/10 | ✅ BE · 🔶 App chờ `flutter create` |
+| **S2** | BE: data model + CRUD | 2 tuần | 14/10 → 27/10 | ✅ 23/09 |
+| **S3** | BE: pipeline transcribe bất đồng bộ | 2 tuần | 28/10 → 10/11 | ✅ 23/09 |
+| **S4** | BE: tính năng AI | 2 tuần | 11/11 → 24/11 | ✅ 23/09 |
+| **S5** | App: auth + home + danh sách note | 2 tuần | 25/11 → 08/12 | ⬜ có thể bắt đầu ngay khi T1+T2 xong |
+| **S6** | App: tạo note → xử lý → xem kết quả | 3 tuần | 09/12 → 29/12 | ⬜ |
+| **S7** | App: tag, settings, l10n, share/PDF | 2 tuần | 30/12 → 12/01/27 | ⬜ |
+| **S8** | Monetization: quota + ads + SSV | 2 tuần | 13/01 → 26/01 | ✅ BE (quota, webhook, SSV) · ⬜ App (AdGate, UMP) |
+| **S9** | Parity sweep + chất lượng | 2 tuần | 27/01 → 09/02 | ⬜ |
+| **S10** | Phát hành | 2 tuần | 10/02 → 23/02/27 | ⬜ |
 
 **Mốc**
 
