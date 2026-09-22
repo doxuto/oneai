@@ -21,3 +21,9 @@ export { listMinutes } from "./minutes/listMinutes.js";
 export { getMinute } from "./minutes/getMinute.js";
 export { updateMinute } from "./minutes/updateMinute.js";
 export { deleteMinute } from "./minutes/deleteMinute.js";
+export { onMinuteWritten } from "./minutes/onMinuteWritten.js";
+
+export { createTag } from "./tags/createTag.js";
+export { listTags } from "./tags/listTags.js";
+export { updateTag } from "./tags/updateTag.js";
+export { deleteTag } from "./tags/deleteTag.js";
