@@ -67,7 +67,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S3-06 | Failure → refund | trong pipeline | `failed` + `creditRefunded:true`; test kill giữa chừng |
 | [x] | S3-07 | `cancelTranscription` | `transcribe/cancelTranscription.ts` | chỉ khi `queued`/`transcribing`; refund |
 | [x] | S3-08 | PDF branch | `lib/pdf/extract.ts` | `pdf-parse`; 20MB |
-| [ ] | S3-09 | `sweepOrphanFiles` | `jobs/sweepOrphanFiles.ts` | `onSchedule` 03:00 VN; test handler thuần |
+| [x] | S3-09 | `sweepOrphanFiles` | `jobs/sweepOrphanFiles.ts` | `onSchedule` 03:00 VN; test handler thuần |
 | [x] | S3-10 | Idempotency `requestId` | trong `startTranscription` | `ref.create()` → code 6 → trả job cũ |
 | [x] | S3-11 | Transcript ra Storage + preview | pipeline | `transcript.json` ở Storage, `transcriptPreview` ≤2000 |
 
