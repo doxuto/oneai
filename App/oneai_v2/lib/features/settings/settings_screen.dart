@@ -171,7 +171,6 @@ class SettingsScreen extends ConsumerWidget {
 }
 
 /// UMP privacy options form; A6 provides the real one.
-final privacyOptionsHookProvider = Provider<Future<void> Function(BuildContext)>((_) => (_) async {});
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text, {this.color = const Color(0xFFBDBDBD)});

@@ -38,7 +38,7 @@ class TranscriptTab extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: 'transcript')),
+          const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: AdPlacement.transcriptTab)),
           if (detail.sourceState == SourceState.expired) ...[_ExpiredNotice(), gapH16],
           if (detail.talkTime.length > 1) ...[_TalkTimeBar(talkTime: detail.talkTime, speakerOrder: speakerOrder), gapH16],
           if (detail.sourceType == SourceType.audio && transcript != null) ...[_ChaptersStrip(detail: detail, positionSeconds: now), gapH16],

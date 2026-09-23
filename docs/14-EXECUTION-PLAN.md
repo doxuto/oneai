@@ -123,6 +123,13 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | A5-03 | Export: `MinuteExport.notesMarkdown` (sections, action items, decisions, events, chapters — chỉ artifact đã sinh, không gọi AI), `transcriptText`, PDF từ cùng cấu trúc; `ShareSheetSharer` 5 lựa chọn v1 (audio tải từ Storage) | `features/minutes/share/export.dart`, `test/unit/share/export_test.dart` (4 test) | |
 | [~] | A5-04 | Xoá tài khoản: dialog xác nhận → `AuthController.deleteAccount` → snack | trong A5-01 | |
 | [~] | A5-05 | Router: không còn placeholder nào — mọi route là màn thật | `core/router/app_router.dart` | |
+| [~] | A6-01 | `AdsRuntime`: UMP → ATT → `MobileAds.initialize`, preload app-open/interstitial/rewarded, mọi quyết định qua `AdGate` + `AdLedger` (SharedPreferences `AD_LEDGER_V2`), chỉ show ad **đã load**, premium → drop ad ngay, app-open khi resume theo giây nền, rewarded gắn `ServerSideVerificationOptions(userId: uid)`; 4 hook provider override trong `bootstrap` (`adsOverrides()`), test/preview giữ no-op | `features/ads/runtime/{ads_runtime,consent,ad_units,ledger_store,ad_hooks}.dart`, `test/unit/ads/{ad_units,ad_placements}_test.dart` (6 test) | **chưa compile** |
+| [~] | A6-02 | UMP consent + Privacy options (Settings), ATT sau UMP; UMP lỗi → vẫn init (không khoá ads ngoài vùng GDPR) | `features/ads/runtime/consent.dart` | |
+| [~] | A6-03 | `BannerAdWidget` anchored-adaptive trong 3 tab qua `AdBannerSlot`; placement = tên trong `ads_config` (`summaryTab` mặc định, `transcriptTab`/`chatTab` bật từ RC); native **chưa** (RC mặc định tắt, `AdGate.nativeRows` sẵn) | `features/ads/runtime/ads_runtime.dart` | 0 chiều cao khi no-fill |
+| [x] | A6-04 | Paywall RevenueCat — đã có từ A3 (`paywallProvider`, `presentPaywallIfNeeded`) | `features/billing/paywall.dart` | |
+| [x] | A6-05 | Quyền push: xin sau lần xử lý đầu (`audio_processing_screen`) + toggle Settings — đã có từ A3/A5 | | |
+| [~] | A6-06 | Sentry bọc `runApp` (DSN rỗng ở dev), AppsFlyer start sau ATT (không chạy ở dev), debug log tắt ở prod | `core/observability/sentry_boot.dart`, `features/analytics/appsflyer_boot.dart`, `bootstrap.dart` | |
+| [ ] | A6-07 | Golden ≥30, widget test, a11y AA, cold start < 2s — **cần Flutter** (T1/T2) | `test/golden/*` | |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

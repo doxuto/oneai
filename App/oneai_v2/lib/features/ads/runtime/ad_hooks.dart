@@ -36,17 +36,28 @@ class NoopRewarded implements RewardedHook {
 final interstitialHookProvider = Provider<InterstitialHook>((_) => const NoopInterstitial());
 final rewardedHookProvider = Provider<RewardedHook>((_) => const NoopRewarded());
 
-/// Placements, as v1 named them (docs/08 §6).
+/// Placement names. These are the strings Remote Config `ads_config`
+/// lists under `interstitial.placements` / `banner.placements`
+/// (Backend/oneai_backend/remote-config/ads_config.defaults.json), so a
+/// placement can be switched off from the console without a release.
 abstract final class AdPlacement {
-  static const preSummary = 'pre_summary';
-  static const summaryExit = 'summary_exit';
-  static const afterShare = 'after_share';
-  static const settingsExit = 'settings_exit';
+  // interstitial
+  static const preSummary = 'summaryEnter';
+  static const summaryExit = 'summaryExit';
+  static const afterShare = 'afterShare';
+  static const settingsExit = 'settingsExit';
+  // banner
+  static const summaryTab = 'summaryTab';
+  static const transcriptTab = 'transcriptTab';
+  static const chatTab = 'chatTab';
 }
 
 /// Inline adaptive banner slot (v1 showed one at the top of each tab).
-/// Renders nothing until A6 provides a builder; the layout reserves no space
-/// so the page never jumps when there is no fill.
+/// Renders nothing until A6 provides a builder (BannerAdWidget); the layout
+/// reserves no space so the page never jumps when there is no fill.
+
+/// Settings → "Privacy options" (UMP). No-op until A6 overrides it.
+final privacyOptionsHookProvider = Provider<Future<void> Function(BuildContext)>((_) => (_) async {});
 typedef BannerBuilder = Widget Function(BuildContext context, String placement);
 final bannerBuilderProvider = Provider<BannerBuilder>((_) => (_, __) => const SizedBox.shrink());
 

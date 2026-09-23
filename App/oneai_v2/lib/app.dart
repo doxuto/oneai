@@ -4,6 +4,7 @@ import 'package:one_ai/bootstrap.dart';
 import 'package:one_ai/core/router/app_router.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/theme/app_theme.dart';
+import 'package:one_ai/features/ads/runtime/ads_runtime.dart';
 import 'package:one_ai/features/auth/splash_gate.dart';
 import 'package:one_ai/features/notifications/push_registrar.dart';
 
@@ -18,6 +19,10 @@ class OneAiApp extends ConsumerWidget {
     // Keep the push registrar alive for the app's lifetime: it follows auth
     // and token rotation on its own. Permission is requested from the UI.
     ref.watch(pushRegistrarProvider);
+
+    // Ads runtime: consent → SDK init → preload, all after first frame; also
+    // owns the app-open-on-resume hook. Premium users get no ads from it.
+    ref.watch(adsRuntimeProvider);
 
     // A tapped "your note is ready" notification opens that note. Failed
     // notes open too — the summary screen shows the failure and the retry.

@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_ai/core/config/app_config.dart';
 import 'package:one_ai/core/config/firebase_options_prod.dart' as prod;
+import 'package:one_ai/core/observability/sentry_boot.dart';
+import 'package:one_ai/features/ads/runtime/ads_runtime.dart';
 
 /// Composition root. Everything that must exist before the first frame goes
 /// here, and it fails loudly rather than limping along with a half-built app.
@@ -42,14 +44,18 @@ Future<void> bootstrap(Widget Function() builder) async {
   );
   developer.log('app.bootstrap flavor=${config.flavor.name}', name: 'one_ai');
 
-  runApp(
-    ProviderScope(
-      overrides: <Override>[
-        appConfigProvider.overrideWithValue(config),
-      ],
-      child: builder(),
-    ),
-  );
+  await SentryBoot.run(config, () async {
+    runApp(
+      ProviderScope(
+        overrides: <Override>[
+          appConfigProvider.overrideWithValue(config),
+          // Real GMA hooks; tests and widget previews keep the no-op defaults.
+          ...adsOverrides(),
+        ],
+        child: builder(),
+      ),
+    );
+  });
 }
 
 /// Overridden in bootstrap; reading it without an override is a programming

@@ -30,7 +30,7 @@ class SummaryTab extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: 'summary')),
+          const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: AdPlacement.summaryTab)),
           if (summary != null) ...summary.sections.map((s) => _SectionWidget(section: s)),
           if (detail.calendarEvents.isNotEmpty) ...[_CalendarEventsBlock(events: detail.calendarEvents), gapH24],
           if (detail.status == MinuteStatus.ready && detail.transcript != null) ...[

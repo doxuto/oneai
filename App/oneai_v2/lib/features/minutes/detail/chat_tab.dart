@@ -56,7 +56,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: 'chat')),
+                const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: AdPlacement.chatTab)),
                 if (chat.hasOlder)
                   Center(child: TextButton(onPressed: () => ref.read(chatControllerProvider(widget.minuteId).notifier).loadOlder(), child: Text(l10n.loadOlder))),
                 if (chat.messages.isEmpty && !chat.loadingHistory)
