@@ -15,6 +15,7 @@ import { previewOf } from "../lib/stt/convert.js";
 import { sttLanguageCode } from "../lib/stt/languages.js";
 import { minuteRef, transcriptPath, type MinuteDoc } from "../minutes/_shared.js";
 import type { Transcript } from "../minutes/types.js";
+import { notifyMinuteResult } from "../push/notify.js";
 import { refundQuota } from "../quota/quota.js";
 import { effectivePlan, type UserDoc } from "../users/_shared.js";
 import type { JobDoc, TaskPayload } from "./types.js";
@@ -132,11 +133,12 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
         kind: "calendarEvents", data: { events: s.calendarEvents }, model: s.model, generatedAt: FieldValue.serverTimestamp(),
       });
     }
-    batch.update(jobRef, { state: "done", finishedAt: FieldValue.serverTimestamp(), error: null });
+    batch.update(jobRef, { state: "done", finishedAt: FieldValue.serverTimestamp(), error: null, stt, durationMs: Date.now() - t0 });
     await batch.commit();
 
     log.info("pipeline.done", { uid, minuteId, jobId, ms: Date.now() - t0, plan, sourceType: minute.sourceType ?? null,
       durationSeconds, stt: stt ? `${stt.vendor}/${stt.model}` : null, model: s.model, tokensIn: s.tokens.input, tokensOut: s.tokens.output });
+    await notifyMinuteResult(deps, uid, { minuteId, title: s.title, kind: "minuteReady" });
     return "done";
   } catch (err) {
     if (err instanceof Cancelled) {
@@ -154,15 +156,30 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
     }
 
     // Permanent (or out of attempts): fail the note and give the credit back.
-    const failure = { code, message: userMessage(err) };
-    await deps.db.runTransaction(async (tx) => {
-      const j = (await tx.get(jobRef)).data() as JobDoc | undefined;
-      if (j && !j.quotaRefunded) await refundQuota(tx, deps.db, uid, j.periodId);
-      tx.update(jobRef, { state: "failed", quotaRefunded: true, finishedAt: FieldValue.serverTimestamp(), error: failure });
-      tx.update(mRef, { status: "failed", failure, statusUpdatedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
-    });
+    await failJob(deps, { uid, minuteId, jobId }, { code, message: userMessage(err) });
     return "failed";
   }
+}
+
+/**
+ * Terminal failure, shared with the stale-job reaper: refund exactly once,
+ * mark job + note, tell the user. Safe to call on a job that already ended
+ * (no second refund).
+ */
+export async function failJob(deps: Deps, ids: { uid: string; minuteId: string; jobId: string }, failure: { code: string; message: string }): Promise<void> {
+  const jobRef = deps.db.doc(`transcriptionJobs/${ids.jobId}`);
+  const mRef = minuteRef(deps.db, ids.uid, ids.minuteId);
+  const title = await deps.db.runTransaction(async (tx) => {
+    const [jSnap, mSnap] = await Promise.all([tx.get(jobRef), tx.get(mRef)]);
+    const j = jSnap.data() as JobDoc | undefined;
+    if (j && !j.quotaRefunded) await refundQuota(tx, deps.db, ids.uid, j.periodId);
+    tx.update(jobRef, { state: "failed", quotaRefunded: true, finishedAt: FieldValue.serverTimestamp(), error: failure });
+    if (mSnap.exists) {
+      tx.update(mRef, { status: "failed", failure, statusUpdatedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
+    }
+    return ((mSnap.data() ?? {}) as MinuteDoc).title ?? "";
+  });
+  await notifyMinuteResult(deps, ids.uid, { minuteId: ids.minuteId, title, kind: "minuteFailed" });
 }
 
 /** What the note shows the user. Never provider text. */
@@ -176,6 +193,7 @@ function userMessage(err: unknown): string {
       case "pdfUnreadable": return "This PDF could not be read.";
       case "safety": return "The content could not be processed.";
       case "noSource": return "The uploaded file is missing.";
+      case "tooManyActiveJobs": return "Please wait for your current recording to finish.";
       default: break;
     }
     if (err.code === "deadline-exceeded") return "Processing took too long. Please try again.";

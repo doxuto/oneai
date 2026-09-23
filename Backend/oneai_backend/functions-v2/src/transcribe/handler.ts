@@ -86,6 +86,15 @@ export async function startTranscriptionHandler(
       if (!STARTABLE.has(((cur.data() ?? {}) as MinuteDoc).status ?? "")) {
         throw new HttpsError("failed-precondition", "This note is already being processed", { reason: "alreadyProcessing" });
       }
+      // Concurrency cap before the charge, so a refused start costs nothing.
+      const active = await tx.get(
+        deps.db.collection("transcriptionJobs").where("uid", "==", uid).where("state", "in", ["queued", "running"]).limit(limits.maxActiveJobs),
+      );
+      if (active.size >= limits.maxActiveJobs) {
+        throw new HttpsError("resource-exhausted", "Please wait for your current recording to finish", {
+          reason: "tooManyActiveJobs", limit: limits.maxActiveJobs,
+        });
+      }
       await consumeQuota(tx, deps.db, uid, plan, limits, now);
       const job: JobDoc = {
         uid, minuteId: input.minuteId, requestId: input.requestId, state: "queued", attempt: 0, periodId,

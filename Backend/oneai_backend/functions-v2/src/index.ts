@@ -34,6 +34,7 @@ export { cancelTranscription } from "./transcribe/cancelTranscription.js";
 export { processTranscription } from "./transcribe/processTranscription.js";
 
 export { sweepOrphanFiles } from "./jobs/sweepOrphanFiles.js";
+export { reapStaleJobs } from "./jobs/reapStaleJobs.js";
 
 export { chat } from "./ai/chat.js";
 export { listChatMessages } from "./ai/listChatMessages.js";
@@ -42,6 +43,11 @@ export { generateQuiz } from "./ai/generateQuiz.js";
 export { generateFlashcards } from "./ai/generateFlashcards.js";
 export { generateMindmap } from "./ai/generateMindmap.js";
 export { generateCalendarEvents } from "./ai/generateCalendarEvents.js";
+
+// ---- push ----
+export { registerDevice } from "./push/registerDevice.js";
+export { unregisterDevice } from "./push/unregisterDevice.js";
+export { updateNotificationPrefs } from "./push/updateNotificationPrefs.js";
 export { mapSpeakers } from "./ai/mapSpeakers.js";
 export { renameSpeaker } from "./ai/renameSpeaker.js";
 

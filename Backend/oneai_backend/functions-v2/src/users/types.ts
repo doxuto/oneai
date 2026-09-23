@@ -22,6 +22,7 @@ export interface UserOutput {
   planExpiresAt: string | null;
   minuteCount: number;
   createdAt: string | null;
+  notifications: { transcriptionDone: boolean };
 }
 
 export interface GetMeOutput {

@@ -33,6 +33,11 @@ service cloud.firestore {
         allow get: if isOwner(uid);
         allow list, write: if false;
       }
+
+      // FCM tokens — written by registerDevice, read by the server only.
+      match /devices/{deviceId} {
+        allow read, write: if false;
+      }
     }
 
     // Server-only collections.

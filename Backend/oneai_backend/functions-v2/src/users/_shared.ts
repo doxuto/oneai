@@ -1,5 +1,6 @@
 import type { DocumentData } from "firebase-admin/firestore";
 import { toIso } from "../lib/time.js";
+import { toPrefs } from "../push/_shared.js";
 import type { Plan, UserOutput } from "./types.js";
 
 /** What `users/{uid}` looks like on disk. Everything optional — old docs exist. */
@@ -13,6 +14,7 @@ export interface UserDoc {
   createdAt?: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
   lastSeenAt?: FirebaseFirestore.Timestamp;
+  notifications?: { transcriptionDone?: boolean } | null;
 }
 
 /**
@@ -38,5 +40,6 @@ export function toUserOutput(uid: string, raw: DocumentData | undefined, now: Da
     planExpiresAt: toIso(d.planExpiresAt ?? null),
     minuteCount: typeof d.minuteCount === "number" ? d.minuteCount : 0,
     createdAt: toIso(d.createdAt ?? null),
+    notifications: toPrefs(d.notifications),
   };
 }

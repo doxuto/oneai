@@ -11,6 +11,9 @@ import type { ElevenLabsResponse, SttResult } from "../../src/lib/stt/types.js";
 import { HttpsError } from "firebase-functions/v2/https";
 import { cancelTranscriptionHandler, startTranscriptionHandler } from "../../src/transcribe/handler.js";
 import { runPipeline } from "../../src/transcribe/pipeline.js";
+import { reapStaleJobs } from "../../src/jobs/reap.js";
+import type { PushMessage } from "../../src/lib/push/types.js";
+import { registerDeviceHandler } from "../../src/push/handler.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
 
 const db = testDb();
@@ -28,7 +31,7 @@ const goodSummary = SummarizeOutput.parse({
   calendarEvents: [{ id: "e1", title: "Review", description: "d", datetime: "2026-09-24T10:00:00+07:00", participants: [], rawText: "review tomorrow at 10" }],
 });
 
-function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<SttResult>; llm?: () => Promise<unknown>; duration?: number | null; failEnqueue?: boolean } = {}): Deps {
+function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<SttResult>; llm?: () => Promise<unknown>; duration?: number | null; failEnqueue?: boolean; pushed?: PushMessage[] } = {}): Deps {
   const enqueued = over.enqueued ?? [];
   return unitDeps({
     db, bucket: bucket as Deps["bucket"], now: fixedNow(),
@@ -38,6 +41,7 @@ function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<SttResult>; 
       llmHeavy: { vendor: "openai", streamText: async () => { throw new Error("unused"); }, generateJson: async () => ({ data: (await (over.llm ?? (async () => goodSummary))()) as never, model: "fake", tokens: { input: 1, output: 1 } }) },
       audioDurationSeconds: async () => over.duration === undefined ? 3.9 : over.duration,
       pdfText: async (b) => Buffer.from(b).toString("utf8"),
+      push: { send: async (ms) => { over.pushed?.push(...ms); return ms.map((m) => ({ token: m.token, ok: true, unregistered: false })); } },
     },
   });
 }
@@ -230,5 +234,122 @@ describe("runPipeline", () => {
   it("cancel when nothing is running is failed-precondition", async () => {
     await seed({ status: "ready" });
     await expect(cancelTranscriptionHandler(u1, { client, minuteId: "m1" }, makeDeps())).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "notProcessing" } });
+  });
+});
+
+describe("push on completion", () => {
+  beforeEach(async () => { await clearFirestore(); const [files] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(files.map((f) => f.delete())); });
+  const TOKEN = "fcm-token-".padEnd(60, "a");
+
+  it("ready → one minuteReady push per device, carrying the note id and its new title", async () => {
+    await seed();
+    const pushed: PushMessage[] = [];
+    const deps = makeDeps({ pushed });
+    await registerDeviceHandler(u1, { client, token: TOKEN, locale: "vi" }, deps);
+    await runPipeline(await started(deps), deps, { attempt: 0, maxAttempts: 3 });
+    expect(pushed).toHaveLength(1);
+    expect(pushed[0]).toMatchObject({ token: TOKEN, title: "Ghi chú đã sẵn sàng", data: { type: "minuteReady", minuteId: "m1" } });
+    expect(pushed[0]?.body).toContain("Standup");
+  });
+
+  it("permanent failure → minuteFailed push; a retryable attempt sends nothing", async () => {
+    await seed();
+    const pushed: PushMessage[] = [];
+    const deps = makeDeps({ pushed, stt: async () => { throw new HttpsError("unavailable", "down"); } });
+    await registerDeviceHandler(u1, { client, token: TOKEN }, deps);
+    const ids = await started(deps);
+    await expect(runPipeline(ids, deps, { attempt: 0, maxAttempts: 3 })).rejects.toBeDefined();
+    expect(pushed).toHaveLength(0);
+    await runPipeline(ids, deps, { attempt: 2, maxAttempts: 3 });
+    expect(pushed).toHaveLength(1);
+    expect(pushed[0]?.data).toEqual({ type: "minuteFailed", minuteId: "m1" });
+  });
+
+  it("no device registered → the pipeline still completes", async () => {
+    await seed();
+    const pushed: PushMessage[] = [];
+    const deps = makeDeps({ pushed });
+    expect(await runPipeline(await started(deps), deps, { attempt: 0, maxAttempts: 3 })).toBe("done");
+    expect(pushed).toHaveLength(0);
+  });
+
+  async function started(deps: Deps) {
+    await startTranscriptionHandler(u1, startInput, deps);
+    return { uid: "u1", minuteId: "m1", jobId: REQ };
+  }
+});
+
+describe("job management", () => {
+  beforeEach(async () => { await clearFirestore(); const [files] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(files.map((f) => f.delete())); });
+
+  async function seedSecond(id: string) {
+    const path = `users/u1/minutes/${id}/source/a.m4a`;
+    await bucket.file(path).save("audio-bytes", { resumable: false });
+    await db.doc(`users/u1/minutes/${id}`).set({ title: id, status: "uploading", sourceType: "audio", sourcePath: path, sourceContentType: "audio/x-m4a", sourceSizeBytes: 11, tagIds: [], createdAt: Timestamp.now(), updatedAt: Timestamp.now() });
+  }
+
+  it("a premium user is capped at maxActiveJobs concurrent jobs; the refused start is not charged", async () => {
+    await seed({ plan: "premium" }); // unitDeps premium: maxActiveJobs 2
+    await seedSecond("m2");
+    await seedSecond("m3");
+    const deps = makeDeps();
+    await startTranscriptionHandler(u1, startInput, deps);
+    await startTranscriptionHandler(u1, { ...startInput, minuteId: "m2", requestId: "3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d22" }, deps);
+    await expect(startTranscriptionHandler(u1, { ...startInput, minuteId: "m3", requestId: "3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d33" }, deps))
+      .rejects.toMatchObject({ code: "resource-exhausted", details: { reason: "tooManyActiveJobs", limit: 2 } });
+    expect((await db.doc("users/u1/minutes/m3").get()).data()?.status).toBe("uploading");
+    const period = (await db.collection("users/u1/quota").get()).docs[0]?.data();
+    expect(period?.used).toBe(2);
+
+    // Finishing one frees a slot.
+    await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 });
+    await expect(startTranscriptionHandler(u1, { ...startInput, minuteId: "m3", requestId: "3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d33" }, deps)).resolves.toMatchObject({ status: "queued" });
+  });
+
+  it("reaper: a job running past the budget is failed, refunded once, the note updated and the user told", async () => {
+    await seed();
+    const pushed: PushMessage[] = [];
+    const deps = makeDeps({ pushed });
+    await registerDeviceHandler(u1, { client, token: "fcm-token-".padEnd(60, "a") }, deps);
+    await startTranscriptionHandler(u1, startInput, deps);
+    const jobRef = db.doc(`transcriptionJobs/${REQ}`);
+    await jobRef.update({ state: "running", startedAt: Timestamp.fromMillis(deps.now().getTime() - 45 * 60 * 1000) });
+    await db.doc("users/u1/minutes/m1").update({ status: "transcribing" });
+
+    const report = await reapStaleJobs(deps);
+    expect(report).toMatchObject({ running: 1, queued: 0, jobIds: [REQ] });
+    expect((await jobRef.get()).data()).toMatchObject({ state: "failed", quotaRefunded: true, error: { code: "stale" } });
+    expect((await db.doc("users/u1/minutes/m1").get()).data()).toMatchObject({ status: "failed", failure: { code: "stale" } });
+    const quota = (await db.collection("users/u1/quota").get()).docs[0]?.data();
+    expect(quota?.used).toBe(0);
+    expect(pushed).toHaveLength(1);
+    expect(pushed[0]?.data.type).toBe("minuteFailed");
+
+    // Second pass: nothing left, and no double refund.
+    expect(await reapStaleJobs(deps)).toMatchObject({ running: 0, queued: 0 });
+    expect((await db.collection("users/u1/quota").get()).docs[0]?.data().used).toBe(0);
+  });
+
+  it("reaper: a queued job nobody ever picked up is failed as lost; fresh jobs are left alone", async () => {
+    await seed();
+    await seedSecond("m2");
+    const deps = makeDeps();
+    await startTranscriptionHandler(u1, { ...startInput, minuteId: "m2", requestId: "3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d22" }, deps);
+    await db.doc("transcriptionJobs/3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d22").update({ createdAt: Timestamp.fromMillis(deps.now().getTime() - 2 * 60 * 60 * 1000) });
+    await db.doc("users/u1").update({ plan: "premium" });
+    await startTranscriptionHandler(u1, startInput, deps); // fresh, must survive
+
+    const report = await reapStaleJobs(deps);
+    expect(report).toMatchObject({ running: 0, queued: 1 });
+    expect((await db.doc("transcriptionJobs/3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d22").get()).data()?.error?.code).toBe("lost");
+    expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()?.state).toBe("queued");
+  });
+
+  it("the done job records which STT vendor/model produced the transcript", async () => {
+    await seed();
+    const deps = makeDeps();
+    await startTranscriptionHandler(u1, startInput, deps);
+    await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 });
+    expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "done", stt: { vendor: "fake", model: "fake-1" } });
   });
 });

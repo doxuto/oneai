@@ -148,6 +148,9 @@ describe("wire shapes", () => {
         "email": "a@b.c",
         "id": "u1",
         "minuteCount": 1,
+        "notifications": {
+          "transcriptionDone": true,
+        },
         "photoUrl": null,
         "plan": "premium",
         "planExpiresAt": "2026-09-22T08:41:12.345Z",

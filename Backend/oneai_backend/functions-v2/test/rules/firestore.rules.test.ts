@@ -101,6 +101,11 @@ describe("server-only collections", () => {
   it("transcriptionJobs likewise", async () => {
     await assertFails(getDoc(doc(owner(), "transcriptionJobs/j1")));
   });
+  it("users/{uid}/devices is server-only even for the owner", async () => {
+    await assertFails(getDoc(doc(owner(), "users/u1/devices/d1")));
+    await assertFails(getDocs(collection(owner(), "users/u1/devices")));
+    await assertFails(setDoc(doc(owner(), "users/u1/devices/d1"), { token: "x" }));
+  });
   it("an unknown top-level collection is closed", async () => {
     await assertFails(getDoc(doc(owner(), "whatever/x")));
     await assertFails(setDoc(doc(owner(), "whatever/x"), { a: 1 }));

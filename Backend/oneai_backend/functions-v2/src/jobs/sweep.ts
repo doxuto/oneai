@@ -13,8 +13,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
 import { minutePrefix } from "../minutes/_shared.js";
-import { refundQuota } from "../quota/quota.js";
-import type { JobDoc } from "../transcribe/types.js";
+import { failJob } from "../transcribe/pipeline.js";
 
 export interface SweepReport {
   abandonedUploads: number;
@@ -42,7 +41,9 @@ export async function sweep(deps: Deps, now = deps.now()): Promise<SweepReport> 
     }
   }
 
-  // 2. stuck processing (> 2 h since the last status change)
+  // 2. stuck processing (> 2 h since the last status change). The 15-minute
+  //    reaper catches these earlier when a job doc exists; this is the
+  //    backstop for a note whose job doc is missing entirely.
   {
     const cutoff = Timestamp.fromDate(new Date(now.getTime() - 2 * H));
     const snap = await deps.db.collectionGroup("minutes")
@@ -51,23 +52,18 @@ export async function sweep(deps: Deps, now = deps.now()): Promise<SweepReport> 
     for (const d of snap.docs) {
       const uid = d.ref.parent.parent?.id;
       if (!uid) continue;
-      await deps.db.runTransaction(async (tx) => {
-        const jobs = await tx.get(
-          deps.db.collection("transcriptionJobs").where("uid", "==", uid).where("minuteId", "==", d.id)
-            .where("state", "in", ["queued", "running"]).limit(1),
-        );
-        const job = jobs.docs[0];
-        if (job) {
-          const j = job.data() as JobDoc;
-          if (!j.quotaRefunded) await refundQuota(tx, deps.db, uid, j.periodId);
-          tx.update(job.ref, { state: "failed", quotaRefunded: true, finishedAt: FieldValue.serverTimestamp(), error: { code: "stuck", message: "worker did not finish" } });
-        }
-        tx.update(d.ref, {
+      const jobs = await deps.db.collection("transcriptionJobs").where("uid", "==", uid).where("minuteId", "==", d.id)
+        .where("state", "in", ["queued", "running"]).limit(1).get();
+      const job = jobs.docs[0];
+      if (job) {
+        await failJob(deps, { uid, minuteId: d.id, jobId: job.id }, { code: "stuck", message: "Processing did not finish. Please try again." });
+      } else {
+        await d.ref.update({
           status: "failed",
           failure: { code: "stuck", message: "Processing did not finish. Please try again." },
           statusUpdatedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
         });
-      });
+      }
       report.stuckJobs++;
     }
   }
