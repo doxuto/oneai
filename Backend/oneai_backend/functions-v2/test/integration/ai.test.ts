@@ -3,7 +3,7 @@ import { getStorage } from "firebase-admin/storage";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpsError } from "firebase-functions/v2/https";
-import { chatHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { chatHandler, generateCalendarEventsHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -87,6 +87,40 @@ describe("generate* with artifact cache", () => {
   it("refuses a note that is not ready", async () => {
     await db.doc("users/u1/minutes/m1").set({ status: "transcribing", createdAt: Timestamp.now() });
     await expect(generateQuizHandler(u1, { client, minuteId: "m1" }, makeDeps(fakeLlm(async () => ({}))))).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "notReady" } });
+  });
+});
+
+describe("calendarEvents", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("uses the minute's stored timezone, then overwrites the ingest-time artifact with a hashed one", async () => {
+    await seedReady();
+    await db.doc("users/u1/minutes/m1").update({ timezone: "Asia/Ho_Chi_Minh" });
+    // As the pipeline writes it: no sourceHash.
+    await db.doc("users/u1/minutes/m1/artifacts/calendarEvents").set({ kind: "calendarEvents", data: { events: [] }, model: "fake" });
+    let seenPrompt = "";
+    const llm = fakeLlm(async () => ({ events: [{ id: "e1", title: "Retro", description: "d", datetime: "2026-09-25T10:00:00+07:00", participants: [], rawText: "r" }] }));
+    const spy: LlmClient = { ...llm, async generateJson(req) { seenPrompt = req.prompt; return llm.generateJson(req); } };
+    const deps = makeDeps(spy);
+
+    const a = await generateCalendarEventsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(a.cached).toBe(false);
+    expect(a.data.events[0]?.title).toBe("Retro");
+    expect(seenPrompt).toContain("Asia/Ho_Chi_Minh");
+    expect((await db.doc("users/u1/minutes/m1/artifacts/calendarEvents").get()).data()).toMatchObject({ kind: "calendarEvents", sourceHash: expect.any(String) });
+
+    const b = await generateCalendarEventsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(b.cached).toBe(true);
+    expect(llm.calls).toBe(1);
+  });
+
+  it("an explicit timezone wins over the stored one", async () => {
+    await seedReady();
+    let seenPrompt = "";
+    const llm = fakeLlm(async () => ({ events: [] }));
+    const spy: LlmClient = { ...llm, async generateJson(req) { seenPrompt = req.prompt; return llm.generateJson(req); } };
+    await generateCalendarEventsHandler(u1, { client, minuteId: "m1", timezone: "Europe/Berlin" }, makeDeps(spy));
+    expect(seenPrompt).toContain("Europe/Berlin");
   });
 });
 

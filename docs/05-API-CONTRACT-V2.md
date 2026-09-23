@@ -127,6 +127,15 @@ interface MinuteDetail extends MinuteSummary {
   description: string | null;
   keywords: string[];
   summaryLanguage: string | null;
+  calendarEvents: CalendarEvent[];   // rút lúc summarize; sinh lại bằng generateCalendarEvents
+  availableArtifacts: ("shortQuestions"|"quiz"|"flashcards"|"mindmap"|"speakers"|"calendarEvents")[];
+                                     // artifact đã tồn tại — app hiện tab mà không cần gọi generate*
+}
+
+interface CalendarEvent {
+  id: string; title: string; description: string;
+  datetime: string;                  // ISO-8601 khi resolve được, không thì nguyên văn
+  participants: string[]; rawText: string;
 }
 
 interface Summary {
@@ -173,6 +182,7 @@ là stub hardcode "Demo Meeting" (audit §1).
 | `generateQuiz` | như trên | `{data: {items: {question, options: string[2..4], answerIndex}[]}, cached}` |
 | `generateFlashcards` | như trên | `{data: {items: {question, answer}[]}, cached}` |
 | `generateMindmap` | như trên | `{data: {root: {id, title, icon, children: [{id, title, children: [{id, title, children: [{id,title}]}]}]}}, cached}` — sâu tối đa 4 |
+| `generateCalendarEvents` | `{client, minuteId, languageCode ="en", force =false, timezone?: IANA}` | `{data: {events: CalendarEvent[]}, cached}` — `timezone` mặc định là zone đã gửi ở `startTranscription`, rồi UTC. Sự kiện đã được rút sẵn lúc summarize và nằm trong `getMinute().calendarEvents`; gọi cái này chỉ khi muốn sinh lại (đổi ngôn ngữ) |
 | `mapSpeakers` | `{client, minuteId, force =false}` | `{data: {speakers: {id, label}[]}, cached}` — mọi `speaker_N` có mặt đúng 1 lần |
 | `renameSpeaker` | `{client, minuteId, speakerId: /^speaker_\d+$/, name ≤60}` | `{data: {speakers}, cached:false}` — không gọi LLM |
 

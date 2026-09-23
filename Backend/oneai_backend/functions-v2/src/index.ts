@@ -41,6 +41,7 @@ export { generateShortQuestions } from "./ai/generateShortQuestions.js";
 export { generateQuiz } from "./ai/generateQuiz.js";
 export { generateFlashcards } from "./ai/generateFlashcards.js";
 export { generateMindmap } from "./ai/generateMindmap.js";
+export { generateCalendarEvents } from "./ai/generateCalendarEvents.js";
 export { mapSpeakers } from "./ai/mapSpeakers.js";
 export { renameSpeaker } from "./ai/renameSpeaker.js";
 

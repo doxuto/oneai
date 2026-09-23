@@ -6,20 +6,7 @@ import { mapFirestoreError, rethrow } from "../lib/errors.js";
 import { requireCaller, type Caller } from "../lib/handler.js";
 import { log, logDone } from "../lib/logging.js";
 import { parse } from "../lib/validate.js";
-import {
-  contentTypeMatches,
-  loadOwnedMinute,
-  minutePrefix,
-  minuteRef,
-  minutesCol,
-  safeFileName,
-  sourcePath,
-  tagsCol,
-  toMinuteDetail,
-  toMinuteSummary,
-  toSpeakers,
-  toTranscript,
-} from "./_shared.js";
+import { contentTypeMatches, loadOwnedMinute, minutePrefix, minuteRef, minutesCol, presentArtifactKinds, safeFileName, sourcePath, tagsCol, toCalendarEvents, toMinuteDetail, toMinuteSummary, toSpeakers, toTranscript } from "./_shared.js";
 import {
   CreateMinuteInput,
   DeleteMinuteInput,
@@ -174,14 +161,20 @@ export async function getMinuteHandler(
   try {
     const { ref, snap, doc } = await loadOwnedMinute(deps.db, uid, input.minuteId);
 
-    const [speakersSnap, transcript] = await Promise.all([
-      ref.collection("artifacts").doc("speakers").get(),
+    // One read of the whole artifacts subcollection (≤6 small docs) instead of
+    // one get per kind: speakers + calendar events come back in it, and its
+    // ids tell the app which tabs already exist.
+    const [artifacts, transcript] = await Promise.all([
+      ref.collection("artifacts").get(),
       readTranscript(deps, doc.transcriptPath ?? null),
     ]);
+    const byKind = new Map(artifacts.docs.map((d) => [d.id, d.data() as { data?: unknown }]));
 
     const minute = toMinuteDetail(snap.id, snap.data(), {
       transcript,
-      speakers: toSpeakers(speakersSnap.data()?.data),
+      speakers: toSpeakers(byKind.get("speakers")?.data),
+      calendarEvents: toCalendarEvents(byKind.get("calendarEvents")?.data),
+      availableArtifacts: presentArtifactKinds(byKind.keys()),
     });
     logDone("minute.get", startedAt, { uid, minuteId: input.minuteId, status: minute.status });
     return { minute };

@@ -20,6 +20,11 @@ export const DocId = z.string().min(1).max(128).regex(/^[^/]+$/, "must not conta
 export const ShortText = z.string().max(200);
 export const LongText = z.string().max(2000);
 export const LanguageCode = z.string().min(2).max(35);
+
+/** IANA zone, validated by trying it. */
+export const IanaTimezone = z.string().min(1).max(64).refine((tz) => {
+  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; } catch { return false; }
+}, "must be an IANA time zone like Asia/Ho_Chi_Minh");
 export const Cursor = z.string().max(512);
 
 /** Timestamps cross the wire as ISO-8601 with fractional seconds and Z. */

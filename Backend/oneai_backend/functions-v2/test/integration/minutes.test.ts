@@ -153,6 +153,20 @@ describe("getMinute", () => {
     expect(minute.speakers).toEqual([{ id: "speaker_0", label: "Ana" }]);
     expect(minute.sourcePath).toBe("users/u1/minutes/m1/source/a.m4a");
     expect(minute.keywords).toEqual(["k1"]);
+    expect(minute.availableArtifacts).toEqual(["speakers"]);
+    expect(minute.calendarEvents).toEqual([]);
+  });
+
+  it("surfaces calendar events written at summarise time and lists every present artifact kind", async () => {
+    await seedMinute("u1", "m1", {});
+    await db.doc("users/u1/minutes/m1/artifacts/calendarEvents").set({
+      kind: "calendarEvents",
+      data: { events: [{ id: "e1", title: "Retro", description: "d", datetime: "2026-09-25T10:00:00+07:00", participants: ["Ana"], rawText: "retro Friday" }] },
+    });
+    await db.doc("users/u1/minutes/m1/artifacts/quiz").set({ kind: "quiz", data: { items: [] } });
+    const { minute } = await getMinuteHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(minute.calendarEvents).toEqual([{ id: "e1", title: "Retro", description: "d", datetime: "2026-09-25T10:00:00+07:00", participants: ["Ana"], rawText: "retro Friday" }]);
+    expect(minute.availableArtifacts).toEqual(["quiz", "calendarEvents"]);
   });
 
   it("is not-found for another user's note (existence is not revealed)", async () => {

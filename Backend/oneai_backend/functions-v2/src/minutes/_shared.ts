@@ -2,8 +2,11 @@ import { HttpsError } from "firebase-functions/v2/https";
 import type { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp } from "firebase-admin/firestore";
 import { toIso } from "../lib/time.js";
 import {
+  ARTIFACT_KINDS,
   MinuteStatus,
   SourceType,
+  type ArtifactKind,
+  type CalendarEvent,
   type MinuteDetail,
   type MinuteSummary,
   type Speaker,
@@ -164,10 +167,33 @@ export function toSpeakers(raw: unknown): Speaker[] {
     .filter((s) => s.id !== "");
 }
 
+export function toCalendarEvents(raw: unknown): CalendarEvent[] {
+  if (!raw || typeof raw !== "object") return [];
+  const list = (raw as Record<string, unknown>).events;
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((x): x is Record<string, unknown> => !!x && typeof x === "object")
+    .map((x, i) => ({
+      id: str(x.id) ?? `ev_${i}`,
+      title: str(x.title) ?? "",
+      description: str(x.description) ?? "",
+      datetime: str(x.datetime) ?? "",
+      participants: strList(x.participants),
+      rawText: str(x.rawText) ?? "",
+    }))
+    .filter((e) => e.title !== "" || e.datetime !== "");
+}
+
+/** The artifact kinds present among a minute's `artifacts/` docs, in canonical order. */
+export function presentArtifactKinds(ids: Iterable<string>): ArtifactKind[] {
+  const set = new Set(ids);
+  return ARTIFACT_KINDS.filter((k) => set.has(k));
+}
+
 export function toMinuteDetail(
   id: string,
   raw: DocumentData | undefined,
-  extras: { transcript: Transcript | null; speakers: Speaker[] },
+  extras: { transcript: Transcript | null; speakers: Speaker[]; calendarEvents?: CalendarEvent[]; availableArtifacts?: ArtifactKind[] },
 ): MinuteDetail {
   const d = (raw ?? {}) as MinuteDoc;
   return {
@@ -183,5 +209,7 @@ export function toMinuteDetail(
     description: str(d.description),
     keywords: strList(d.keywords),
     summaryLanguage: str(d.summaryLanguage),
+    calendarEvents: extras.calendarEvents ?? [],
+    availableArtifacts: extras.availableArtifacts ?? [],
   };
 }

@@ -5,6 +5,8 @@ import {
   contentTypeMatches,
   safeFileName,
   toMinuteDetail,
+  toCalendarEvents,
+  presentArtifactKinds,
   toMinuteSummary,
   toSpeakers,
   toSummary,
@@ -193,5 +195,20 @@ describe("mappers", () => {
     });
     expect(d.failure).toEqual({ code: "stt_timeout", message: "took too long" });
     expect(toMinuteDetail("m1", {}, { transcript: null, speakers: [] }).failure).toBeNull();
+  });
+
+  it("toMinuteDetail defaults calendarEvents and availableArtifacts to empty", () => {
+    const d = toMinuteDetail("m1", {}, { transcript: null, speakers: [] });
+    expect(d.calendarEvents).toEqual([]);
+    expect(d.availableArtifacts).toEqual([]);
+  });
+
+  it("toCalendarEvents tolerates junk and drops empty events; presentArtifactKinds keeps canonical order", () => {
+    expect(toCalendarEvents(undefined)).toEqual([]);
+    expect(toCalendarEvents({ events: "nope" })).toEqual([]);
+    expect(toCalendarEvents({ events: [null, 7, { title: "", datetime: "" }, { id: "e1", title: "Retro", datetime: "2026-09-25", participants: ["Ana", 3] }] })).toEqual([
+      { id: "e1", title: "Retro", description: "", datetime: "2026-09-25", participants: ["Ana"], rawText: "" },
+    ]);
+    expect(presentArtifactKinds(["calendarEvents", "junk", "quiz", "speakers"])).toEqual(["quiz", "speakers", "calendarEvents"]);
   });
 });

@@ -11,10 +11,13 @@ import { effectivePlan, type UserDoc } from "../users/_shared.js";
 import type { Transcript } from "../minutes/types.js";
 import { trimTranscript } from "./summarize.js";
 
-export type ArtifactKind = "shortQuestions" | "quiz" | "flashcards" | "mindmap" | "speakers" | "calendarEvents";
+export type { ArtifactKind } from "../minutes/types.js";
+import type { ArtifactKind } from "../minutes/types.js";
 
 export interface LoadedTranscript {
   minuteRef: DocumentReference;
+  /** The minute document as stored (status, timezone, summaryLanguage, …). */
+  minuteDoc: Record<string, unknown>;
   transcript: Transcript;
   /** sha256 of the transcript text; artifacts remember which text they came from. */
   sourceHash: string;
@@ -37,7 +40,10 @@ export async function loadReadyTranscript(deps: Deps, uid: string, minuteId: str
   if (!transcript || transcript.text.trim().length === 0) {
     throw new HttpsError("failed-precondition", "This note has no transcript text", { reason: "noSpeech" });
   }
-  return { minuteRef: ref, transcript, sourceHash: createHash("sha256").update(transcript.text).digest("hex") };
+  return {
+    minuteRef: ref, minuteDoc: doc as Record<string, unknown>, transcript,
+    sourceHash: createHash("sha256").update(transcript.text).digest("hex"),
+  };
 }
 
 export function artifactRef(minuteRef: DocumentReference, kind: ArtifactKind): DocumentReference {

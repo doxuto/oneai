@@ -1,11 +1,18 @@
 import { z } from "zod";
-import { DocId, LanguageCode, LongText, withClient } from "../types/common.js";
+import { DocId, IanaTimezone, LanguageCode, LongText, withClient } from "../types/common.js";
+import { CalendarEvent } from "./summarize.js";
 
 // ---------- inputs ----------
 const ForMinute = { minuteId: DocId, languageCode: LanguageCode.default("en") };
 
 export const GenerateInput = withClient({ ...ForMinute, force: z.boolean().default(false) }).strict();
 export type GenerateInput = z.infer<typeof GenerateInput>;
+
+/** Calendar extraction needs a reference clock; defaults to the zone given at startTranscription, then UTC. */
+export const GenerateCalendarEventsInput = withClient({
+  ...ForMinute, force: z.boolean().default(false), timezone: IanaTimezone.optional(),
+}).strict();
+export type GenerateCalendarEventsInput = z.infer<typeof GenerateCalendarEventsInput>;
 
 export const ChatInput = withClient({ ...ForMinute, question: LongText.min(1) }).strict();
 export type ChatInput = z.infer<typeof ChatInput>;
@@ -50,6 +57,9 @@ export const MindmapData = z.object({
   root: Leaf.extend({ icon: z.string().min(1).max(16), children: z.array(L2).min(1).max(12) }),
 });
 export type MindmapData = z.infer<typeof MindmapData>;
+
+export const CalendarEventsData = z.object({ events: z.array(CalendarEvent).max(20) });
+export type CalendarEventsData = z.infer<typeof CalendarEventsData>;
 
 export const SpeakersData = z.object({
   speakers: z.array(z.object({ id: z.string().regex(/^speaker_\d+$|^document$/), label: z.string().min(1).max(60) })).min(1).max(30),

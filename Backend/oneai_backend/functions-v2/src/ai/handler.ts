@@ -10,12 +10,13 @@ import { toIso } from "../lib/time.js";
 import { parse } from "../lib/validate.js";
 import { loadOwnedMinute } from "../minutes/_shared.js";
 import {
-  CHAT_CONTEXT, CHAT_SYSTEM, FLASHCARDS_PROMPT, MAP_SPEAKERS_PROMPT, MAP_SPEAKERS_SYSTEM, MINDMAP_PROMPT, QUIZ_PROMPT, SHORT_QUESTIONS_PROMPT,
+  CALENDAR_EVENTS_PROMPT, CHAT_CONTEXT, CHAT_SYSTEM, FLASHCARDS_PROMPT, MAP_SPEAKERS_PROMPT, MAP_SPEAKERS_SYSTEM, MINDMAP_PROMPT, QUIZ_PROMPT, SHORT_QUESTIONS_PROMPT,
 } from "../prompts/ai.js";
 import { fill } from "../prompts/summarize.js";
 import { artifactRef, chargeAiCall, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker } from "./_artifacts.js";
 import {
-  ChatInput, FlashcardsData, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData, RenameSpeakerInput, ShortQuestionsData, SpeakersData,
+  CalendarEventsData, ChatInput, FlashcardsData, GenerateCalendarEventsInput, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData,
+  RenameSpeakerInput, ShortQuestionsData, SpeakersData,
   type ChatMessage, type ChatOutput, type GenerateOutput, type ListChatMessagesOutput,
 } from "./types.js";
 
@@ -44,6 +45,42 @@ export const generateShortQuestionsHandler = makeGenerator<ShortQuestionsData>("
 export const generateQuizHandler = makeGenerator<QuizData>("quiz", QuizData, QUIZ_PROMPT, 2500);
 export const generateFlashcardsHandler = makeGenerator<FlashcardsData>("flashcards", FlashcardsData, FLASHCARDS_PROMPT, 2500);
 export const generateMindmapHandler = makeGenerator<MindmapData>("mindmap", MindmapData, MINDMAP_PROMPT, 3000);
+
+// ---------------------------------------------------------------- calendar events
+
+/**
+ * The summariser already extracts events at ingest; this regenerates them on
+ * demand (different language, or the user wants another pass). Same cache
+ * rules as the other artifacts; the ingest-time doc has no sourceHash, so the
+ * first explicit call always generates.
+ */
+export async function generateCalendarEventsHandler(
+  caller: Caller | undefined,
+  raw: unknown,
+  deps: Deps,
+): Promise<GenerateOutput<CalendarEventsData>> {
+  const startedAt = Date.now();
+  const { uid } = requireCaller(caller);
+  const input = parse(GenerateCalendarEventsInput, raw, deps.minClientVersion);
+  try {
+    const loaded = await loadReadyTranscript(deps, uid, input.minuteId);
+    const storedTz = loaded.minuteDoc.timezone;
+    const timezone = input.timezone ?? (typeof storedTz === "string" && storedTz ? storedTz : "UTC");
+    const prompt = fill(CALENDAR_EVENTS_PROMPT, {
+      transcript: promptTranscript(loaded.transcript),
+      languageCode: input.languageCode,
+      now: deps.now().toISOString(),
+      timezone,
+    });
+    const out = await generateArtifact<CalendarEventsData>({
+      deps, llm: deps.services.llm, uid, loaded, kind: "calendarEvents", schema: CalendarEventsData, prompt, maxOutputTokens: 2000, force: input.force,
+    });
+    logDone("ai.calendarEvents", startedAt, { uid, minuteId: input.minuteId, cached: out.cached, count: out.data.events.length });
+    return out;
+  } catch (err) {
+    return rethrow(err, "ai.calendarEvents.failed", { uid, minuteId: input.minuteId });
+  }
+}
 
 // ---------------------------------------------------------------- speakers
 

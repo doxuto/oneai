@@ -116,6 +116,20 @@ export interface MinuteFailure {
   message: string;
 }
 
+/** An event the summariser (or `generateCalendarEvents`) extracted from the content. */
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description: string;
+  /** ISO-8601 when resolvable, else the text as spoken. */
+  datetime: string;
+  participants: string[];
+  rawText: string;
+}
+
+export const ARTIFACT_KINDS = ["shortQuestions", "quiz", "flashcards", "mindmap", "speakers", "calendarEvents"] as const;
+export type ArtifactKind = (typeof ARTIFACT_KINDS)[number];
+
 export interface MinuteDetail extends MinuteSummary {
   summary: Summary | null;
   transcript: Transcript | null;
@@ -126,6 +140,10 @@ export interface MinuteDetail extends MinuteSummary {
   description: string | null;
   keywords: string[];
   summaryLanguage: string | null;
+  /** Extracted at summarise time; regenerate with `generateCalendarEvents`. */
+  calendarEvents: CalendarEvent[];
+  /** Which `artifacts/{kind}` docs exist, so the app can show tabs without a generate call. */
+  availableArtifacts: ArtifactKind[];
 }
 
 export interface CreateMinuteOutput {

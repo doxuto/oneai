@@ -105,6 +105,7 @@ export async function startTranscriptionHandler(
         summaryLanguage: input.summaryLanguage,
         keywords: input.keywords,
         description: input.description ?? null,
+        timezone: input.timezone,
         updatedAt: FieldValue.serverTimestamp(),
       });
     });

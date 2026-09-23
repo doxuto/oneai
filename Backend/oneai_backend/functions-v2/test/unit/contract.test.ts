@@ -50,10 +50,28 @@ describe("wire shapes", () => {
           transcript: { durationSeconds: 1, languageCode: "eng", languageProbability: 0.9, text: "t",
             segments: [{ startSeconds: 0, endSeconds: 1, text: "t", speakerId: "speaker_0", speakerLabel: "Speaker 1" }] },
           speakers: [{ id: "speaker_0", label: "Ana" }],
+          calendarEvents: [{ id: "e1", title: "Retro", description: "Sprint retro", datetime: "2026-09-25T10:00:00+07:00", participants: ["Ana"], rawText: "retro Friday at 10" }],
+          availableArtifacts: ["speakers", "calendarEvents"],
         },
       ),
     ).toMatchInlineSnapshot(`
       {
+        "availableArtifacts": [
+          "speakers",
+          "calendarEvents",
+        ],
+        "calendarEvents": [
+          {
+            "datetime": "2026-09-25T10:00:00+07:00",
+            "description": "Sprint retro",
+            "id": "e1",
+            "participants": [
+              "Ana",
+            ],
+            "rawText": "retro Friday at 10",
+            "title": "Retro",
+          },
+        ],
         "contentKind": null,
         "createdAt": "2026-09-22T08:41:12.345Z",
         "description": "d",

@@ -28,6 +28,18 @@ Transcript:
 {{transcript}}
 '''`;
 
+export const CALENDAR_EVENTS_PROMPT = `Extract every meeting, deadline, appointment or scheduled event that is clearly stated in the transcript with enough detail to put on a calendar. Rules:
+- Only events that are actually planned or agreed — not hypotheticals, past events being recounted, or vague intentions.
+- Resolve relative dates ("tomorrow at 3", "next Monday") to absolute ISO-8601 with offset using now and timezone; if the time is unknown, use the date only; if neither can be resolved, put the wording as spoken in datetime.
+- title: short, ≤ 10 words. description: one sentence of context. participants: names mentioned as attending (may be empty). rawText: the transcript wording the event came from.
+- ids are short and unique (e1, e2, …). No events → an empty list.
+Write title and description in language code '{{languageCode}}'.
+
+now: {{now}}   timezone: {{timezone}}
+
+Transcript:
+{{transcript}}`;
+
 export const MAP_SPEAKERS_SYSTEM = `You map diarised speaker ids (speaker_0, speaker_1, …) to real names, and you never guess.`;
 
 export const MAP_SPEAKERS_PROMPT = `Rules:

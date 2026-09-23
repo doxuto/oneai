@@ -3,9 +3,9 @@ import { openAiClient } from "../../src/lib/llm/openai.js";
 import { geminiClient } from "../../src/lib/llm/gemini.js";
 import { sseData } from "../../src/lib/llm/sse.js";
 import { unitDeps } from "../../src/lib/deps.js";
-import { chatHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
-import { MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
-import { CHAT_SYSTEM, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
+import { chatHandler, generateCalendarEventsHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { CalendarEventsData, MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
+import { CALENDAR_EVENTS_PROMPT, CHAT_SYSTEM, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
 import { fill } from "../../src/prompts/summarize.js";
 
 const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
@@ -77,6 +77,11 @@ describe("schemas", () => {
     expect(p.root.children[0]?.children).toEqual([]);
     expect(MindmapData.safeParse({ root: { id: "r", title: "T", icon: "🎯", children: [] } }).success).toBe(false);
   });
+  it("CalendarEventsData accepts an empty list and caps at 20", () => {
+    expect(CalendarEventsData.safeParse({ events: [] }).success).toBe(true);
+    const ev = { id: "e1", title: "t", description: "d", datetime: "2026-09-25T10:00:00+07:00", participants: [], rawText: "r" };
+    expect(CalendarEventsData.safeParse({ events: Array.from({ length: 21 }, () => ev) }).success).toBe(false);
+  });
   it("SpeakersData only accepts speaker_N ids", () => {
     expect(SpeakersData.safeParse({ speakers: [{ id: "bob", label: "Bob" }] }).success).toBe(false);
     expect(SpeakersData.safeParse({ speakers: [{ id: "speaker_2", label: "Bob" }] }).success).toBe(true);
@@ -88,6 +93,9 @@ describe("prompts", () => {
     expect(fill(QUIZ_PROMPT, { transcript: "t", languageCode: "vi" })).not.toContain("{{");
     expect(fill(MAP_SPEAKERS_PROMPT, { speakerIds: "speaker_0", transcript: "t" })).not.toContain("{{");
     expect(fill(CHAT_SYSTEM, { languageCode: "en" })).toContain("'en'");
+    const cal = fill(CALENDAR_EVENTS_PROMPT, { transcript: "t", languageCode: "vi", now: "2026-09-23T10:00:00.000Z", timezone: "Asia/Ho_Chi_Minh" });
+    expect(cal).not.toContain("{{");
+    expect(cal).toContain("Asia/Ho_Chi_Minh");
   });
 });
 
@@ -98,6 +106,9 @@ describe("handlers — validation", () => {
   });
   it("generateQuiz: languageCode defaults to en; unknown keys rejected", async () => {
     await expect(generateQuizHandler(caller, { client, minuteId: "m1", summaryText: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("generateCalendarEvents: timezone must be IANA when given", async () => {
+    await expect(generateCalendarEventsHandler(caller, { client, minuteId: "m1", timezone: "GMT+7" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
   });
   it("renameSpeaker: speakerId must be speaker_N (v1 accepted any string as a Firestore field name)", async () => {
     await expect(renameSpeakerHandler(caller, { client, minuteId: "m1", speakerId: "__proto__", name: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });

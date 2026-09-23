@@ -1,13 +1,8 @@
 import { z } from "zod";
-import { DocId, withClient } from "../types/common.js";
+import { DocId, IanaTimezone, withClient } from "../types/common.js";
 import type { MinuteStatus } from "../minutes/types.js";
 
 export const TASK_QUEUE = "processTranscription";
-
-/** IANA zone, validated by trying it. */
-const IanaTimezone = z.string().min(1).max(64).refine((tz) => {
-  try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; } catch { return false; }
-}, "must be an IANA time zone like Asia/Ho_Chi_Minh");
 
 export const StartTranscriptionInput = withClient({
   minuteId: DocId,
