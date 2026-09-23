@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/di/providers.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/features/auth/login_screen.dart';
+import 'package:one_ai/features/minutes/home/home_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -31,7 +32,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.root,
-        builder: (_, __) => const _Placeholder('Home'),
+        pageBuilder: (_, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const HomeScreen(),
+          transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
+        ),
         routes: <RouteBase>[
           GoRoute(
             path: 'transcriptionSummary',

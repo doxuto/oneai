@@ -100,6 +100,12 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | A1-02 | `LoginScreen` port từ `login_page.dart`: cùng bố cục/màu/chữ, Apple chỉ iOS, loading theo nút, lỗi qua snack, cancel im lặng | `features/auth/login_screen.dart` | |
 | [~] | A1-03 | `route_args.dart` typed extra; router dùng `LoginScreen` thật | `core/router/*` | các màn khác nối ở A2–A5 |
 | [~] | A1-04 | `SplashGate` chờ auth resolve lần đầu | `features/auth/splash_gate.dart`, `app.dart` | |
+| [~] | A2-01 | `HomeScreen` port: header (PremiumButton/feedback/settings), "My Notes", chip row (Create tag / All / tags, long-press xoá), list live, empty state v1, FAB trượt khi bàn phím mở; intro-basic popup từ Remote Config (không xin ATT ở đây nữa) | `features/minutes/home/{home_screen,intro_basic_popup}.dart`, `core/config/remote_config.dart` | |
+| [~] | A2-02 | `MinuteItemCard` port + menu 4 mục; dialog rename/emoji (regex single-emoji v1)/xoá qua `StyledDialog`; trạng thái live (processing dots / failed) thay chỗ thời lượng | `features/minutes/home/minute_item_card.dart`, `core/widgets/{styled_dialog,format}.dart` | |
+| [~] | A2-03 | `TagChip`, `TagActions`, dialog tạo/xoá tag, dialog Manage tags (chọn local, Done lưu 1 lần, tạo tag tại chỗ) | `features/tags/*` | |
+| [~] | A2-04 | `NewMinutesBottomSheet` 2 lối | `features/minutes/home/new_minutes_bottom_sheet.dart` | |
+| [~] | A2-05 | `PremiumButton`, `meProvider`/`quotaProvider`/`premiumStatusProvider`, `Paywall` (RevenueCatUI + refresh entitlement), `interstitialHook`/`rewardedHook` no-op cho tới A6 | `features/credits/*`, `features/billing/paywall.dart`, `features/ads/runtime/ad_hooks.dart` | |
+| [~] | A2-06 | Feedback dialog (Sentry captureFeedback) | `features/minutes/detail/feedback_dialog.dart` | |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 
