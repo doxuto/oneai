@@ -213,6 +213,10 @@ export async function updateMinuteHandler(
     const patch: Record<string, unknown> = { updatedAt: FieldValue.serverTimestamp() };
     if (input.title !== undefined) patch.title = input.title.trim();
     if (input.iconEmoji !== undefined) patch.iconEmoji = input.iconEmoji;
+    if (input.pinned !== undefined) {
+      patch.pinned = input.pinned;
+      patch.pinnedAt = input.pinned ? FieldValue.serverTimestamp() : null;
+    }
     if (input.tagIds !== undefined) {
       const unique = [...new Set(input.tagIds)];
       if (unique.length > 0) {

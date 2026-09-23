@@ -90,7 +90,20 @@ class FakeAi implements AiRepository {
   @override
   Future<Generated<Mindmap>> mindmap(String minuteId, {String languageCode = 'en', bool force = false}) => throw UnimplementedError();
   @override
-  Future<Generated<ActionItems>> actionItems(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) => throw UnimplementedError();
+  ActionItems stored = const ActionItems(items: [ActionItem(id: 'a1', text: 'Thank Ana', owner: null, due: null, quote: 'q'), ActionItem(id: 'a2', text: 'Send notes', owner: null, due: null, quote: 'q')], decisions: []);
+  @override
+  Future<Generated<ActionItems>> actionItems(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) async {
+    calls.add('ai:$force');
+    return Generated(data: stored, cached: !force);
+  }
+
+  @override
+  Future<Generated<ActionItems>> setActionItemDone(String minuteId, {required String itemId, required bool done}) async {
+    calls.add('tick:$itemId:$done');
+    if (error != null) throw error!;
+    stored = stored.withDone(itemId, done);
+    return Generated(data: stored, cached: true);
+  }
   @override
   Future<Generated<KeyTerms>> keyTerms(String minuteId, {String languageCode = 'en', bool force = false}) => throw UnimplementedError();
   @override
@@ -173,6 +186,29 @@ void main() {
     expect(s.hasError, isTrue);
     expect(s.error, isA<QuotaFailure>());
     expect(s.valueOrNull?.data.questions, ['q1']);
+  });
+
+  group('action items', () {
+    test('tick is optimistic, then the server list replaces it', () async {
+      final h = Harness();
+      h.container.listen(actionItemsProvider('m1'), (_, __) {});
+      await h.container.read(actionItemsProvider('m1').future);
+      final fut = h.container.read(actionItemsProvider('m1').notifier).setDone('a2', true);
+      expect(h.container.read(actionItemsProvider('m1')).requireValue.data.items[1].done, isTrue, reason: 'flipped before the call returns');
+      expect(await fut, isTrue);
+      expect(h.ai.calls.last, 'tick:a2:true');
+      expect(h.container.read(actionItemsProvider('m1')).requireValue.data.items.map((i) => i.done), [false, true]);
+    });
+
+    test('tick failure rolls back and exposes the error', () async {
+      final h = Harness();
+      h.container.listen(actionItemsProvider('m1'), (_, __) {});
+      await h.container.read(actionItemsProvider('m1').future);
+      h.ai.error = const TransientFailure('boom');
+      expect(await h.container.read(actionItemsProvider('m1').notifier).setDone('a1', true), isFalse);
+      expect(h.container.read(actionItemsProvider('m1')).requireValue.data.items[0].done, isFalse);
+      expect(h.container.read(actionItemsProvider('m1').notifier).lastTickError, isA<TransientFailure>());
+    });
   });
 
   group('speakers', () {

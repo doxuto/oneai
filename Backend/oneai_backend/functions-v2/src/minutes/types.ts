@@ -53,10 +53,12 @@ export const UpdateMinuteInput = withClient({
   // One emoji is up to ~8 UTF-16 code units (ZWJ sequences, skin tones).
   iconEmoji: z.string().min(1).max(16).nullable().optional(),
   tagIds: z.array(DocId).max(MAX_TAGS_PER_MINUTE).optional(),
+  /** Pinned notes sort first on the client; the server only stores the flag. */
+  pinned: z.boolean().optional(),
 })
   .strict()
-  .refine((v) => v.title !== undefined || v.iconEmoji !== undefined || v.tagIds !== undefined, {
-    message: "At least one of title, iconEmoji, tagIds is required",
+  .refine((v) => v.title !== undefined || v.iconEmoji !== undefined || v.tagIds !== undefined || v.pinned !== undefined, {
+    message: "At least one of title, iconEmoji, tagIds, pinned is required",
   });
 export type UpdateMinuteInput = z.infer<typeof UpdateMinuteInput>;
 
@@ -74,6 +76,9 @@ export interface MinuteSummary {
   status: MinuteStatus;
   durationSeconds: number | null;
   tagIds: string[];
+  pinned: boolean;
+  /** When it was pinned, or null. Clients order pinned notes by this, newest first. */
+  pinnedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

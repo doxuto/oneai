@@ -120,13 +120,14 @@ class CalendarEvents {
 }
 
 class ActionItem {
-  const ActionItem({required this.id, required this.text, required this.owner, required this.due, required this.quote});
+  const ActionItem({required this.id, required this.text, required this.owner, required this.due, required this.quote, this.done = false});
   factory ActionItem.fromJson(Map<String, dynamic> j) => ActionItem(
         id: readString(j, 'id') ?? '',
         text: readString(j, 'text') ?? '',
         owner: readString(j, 'owner'),
         due: readString(j, 'due'),
         quote: readString(j, 'quote') ?? '',
+        done: readBool(j, 'done'),
       );
   final String id;
   final String text;
@@ -134,7 +135,10 @@ class ActionItem {
   /// ISO-8601 date when the model could resolve one.
   final String? due;
   final String quote;
+  /// Ticked by the user; stored server-side (setActionItemDone).
+  final bool done;
   DateTime? get dueAt => due == null ? null : DateTime.tryParse(due!);
+  ActionItem copyWith({bool? done}) => ActionItem(id: id, text: text, owner: owner, due: due, quote: quote, done: done ?? this.done);
 }
 
 class ActionItems {
@@ -145,6 +149,8 @@ class ActionItems {
       );
   final List<ActionItem> items;
   final List<String> decisions;
+  ActionItems withDone(String itemId, bool done) =>
+      ActionItems(items: [for (final it in items) it.id == itemId ? it.copyWith(done: done) : it], decisions: decisions);
 }
 
 class KeyTerm {

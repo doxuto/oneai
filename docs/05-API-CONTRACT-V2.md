@@ -101,7 +101,7 @@ file, tên file = tên export.
 | `createMinute` | `{client, sourceType: "audio"\|"pdf", fileName, sizeBytes, contentType}` | `{minuteId, upload: {path, contentType, maxSizeBytes}}` — client upload thẳng bằng Firebase Storage SDK, rules kiểm size/type |
 | `listMinutes` | `{client, limit: 1..50 =20, cursor?, tagIds?: string[] ≤10, sort: "createdAtDesc"\|"titleAsc" ="createdAtDesc"}` | `{items: MinuteSummary[], nextCursor: string\|null}` — không có `query` (OQ-07: lọc client-side) |
 | `getMinute` | `{client, minuteId}` | `{minute: MinuteDetail}` |
-| `updateMinute` | `{client, minuteId, title?, iconEmoji?, tagIds?}` | `{minute: MinuteSummary}` |
+| `updateMinute` | `{client, minuteId, title?, iconEmoji?, tagIds?, pinned?}` | `{minute: MinuteSummary}` — `pinned` chỉ là cờ; client xếp note ghim lên đầu theo `pinnedAt` mới nhất trước |
 | `deleteMinute` | `{client, minuteId}` | `{}` |
 
 ```ts
@@ -114,6 +114,8 @@ interface MinuteSummary {
   status: "uploading" | "queued" | "transcribing" | "summarizing" | "ready" | "failed" | "cancelled";
   durationSeconds: number | null;    // v1 lưu chuỗi "MM:SS" — v2 dùng số
   tagIds: string[];
+  pinned: boolean;
+  pinnedAt: string | null;           // ISO khi ghim; null khi bỏ ghim
   createdAt: string;                 // ISO-8601
   updatedAt: string;
 }
@@ -186,7 +188,8 @@ là stub hardcode "Demo Meeting" (audit §1).
 | `generateFlashcards` | như trên | `{data: {items: {question, answer}[]}, cached}` |
 | `generateMindmap` | như trên | `{data: {root: {id, title, icon, children: [{id, title, children: [{id, title, children: [{id,title}]}]}]}}, cached}` — sâu tối đa 4 |
 | `generateCalendarEvents` | `{client, minuteId, languageCode ="en", force =false, timezone?: IANA}` | `{data: {events: CalendarEvent[]}, cached}` — `timezone` mặc định là zone đã gửi ở `startTranscription`, rồi UTC. Sự kiện đã được rút sẵn lúc summarize và nằm trong `getMinute().calendarEvents`; gọi cái này chỉ khi muốn sinh lại (đổi ngôn ngữ) |
-| `generateActionItems` | như `generateCalendarEvents` (có `timezone?`) | `{data: {items: {id, text, owner\|null, due: ISO\|null, quote}[], decisions: string[]}, cached}` — họp: ai làm gì đến khi nào, đã chốt gì |
+| `generateActionItems` | như `generateCalendarEvents` (có `timezone?`) | `{data: {items: {id, text, owner\|null, due: ISO\|null, quote, done}[], decisions: string[]}, cached}` — họp: ai làm gì đến khi nào, đã chốt gì; `done` do user tick (mặc định false) |
+| `setActionItemDone` | `{client, minuteId, itemId, done}` | như trên (`cached: true`) — không gọi model, không trừ quota; cờ nằm trong artifact nên đồng bộ mọi máy; `force` sinh lại sẽ **xoá tick**. Chưa sinh → `failed-precondition reason:"noActionItems"`; `itemId` lạ → `not-found` |
 | `generateKeyTerms` | `{client, minuteId, languageCode ="en", force =false}` | `{data: {terms: {term, definition, quote}[]}, cached}` — glossary theo ngữ cảnh |
 | `generateChapters` | như trên | `{data: {chapters: {title, startSeconds, endSeconds, summary}[]}, cached}` — chương theo chủ đề, mốc thời gian clamp về độ dài thật; PDF → `failed-precondition reason:"noTimeline"` |
 | `mapSpeakers` | `{client, minuteId, force =false}` | `{data: {speakers: {id, label}[]}, cached}` — mọi `speaker_N` có mặt đúng 1 lần |

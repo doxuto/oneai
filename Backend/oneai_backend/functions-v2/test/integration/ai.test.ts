@@ -3,7 +3,7 @@ import { getStorage } from "firebase-admin/storage";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpsError } from "firebase-functions/v2/https";
-import { chatHandler, generateActionItemsHandler, generateCalendarEventsHandler, generateChaptersHandler, generateFlashcardsHandler, generateKeyTermsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { chatHandler, generateActionItemsHandler, generateCalendarEventsHandler, generateChaptersHandler, generateFlashcardsHandler, generateKeyTermsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler, setActionItemDoneHandler } from "../../src/ai/handler.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -160,6 +160,34 @@ describe("actionItems / keyTerms / chapters", () => {
     expect((await db.doc("users/u1/minutes/m1/artifacts/actionItems").get()).exists).toBe(true);
     expect((await generateActionItemsHandler(u1, { client, minuteId: "m1", languageCode: "vi" }, makeDeps(spy))).cached).toBe(true);
     expect(llm.calls).toBe(1);
+  });
+
+  it("setActionItemDone ticks one item inside the artifact, is idempotent, and needs no model", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ items: [
+      { id: "a1", text: "Thank Ana", owner: null, due: null, quote: "q" },
+      { id: "a2", text: "Send notes", owner: null, due: null, quote: "q" },
+    ], decisions: [] }));
+    const deps = makeDeps(llm);
+    await generateActionItemsHandler(u1, { client, minuteId: "m1" }, deps);
+    const out = await setActionItemDoneHandler(u1, { client, minuteId: "m1", itemId: "a2", done: true }, deps);
+    expect(out.data.items.map((i) => [i.id, i.done])).toEqual([["a1", false], ["a2", true]]);
+    // Reading again (cached) shows the tick; untick works; the model was called once.
+    const again = await generateActionItemsHandler(u1, { client, minuteId: "m1" }, deps);
+    expect(again.cached).toBe(true);
+    expect(again.data.items[1]?.done).toBe(true);
+    const off = await setActionItemDoneHandler(u1, { client, minuteId: "m1", itemId: "a2", done: false }, deps);
+    expect(off.data.items[1]?.done).toBe(false);
+    expect(llm.calls).toBe(1);
+  });
+
+  it("setActionItemDone refuses before generation and for an unknown item", async () => {
+    await seedReady();
+    const deps = makeDeps(fakeLlm(async () => ({ items: [{ id: "a1", text: "t", owner: null, due: null, quote: "q" }], decisions: [] })));
+    await expect(setActionItemDoneHandler(u1, { client, minuteId: "m1", itemId: "a1", done: true }, deps)).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "noActionItems" } });
+    await generateActionItemsHandler(u1, { client, minuteId: "m1" }, deps);
+    await expect(setActionItemDoneHandler(u1, { client, minuteId: "m1", itemId: "zz", done: true }, deps)).rejects.toMatchObject({ code: "not-found" });
+    await expect(setActionItemDoneHandler({ uid: "u2", signInProvider: "google.com" }, { client, minuteId: "m1", itemId: "a1", done: true }, deps)).rejects.toMatchObject({ code: "not-found" });
   });
 
   it("key terms go through the shared generator", async () => {

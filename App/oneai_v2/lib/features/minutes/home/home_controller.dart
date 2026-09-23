@@ -41,21 +41,63 @@ class SelectedTagIds extends Notifier<Set<String>> {
   void clear() => state = const {};
 }
 
-/// Pure so it can be tested and reused by the tag sheet.
-List<MinuteSummary> filterMinutes(List<MinuteSummary> all, Set<String> selected, {Set<String> hidden = const {}}) {
-  if (selected.isEmpty && hidden.isEmpty) return all;
-  return [
-    for (final m in all)
-      if (!hidden.contains(m.id) && selected.every(m.tagIds.contains)) m,
-  ];
+// ---- Search (client-side, step 1 of OQ-07) ----
+
+final searchQueryProvider = NotifierProvider<SearchQuery, String>(SearchQuery.new);
+
+class SearchQuery extends Notifier<String> {
+  @override
+  String build() => '';
+  void set(String q) => state = q;
+  void clear() => state = '';
 }
 
-/// What the list renders: live minutes, tag filter applied, minus rows whose
-/// deletion is in flight (so a tap on "delete" removes the card instantly).
+/// Case-insensitive, diacritic-tolerant match on title + transcript preview.
+/// Every whitespace-separated term must match (AND), like the tag filter.
+bool matchesQuery(MinuteSummary m, String query) {
+  final terms = _fold(query).split(RegExp(r'\s+')).where((t) => t.isNotEmpty);
+  if (terms.isEmpty) return true;
+  final hay = _fold('${m.title} ${m.transcriptPreview ?? ''}');
+  return terms.every(hay.contains);
+}
+
+/// Lower-case and strip the Vietnamese/Latin diacritics users rarely type
+/// when searching ("hop" finds "Họp"). Only the common combining marks.
+String _fold(String s) {
+  const from = 'àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ';
+  const to = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+  final b = StringBuffer();
+  for (final r in s.toLowerCase().runes) {
+    final ch = String.fromCharCode(r);
+    final i = from.indexOf(ch);
+    b.write(i < 0 ? ch : to[i]);
+  }
+  return b.toString();
+}
+
+/// Pure so it can be tested and reused by the tag sheet. Pinned notes come
+/// first (most recently pinned on top); the rest keep the stream's order.
+List<MinuteSummary> filterMinutes(List<MinuteSummary> all, Set<String> selected, {Set<String> hidden = const {}, String query = ''}) {
+  final kept = (selected.isEmpty && hidden.isEmpty && query.isEmpty)
+      ? all
+      : [
+          for (final m in all)
+            if (!hidden.contains(m.id) && selected.every(m.tagIds.contains) && matchesQuery(m, query)) m,
+        ];
+  if (!kept.any((m) => m.pinned)) return kept;
+  final pinned = kept.where((m) => m.pinned).toList()
+    ..sort((a, b) => (b.pinnedAt ?? b.createdAt).compareTo(a.pinnedAt ?? a.createdAt));
+  return [...pinned, ...kept.where((m) => !m.pinned)];
+}
+
+/// What the list renders: live minutes, tag filter + search applied, pinned
+/// first, minus rows whose deletion is in flight (so a tap on "delete"
+/// removes the card instantly).
 final visibleMinutesProvider = Provider<AsyncValue<List<MinuteSummary>>>((ref) {
   final selected = ref.watch(selectedTagIdsProvider);
   final hidden = ref.watch(minuteActionsProvider).deleting;
-  return ref.watch(minutesListProvider).whenData((all) => filterMinutes(all, selected, hidden: hidden));
+  final query = ref.watch(searchQueryProvider);
+  return ref.watch(minutesListProvider).whenData((all) => filterMinutes(all, selected, hidden: hidden, query: query));
 });
 
 // ---- Mutations ----
@@ -107,6 +149,9 @@ class MinuteActions extends Notifier<MinuteActionsState> {
 
   Future<bool> setTags(String minuteId, List<String> tagIds) =>
       _mutate(() => ref.read(minutesRepositoryProvider).update(minuteId, tagIds: tagIds));
+
+  Future<bool> setPinned(String minuteId, bool pinned) =>
+      _mutate(() => ref.read(minutesRepositoryProvider).update(minuteId, pinned: pinned));
 
   Future<bool> setIcon(String minuteId, String? emoji) => _mutate(
         () => ref.read(minutesRepositoryProvider).update(minuteId, iconEmoji: emoji, clearIconEmoji: emoji == null),

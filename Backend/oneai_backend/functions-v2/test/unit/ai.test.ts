@@ -4,7 +4,7 @@ import { geminiClient } from "../../src/lib/llm/gemini.js";
 import { sseData } from "../../src/lib/llm/sse.js";
 import { unitDeps } from "../../src/lib/deps.js";
 import { transcriptWithTimes } from "../../src/ai/_artifacts.js";
-import { chatHandler, generateCalendarEventsHandler, generateChaptersHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { chatHandler, generateCalendarEventsHandler, generateChaptersHandler, generateQuizHandler, renameSpeakerHandler, setActionItemDoneHandler } from "../../src/ai/handler.js";
 import { ActionItemsData, CalendarEventsData, ChaptersData, KeyTermsData, MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
 import { ACTION_ITEMS_PROMPT, CALENDAR_EVENTS_PROMPT, CHAPTERS_PROMPT, CHAT_SYSTEM, KEY_TERMS_PROMPT, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
 import { fill } from "../../src/prompts/summarize.js";
@@ -133,5 +133,21 @@ describe("handlers — validation", () => {
   });
   it("renameSpeaker: speakerId must be speaker_N (v1 accepted any string as a Firestore field name)", async () => {
     await expect(renameSpeakerHandler(caller, { client, minuteId: "m1", speakerId: "__proto__", name: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+});
+
+describe("setActionItemDone", () => {
+  const deps = unitDeps();
+  it("requires auth", async () => {
+    await expect(setActionItemDoneHandler(undefined, { client, minuteId: "m1", itemId: "a1", done: true }, deps)).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+  it("validates itemId and done", async () => {
+    await expect(setActionItemDoneHandler(caller, { client, minuteId: "m1", itemId: "", done: true }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+    await expect(setActionItemDoneHandler(caller, { client, minuteId: "m1", itemId: "a1", done: "yes" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+    await expect(setActionItemDoneHandler(caller, { client, minuteId: "m1", itemId: "a1" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("ActionItemsData defaults done to false so model output never needs it", () => {
+    const parsed = ActionItemsData.parse({ items: [{ id: "a1", text: "t", owner: null, due: null, quote: "q" }], decisions: [] });
+    expect(parsed.items[0]?.done).toBe(false);
   });
 });

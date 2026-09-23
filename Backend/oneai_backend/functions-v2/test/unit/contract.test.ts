@@ -25,6 +25,8 @@ describe("wire shapes", () => {
         "durationSeconds": 900,
         "iconEmoji": "📝",
         "id": "m1",
+        "pinned": false,
+        "pinnedAt": null,
         "sourceType": "audio",
         "status": "ready",
         "tagIds": [
@@ -82,6 +84,8 @@ describe("wire shapes", () => {
         "keywords": [
           "k",
         ],
+        "pinned": false,
+        "pinnedAt": null,
         "sourceExpiresAt": null,
         "sourcePath": "users/u1/minutes/m1/source/a.pdf",
         "sourceState": "available",

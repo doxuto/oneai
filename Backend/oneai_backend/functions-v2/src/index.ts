@@ -44,6 +44,7 @@ export { generateFlashcards } from "./ai/generateFlashcards.js";
 export { generateMindmap } from "./ai/generateMindmap.js";
 export { generateCalendarEvents } from "./ai/generateCalendarEvents.js";
 export { generateActionItems } from "./ai/generateActionItems.js";
+export { setActionItemDone } from "./ai/setActionItemDone.js";
 export { generateKeyTerms } from "./ai/generateKeyTerms.js";
 export { generateChapters } from "./ai/generateChapters.js";
 

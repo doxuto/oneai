@@ -97,6 +97,25 @@ class ActionItemsController extends ArtifactController<ActionItems> {
   ActionItemsController(super.minuteId);
   @override
   Future<Generated<ActionItems>> fetch({required bool force}) => ai.actionItems(minuteId, languageCode: languageCode, force: force);
+
+  /// Optimistic tick: the box flips now; the server answer replaces the list
+  /// (it is the source of truth across devices); on failure the flip is
+  /// undone and the error surfaces through [lastTickError].
+  Object? lastTickError;
+  Future<bool> setDone(String itemId, bool done) async {
+    final before = state.valueOrNull;
+    if (before == null) return false;
+    lastTickError = null;
+    state = AsyncData(Generated(data: before.data.withDone(itemId, done), cached: before.cached));
+    try {
+      state = AsyncData(await ai.setActionItemDone(minuteId, itemId: itemId, done: done));
+      return true;
+    } on Object catch (e) {
+      lastTickError = e;
+      state = AsyncData(before);
+      return false;
+    }
+  }
 }
 
 class KeyTermsController extends ArtifactController<KeyTerms> {

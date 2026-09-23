@@ -68,6 +68,10 @@ class AiRepository {
         ActionItems.fromJson,
       );
 
+  /// Tick / untick one action item; the flag lives in the artifact server-side.
+  Future<Generated<ActionItems>> setActionItemDone(String minuteId, {required String itemId, required bool done}) async =>
+      Generated.fromJson(await _fns.call('setActionItemDone', {'minuteId': minuteId, 'itemId': itemId, 'done': done}), ActionItems.fromJson);
+
   /// Glossary of jargon and named concepts (lectures).
   Future<Generated<KeyTerms>> keyTerms(String minuteId, {String languageCode = 'en', bool force = false}) async =>
       Generated.fromJson(await _fns.call('generateKeyTerms', _gen(minuteId, languageCode, force)), KeyTerms.fromJson);

@@ -177,7 +177,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S6-09 | Audio player trong tab Transcript | |
 | S6-10 | `QuotaFailure` → dialog "Premium Required" — ✍️ `creditGateDecide` + `NewMinuteFailed.isOutOfCredits` | test: hết quota → paywall hiện |
 | S6-11 | Golden + widget test cho toàn bộ màn mới | ≥30 golden tổng |
-| S6-12 | Tab **Việc cần làm** (action items, decisions, tick xong) | tick lưu local; xuất Reminders |
+| S6-12 | Tab **Việc cần làm** (action items, decisions, tick xong) — ✅ BE `setActionItemDone`; ✍️ app tick đồng bộ server | tick theo note trên mọi máy; xuất Reminders còn |
 | S6-13 | **Thanh chương** trên player, tua theo chương, highlight chương đang phát | dùng `chapters` |
 | S6-14 | **Thêm vào Lịch** từ `calendarEvents` (EventKit / Calendar intent) | |
 | S6-15 | Cảnh báo **audio gốc hết hạn sau N ngày** + nút tải về; trạng thái `expired` ẩn player | từ `sourceExpiresAt` |
@@ -197,8 +197,8 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S7-05 | `en` + `es` + **`vi`** đủ key — chờ OQ-12 | |
 | S7-06 | Xoá tài khoản + xoá dữ liệu — ✅ BE `deleteAccount`; ✍️ `AuthController.deleteAccount` | |
 | S7-07 | Sentry + AppsFlyer, debug flag tắt ở prod | |
-| S7-08 | Tìm kiếm client-side (title + `transcriptPreview`) — bước 1 của OQ-07 | |
-| S7-09 | Ghim / yêu thích note (`updateMinute.pinned`) | |
+| S7-08 | Tìm kiếm client-side (title + `transcriptPreview`) — bước 1 của OQ-07 — ✍️ viết xong, chưa compile | |
+| S7-09 | Ghim / yêu thích note (`updateMinute.pinned`) — ✅ BE; ✍️ app viết xong | |
 
 **Cổng ra:** không còn màn nào là placeholder.
 

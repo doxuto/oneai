@@ -13,7 +13,7 @@ import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
 import 'package:one_ai/features/minutes/detail/ai_tools/ai_tools_row.dart';
 import 'package:one_ai/features/minutes/detail/feedback_widget.dart';
 import 'package:one_ai/features/minutes/detail/minute_detail_controller.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:one_ai/core/widgets/app_snack.dart';
 
 /// v1 Summary tab (sections as plain bullet text), plus the blocks the new
 /// artifacts add: action items, calendar events, and the AI tools row.
@@ -117,8 +117,8 @@ class _CalendarEventsBlock extends StatelessWidget {
 }
 
 /// Action items + decisions. Generated on demand (one AI call, then cached);
-/// ticks are per device (shared_preferences) — cheap and good enough until a
-/// server-side `updateArtifact` exists.
+/// ticks go to the server (`setActionItemDone`) so they follow the note to
+/// every device; the box flips optimistically.
 class _ActionItemsBlock extends ConsumerStatefulWidget {
   const _ActionItemsBlock({required this.minuteId});
   final String minuteId;
@@ -128,24 +128,10 @@ class _ActionItemsBlock extends ConsumerStatefulWidget {
 
 class _ActionItemsBlockState extends ConsumerState<_ActionItemsBlock> {
   bool _requested = false;
-  Set<String> _done = {};
 
-  String get _prefsKey => 'ACTION_ITEMS_DONE_${widget.minuteId}';
-
-  @override
-  void initState() {
-    super.initState();
-    SharedPreferences.getInstance().then((p) {
-      if (mounted) setState(() => _done = (p.getStringList(_prefsKey) ?? const []).toSet());
-    }).catchError((Object _) {});
-  }
-
-  Future<void> _toggle(String id) async {
-    setState(() => _done.contains(id) ? _done.remove(id) : _done.add(id));
-    try {
-      final p = await SharedPreferences.getInstance();
-      await p.setStringList(_prefsKey, _done.toList());
-    } on Object catch (_) {}
+  Future<void> _toggle(ActionItem it) async {
+    final ok = await ref.read(actionItemsProvider(widget.minuteId).notifier).setDone(it.id, !it.done);
+    if (!ok && mounted) AppSnack.failure(context, ref.read(actionItemsProvider(widget.minuteId).notifier).lastTickError);
   }
 
   @override
@@ -181,13 +167,13 @@ class _ActionItemsBlockState extends ConsumerState<_ActionItemsBlock> {
                 if (value.data.items.isEmpty && value.data.decisions.isEmpty) Text(l10n.noActionItems, style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
                 for (final it in value.data.items)
                   CheckboxListTile(
-                    value: _done.contains(it.id),
-                    onChanged: (_) => _toggle(it.id),
+                    value: it.done,
+                    onChanged: (_) => _toggle(it),
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                     controlAffinity: ListTileControlAffinity.leading,
                     activeColor: AppColors.brandBlueAlt,
-                    title: Text(it.text, style: context.textTheme.bodyMedium?.copyWith(decoration: _done.contains(it.id) ? TextDecoration.lineThrough : null)),
+                    title: Text(it.text, style: context.textTheme.bodyMedium?.copyWith(decoration: it.done ? TextDecoration.lineThrough : null)),
                     subtitle: (it.owner != null || it.due != null)
                         ? Text([if (it.owner != null) it.owner!, if (it.due != null) it.due!].join(' · '), style: context.textTheme.bodySmall?.copyWith(color: Colors.grey[600]))
                         : null,

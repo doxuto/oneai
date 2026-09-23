@@ -57,7 +57,13 @@ class MinuteItemCard extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.title, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                      Row(children: [
+                        if (item.pinned) ...[
+                          Icon(Icons.push_pin, size: 14, color: context.colorScheme.onSurface.withAlpha(153)),
+                          gapW4,
+                        ],
+                        Expanded(child: Text(item.title, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600))),
+                      ]),
                       gapH8,
                       _Info(item: item),
                     ],
@@ -123,6 +129,8 @@ class _MoreButton extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onSelected: (value) {
           switch (value) {
+            case 'pin':
+              ref.read(minuteActionsProvider.notifier).setPinned(item.id, !item.pinned);
             case 'edit_name':
               _editName(context, ref);
             case 'edit_icon':
@@ -134,6 +142,8 @@ class _MoreButton extends ConsumerWidget {
           }
         },
         itemBuilder: (context) => [
+          _item(context, 'pin', item.pinned ? context.l10n.unpinNote : context.l10n.pinNote, null),
+          _divider,
           _item(context, 'edit_name', context.l10n.editName, Assets.editIcon),
           _divider,
           _item(context, 'edit_icon', context.l10n.editIcon, Assets.smileIcon),
@@ -145,13 +155,13 @@ class _MoreButton extends ConsumerWidget {
         child: Padding(padding: const EdgeInsets.all(4), child: Icon(Icons.more_horiz, color: context.colorScheme.onSurface.withAlpha(153))),
       );
 
-  PopupMenuItem<String> _item(BuildContext context, String value, String title, String icon) => PopupMenuItem<String>(
+  PopupMenuItem<String> _item(BuildContext context, String value, String title, String? icon) => PopupMenuItem<String>(
         value: value,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: context.textTheme.bodyMedium?.copyWith(color: value == 'delete' ? AppColors.destructiveRed : context.colorScheme.onSurface)),
-            SvgPicture.asset(icon, width: 16, height: 16),
+            if (icon != null) SvgPicture.asset(icon, width: 16, height: 16) else Icon(item.pinned ? Icons.push_pin_outlined : Icons.push_pin, size: 16, color: context.colorScheme.onSurface),
           ],
         ),
       );

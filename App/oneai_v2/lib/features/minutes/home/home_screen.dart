@@ -59,11 +59,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const _Header(),
               gapH16,
               Text(context.l10n.myNotes, style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-              gapH24,
+              gapH16,
+              const _SearchField(),
+              gapH16,
               const _TagRow(),
               gapH24,
               Expanded(
                 child: switch (minutes) {
+                  AsyncData(:final value) when value.isEmpty && ref.watch(searchQueryProvider).isNotEmpty => const _NoSearchResults(),
                   AsyncData(:final value) when value.isEmpty => const _EmptyNotes(),
                   AsyncData(:final value) => ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -124,6 +127,68 @@ class _Header extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Client-side search over title + transcript preview (S7-08, step 1 of
+/// OQ-07). Same idle grey as the tag chips so it reads as part of the filter
+/// row rather than a new element. Debounce is unnecessary: the filter is a
+/// pure function over the already-loaded list.
+class _SearchField extends ConsumerStatefulWidget {
+  const _SearchField();
+  @override
+  ConsumerState<_SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends ConsumerState<_SearchField> {
+  final _ctl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = ref.watch(searchQueryProvider);
+    if (query.isEmpty && _ctl.text.isNotEmpty) _ctl.clear(); // cleared elsewhere
+    return SizedBox(
+      height: 40,
+      child: TextField(
+        controller: _ctl,
+        onChanged: ref.read(searchQueryProvider.notifier).set,
+        textInputAction: TextInputAction.search,
+        style: context.textTheme.bodyMedium,
+        decoration: InputDecoration(
+          hintText: context.l10n.searchNotes,
+          hintStyle: context.textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+          prefixIcon: Icon(Icons.search, size: 20, color: Colors.grey[600]),
+          suffixIcon: query.isEmpty
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.close, size: 18, color: Colors.grey[600]),
+                  onPressed: () {
+                    _ctl.clear();
+                    ref.read(searchQueryProvider.notifier).clear();
+                  },
+                ),
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+          filled: true,
+          fillColor: TagChip.idleColor,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+        ),
+      ),
+    );
+  }
+}
+
+class _NoSearchResults extends StatelessWidget {
+  const _NoSearchResults();
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Text(context.l10n.noSearchResults, textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey[600])),
+      );
 }
 
 class _ActionButton extends StatelessWidget {

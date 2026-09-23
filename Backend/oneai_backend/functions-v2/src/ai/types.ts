@@ -68,10 +68,19 @@ export const ActionItemsData = z.object({
     due: z.string().max(40).nullable(),
     /** The words it came from — lets the UI jump to the spot. */
     quote: z.string().max(300),
+    /** Ticked by the user (setActionItemDone); the model never sets it. */
+    done: z.boolean().default(false),
   })).max(30),
   decisions: z.array(z.string().min(1).max(300)).max(20),
 });
 export type ActionItemsData = z.infer<typeof ActionItemsData>;
+
+export const SetActionItemDoneInput = withClient({
+  minuteId: DocId,
+  itemId: z.string().min(1).max(16),
+  done: z.boolean(),
+}).strict();
+export type SetActionItemDoneInput = z.infer<typeof SetActionItemDoneInput>;
 
 export const KeyTermsData = z.object({
   terms: z.array(z.object({

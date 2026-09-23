@@ -16,7 +16,7 @@ import { fill } from "../prompts/summarize.js";
 import { artifactRef, chargeAiCall, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker, transcriptWithTimes } from "./_artifacts.js";
 import {
   ActionItemsData, CalendarEventsData, ChaptersData, ChatInput, FlashcardsData, KeyTermsData, GenerateCalendarEventsInput, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData,
-  RenameSpeakerInput, ShortQuestionsData, SpeakersData,
+  RenameSpeakerInput, SetActionItemDoneInput, ShortQuestionsData, SpeakersData,
   type ChatMessage, type ChatOutput, type GenerateOutput, type ListChatMessagesOutput,
 } from "./types.js";
 
@@ -67,6 +67,40 @@ export async function generateActionItemsHandler(caller: Caller | undefined, raw
     return out;
   } catch (err) {
     return rethrow(err, "ai.actionItems.failed", { uid, minuteId: input.minuteId });
+  }
+}
+
+// ---------------------------------------------------------------- action item tick (no model call, no quota)
+
+/**
+ * Ticks / unticks one action item. The flag lives inside the artifact doc so
+ * it survives app reinstalls and shows on every device; a `force` regenerate
+ * replaces the items and therefore resets ticks (documented in the contract).
+ */
+export async function setActionItemDoneHandler(caller: Caller | undefined, raw: unknown, deps: Deps): Promise<GenerateOutput<ActionItemsData>> {
+  const startedAt = Date.now();
+  const { uid } = requireCaller(caller);
+  const input = parse(SetActionItemDoneInput, raw, deps.minClientVersion);
+  try {
+    const { ref: minuteRef } = await loadOwnedMinute(deps.db, uid, input.minuteId);
+    const ref = artifactRef(minuteRef, "actionItems");
+    const data = await deps.db.runTransaction(async (tx) => {
+      const snap = await tx.get(ref);
+      const parsed = ActionItemsData.safeParse((snap.data() as { data?: unknown } | undefined)?.data);
+      if (!snap.exists || !parsed.success) {
+        throw new HttpsError("failed-precondition", "Action items have not been generated for this note", { reason: "noActionItems" });
+      }
+      const idx = parsed.data.items.findIndex((it) => it.id === input.itemId);
+      if (idx < 0) throw new HttpsError("not-found", "Action item not found", { field: "itemId" });
+      const items = parsed.data.items.map((it, i) => (i === idx ? { ...it, done: input.done } : it));
+      const next: ActionItemsData = { ...parsed.data, items };
+      tx.update(ref, { data: next, updatedAt: FieldValue.serverTimestamp() });
+      return next;
+    });
+    logDone("ai.actionItems.done", startedAt, { uid, minuteId: input.minuteId, itemId: input.itemId, done: input.done });
+    return { data, cached: true };
+  } catch (err) {
+    return rethrow(err, "ai.actionItems.done.failed", { uid, minuteId: input.minuteId });
   }
 }
 

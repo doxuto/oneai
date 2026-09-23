@@ -130,6 +130,11 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | A6-05 | Quyền push: xin sau lần xử lý đầu (`audio_processing_screen`) + toggle Settings — đã có từ A3/A5 | | |
 | [~] | A6-06 | Sentry bọc `runApp` (DSN rỗng ở dev), AppsFlyer start sau ATT (không chạy ở dev), debug log tắt ở prod | `core/observability/sentry_boot.dart`, `features/analytics/appsflyer_boot.dart`, `bootstrap.dart` | |
 | [ ] | A6-07 | Golden ≥30, widget test, a11y AA, cold start < 2s — **cần Flutter** (T1/T2) | `test/golden/*` | |
+| [x] | S7-09a | BE: `updateMinute.pinned` → `pinned` + `pinnedAt`; `MinuteSummary.pinned/pinnedAt` | `minutes/{types,_shared,handler}.ts`, contract snapshot, 1 unit + 1 integration | |
+| [~] | S7-09b | App: menu Ghim/Bỏ ghim trên card, icon ghim, ghim lên đầu theo `pinnedAt` (thuần `filterMinutes`) | `home/{home_controller,minute_item_card}.dart`, 1 test | chưa compile |
+| [~] | S7-08 | App: tìm kiếm client-side title + `transcriptPreview` (AND theo từ, bỏ dấu tiếng Việt), ô search dưới "My Notes", trạng thái không kết quả | `home/{home_controller,home_screen}.dart`, 3 test | chưa compile — bước 1 OQ-07 |
+| [x] | S6-12a | BE: `setActionItemDone {minuteId,itemId,done}` — tick nằm trong artifact, không gọi model/không quota; `ActionItemsData.items[].done` | `ai/{types,handler,setActionItemDone}.ts`, 3 unit + 2 integration | `force` sinh lại xoá tick (ghi trong contract) |
+| [~] | S6-12b | App: tick action item optimistic → server (thay SharedPreferences), rollback + snack khi lỗi | `minute_detail_controller.dart` (`ActionItemsController.setDone`), `summary_tab.dart`, 2 test | chưa compile |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

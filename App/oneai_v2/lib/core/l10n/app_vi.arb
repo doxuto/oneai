@@ -215,5 +215,9 @@
   "@noteCount": {"placeholders": {"n": {"type": "int"}}},
   "notifyWhenReady": "Báo khi ghi chú xong",
   "deleteAccountConfirm": "Bạn chắc chắn muốn xoá tài khoản? Hành động này không thể hoàn tác.",
-  "accountDeleted": "Đã xoá tài khoản."
+  "accountDeleted": "Đã xoá tài khoản.",
+  "searchNotes": "Tìm ghi chú",
+  "pinNote": "Ghim",
+  "unpinNote": "Bỏ ghim",
+  "noSearchResults": "Không có ghi chú nào khớp."
 }

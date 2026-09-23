@@ -59,12 +59,13 @@ class MinutesRepository {
   Future<MinuteDetail> get(String minuteId) async =>
       MinuteDetail.fromJson((await _fns.call('getMinute', {'minuteId': minuteId}))['minute'] as Map<String, dynamic>);
 
-  Future<MinuteSummary> update(String minuteId, {String? title, String? iconEmoji, bool clearIconEmoji = false, List<String>? tagIds}) async =>
+  Future<MinuteSummary> update(String minuteId, {String? title, String? iconEmoji, bool clearIconEmoji = false, List<String>? tagIds, bool? pinned}) async =>
       MinuteSummary.fromJson((await _fns.call('updateMinute', {
         'minuteId': minuteId,
         if (title != null) 'title': title,
         if (clearIconEmoji) 'iconEmoji': null else if (iconEmoji != null) 'iconEmoji': iconEmoji,
         if (tagIds != null) 'tagIds': tagIds,
+        if (pinned != null) 'pinned': pinned,
       }))['minute'] as Map<String, dynamic>);
 
   Future<void> delete(String minuteId) => _fns.call('deleteMinute', {'minuteId': minuteId});

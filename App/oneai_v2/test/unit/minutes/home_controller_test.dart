@@ -10,9 +10,12 @@ import 'package:one_ai/data/repositories/minutes_repository.dart';
 import 'package:one_ai/data/repositories/tags_repository.dart';
 import 'package:one_ai/features/minutes/home/home_controller.dart';
 
-MinuteSummary m(String id, {List<String> tags = const []}) => MinuteSummary(
+MinuteSummary m(String id, {List<String> tags = const [], String? title, String? preview, bool pinned = false, DateTime? pinnedAt}) => MinuteSummary(
       id: id,
-      title: id,
+      title: title ?? id,
+      pinned: pinned,
+      pinnedAt: pinnedAt,
+      transcriptPreview: preview,
       iconEmoji: null,
       sourceType: SourceType.audio,
       contentKind: null,
@@ -113,6 +116,33 @@ void main() {
     });
     test('hidden ids are removed even with no selection', () {
       expect(filterMinutes(all, const {}, hidden: {'b'}).map((x) => x.id), ['a', 'c']);
+    });
+    test('pinned notes come first, most recently pinned on top; others keep stream order', () {
+      final list = [m('x'), m('p1', pinned: true, pinnedAt: DateTime(2026, 1, 1)), m('y'), m('p2', pinned: true, pinnedAt: DateTime(2026, 2, 1))];
+      expect(filterMinutes(list, const {}).map((x) => x.id), ['p2', 'p1', 'x', 'y']);
+    });
+  });
+
+  group('search', () {
+    final list = [
+      m('a', title: 'Họp sprint planning', preview: 'chốt scope release'),
+      m('b', title: 'Lecture 3', preview: 'photosynthesis and chlorophyll'),
+      m('c', title: 'Standup'),
+    ];
+    test('matches title or preview, case- and diacritic-insensitive', () {
+      expect(filterMinutes(list, const {}, query: 'hop').map((x) => x.id), ['a']);
+      expect(filterMinutes(list, const {}, query: 'CHLOROPHYLL').map((x) => x.id), ['b']);
+      expect(filterMinutes(list, const {}, query: 'scope').map((x) => x.id), ['a']);
+    });
+    test('every term must match; blank query is a no-op', () {
+      expect(filterMinutes(list, const {}, query: 'sprint release').map((x) => x.id), ['a']);
+      expect(filterMinutes(list, const {}, query: 'sprint photo'), isEmpty);
+      expect(identical(filterMinutes(list, const {}, query: ''), list), isTrue);
+      expect(matchesQuery(list[2], '   '), isTrue);
+    });
+    test('combines with the tag filter', () {
+      final tagged = [m('a', tags: ['t1'], title: 'Họp'), m('b', title: 'Họp')];
+      expect(filterMinutes(tagged, {'t1'}, query: 'hop').map((x) => x.id), ['a']);
     });
   });
 

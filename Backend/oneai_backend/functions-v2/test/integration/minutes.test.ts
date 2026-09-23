@@ -214,6 +214,14 @@ describe("updateMinute", () => {
     expect(minute.iconEmoji).toBeNull();
   });
 
+  it("pin sets pinnedAt; unpin clears it; the summary carries both", async () => {
+    const { minute: on } = await updateMinuteHandler(u1, { client, minuteId: "m1", pinned: true }, deps);
+    expect(on.pinned).toBe(true);
+    expect(on.pinnedAt).not.toBeNull();
+    const { minute: off } = await updateMinuteHandler(u1, { client, minuteId: "m1", pinned: false }, deps);
+    expect(off).toMatchObject({ pinned: false, pinnedAt: null });
+  });
+
   it("cannot touch another user's note", async () => {
     await seedMinute("u2", "m9", {});
     await expect(updateMinuteHandler(u1, { client, minuteId: "m9", title: "x" }, deps)).rejects.toMatchObject({

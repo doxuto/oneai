@@ -100,6 +100,16 @@ describe("input validation (never reaches Firestore)", () => {
     });
   });
 
+  it("updateMinute: pinned alone is a valid patch; a non-boolean is rejected", async () => {
+    // Valid shape reaches the (throwing) unit db, so the failure is not invalid-argument.
+    await expect(updateMinuteHandler(caller, { client, minuteId: "m1", pinned: true }, deps)).rejects.not.toMatchObject({
+      code: "invalid-argument",
+    });
+    await expect(updateMinuteHandler(caller, { client, minuteId: "m1", pinned: "yes" }, deps)).rejects.toMatchObject({
+      code: "invalid-argument",
+    });
+  });
+
   it("updateMinute: summaryText and transcription cannot be written by the client any more", async () => {
     await expect(
       updateMinuteHandler(caller, { client, minuteId: "m1", title: "x", summaryText: "pwn" }, deps),
@@ -143,6 +153,8 @@ describe("mappers", () => {
       status: "failed",
       durationSeconds: null,
       tagIds: [],
+      pinned: false,
+      pinnedAt: null,
       createdAt: "1970-01-01T00:00:00.000Z",
       updatedAt: "1970-01-01T00:00:00.000Z",
     });

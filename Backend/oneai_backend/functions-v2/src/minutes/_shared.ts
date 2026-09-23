@@ -40,6 +40,8 @@ export interface MinuteDoc {
   keywords?: string[];
   description?: string | null;
   tagIds?: string[];
+  pinned?: boolean;
+  pinnedAt?: Timestamp | null;
   summary?: Summary | null;
   transcriptPath?: string | null;
   transcriptPreview?: string | null;
@@ -119,6 +121,8 @@ export function toMinuteSummary(id: string, raw: DocumentData | undefined): Minu
     status: statusParsed.success ? statusParsed.data : "failed",
     durationSeconds: num(d.durationSeconds),
     tagIds: strList(d.tagIds),
+    pinned: d.pinned === true,
+    pinnedAt: d.pinned === true ? toIso(d.pinnedAt ?? null) : null,
     createdAt: toIso(d.createdAt ?? null) ?? "1970-01-01T00:00:00.000Z",
     updatedAt: toIso(d.updatedAt ?? d.createdAt ?? null) ?? "1970-01-01T00:00:00.000Z",
   };

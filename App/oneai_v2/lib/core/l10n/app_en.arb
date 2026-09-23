@@ -609,5 +609,9 @@
   "@noteCount": {"placeholders": {"n": {"type": "int"}}},
   "notifyWhenReady": "Notify me when a note is ready",
   "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
-  "accountDeleted": "Account deleted successfully."
+  "accountDeleted": "Account deleted successfully.",
+  "searchNotes": "Search notes",
+  "pinNote": "Pin",
+  "unpinNote": "Unpin",
+  "noSearchResults": "No notes match your search."
 }

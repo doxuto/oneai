@@ -58,6 +58,9 @@ class MinuteSummary {
     required this.tagIds,
     required this.createdAt,
     required this.updatedAt,
+    this.pinned = false,
+    this.pinnedAt,
+    this.transcriptPreview,
   });
 
   factory MinuteSummary.fromJson(Map<String, dynamic> j) => MinuteSummary(
@@ -71,6 +74,8 @@ class MinuteSummary {
         tagIds: readStringList(j, 'tagIds'),
         createdAt: readDateTime(j, 'createdAt') ?? DateTime.fromMillisecondsSinceEpoch(0),
         updatedAt: readDateTime(j, 'updatedAt') ?? DateTime.fromMillisecondsSinceEpoch(0),
+        pinned: readBool(j, 'pinned'),
+        pinnedAt: readDateTime(j, 'pinnedAt'),
       );
 
   /// From a live Firestore document (snapshots()). Dates are Timestamps
@@ -81,6 +86,7 @@ class MinuteSummary {
       if (v is Timestamp) return v.toDate();
       return DateTime.fromMillisecondsSinceEpoch(0);
     }
+    final pinnedAtRaw = d['pinnedAt'];
     return MinuteSummary(
       id: id,
       title: readString(d, 'title') ?? 'Untitled',
@@ -92,6 +98,10 @@ class MinuteSummary {
       tagIds: readStringList(d, 'tagIds'),
       createdAt: ts('createdAt'),
       updatedAt: ts('updatedAt'),
+      pinned: readBool(d, 'pinned'),
+      pinnedAt: pinnedAtRaw is Timestamp ? pinnedAtRaw.toDate() : null,
+      // Server-written excerpt of the transcript; only the live stream has it.
+      transcriptPreview: readString(d, 'transcriptPreview'),
     );
   }
 
@@ -105,6 +115,9 @@ class MinuteSummary {
   final List<String> tagIds;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool pinned;
+  final DateTime? pinnedAt;
+  final String? transcriptPreview;
 }
 
 class SummarySection {
