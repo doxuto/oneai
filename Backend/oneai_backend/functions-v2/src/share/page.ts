@@ -3,9 +3,10 @@ import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
 import { toSummary, toTranscript, toSpeakers } from "../minutes/_shared.js";
 import type { Summary, Transcript } from "../minutes/types.js";
+import { pdfFileName, renderNotePdf } from "./pdf.js";
 import type { ShareDoc } from "./types.js";
 
-export interface PageResult { status: number; html: string }
+export interface PageResult { status: number; html: string; pdf?: { bytes: Buffer; fileName: string } }
 
 export const esc = (s: string): string =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c] ?? c);
@@ -14,7 +15,8 @@ const STYLE = `body{margin:0;background:#f6f8fb;color:#1a1a1a;font:16px/1.55 -ap
 main{max-width:720px;margin:0 auto;padding:32px 20px 64px}h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px}
 .meta{color:#666;font-size:13px;margin-bottom:20px}.card{background:#fff;border:1px solid #e3e8ef;border-radius:12px;padding:20px 22px}
 ul{padding-left:20px;margin:0}li{margin:4px 0}li.sub{list-style:circle;margin-left:18px}p.text{white-space:pre-wrap}
-.seg{margin:8px 0}.spk{font-weight:600;color:#0767f8}footer{margin-top:32px;color:#888;font-size:12px;text-align:center}`;
+.seg{margin:8px 0}.spk{font-weight:600;color:#0767f8}footer{margin-top:32px;color:#888;font-size:12px;text-align:center}
+a.pdf{color:#0767f8;font-weight:600;text-decoration:none}a.pdf:hover{text-decoration:underline}`;
 
 function bulletsHtml(bullets: string[]): string {
   return `<ul>${bullets.map((b) => {
@@ -24,11 +26,11 @@ function bulletsHtml(bullets: string[]): string {
   }).join("")}</ul>`;
 }
 
-export function renderPage(opts: { title: string; iconEmoji: string | null; createdAt: string; summary: Summary | null; transcript: Transcript | null; speakerLabels: Map<string, string> }): string {
+export function renderPage(opts: { title: string; iconEmoji: string | null; createdAt: string; summary: Summary | null; transcript: Transcript | null; speakerLabels: Map<string, string>; pdfHref?: string }): string {
   const s = opts.summary;
   const body: string[] = [];
   body.push(`<h1>${opts.iconEmoji ? esc(opts.iconEmoji) + " " : ""}${esc(opts.title)}</h1>`);
-  body.push(`<div class="meta">${esc(opts.createdAt)}</div>`);
+  body.push(`<div class="meta">${esc(opts.createdAt)}${opts.pdfHref ? ` · <a class="pdf" href="${esc(opts.pdfHref)}">Download PDF</a>` : ""}</div>`);
   if (s) {
     body.push(`<div class="card">`);
     if (s.text) body.push(`<p class="text">${esc(s.text)}</p>`);
@@ -55,7 +57,7 @@ export function notFoundPage(): string {
 }
 
 /** Pure-ish: everything the HTTP wrapper needs, testable without Express. */
-export async function sharePage(deps: Deps, token: string | undefined): Promise<PageResult> {
+export async function sharePage(deps: Deps, token: string | undefined, opts: { format?: "html" | "pdf" } = {}): Promise<PageResult> {
   if (!token || !/^[A-Za-z0-9_-]{16,64}$/.test(token)) return { status: 404, html: notFoundPage() };
   const shareSnap = await deps.db.collection("shares").doc(token).get();
   const share = shareSnap.data() as ShareDoc | undefined;
@@ -81,15 +83,11 @@ export async function sharePage(deps: Deps, token: string | undefined): Promise<
   // Best-effort view counter; never delays or fails the page.
   void shareSnap.ref.update({ views: FieldValue.increment(1), lastViewedAt: FieldValue.serverTimestamp() }).catch(() => undefined);
 
-  return {
-    status: 200,
-    html: renderPage({
-      title: typeof m.title === "string" ? m.title : "Untitled",
-      iconEmoji: typeof m.iconEmoji === "string" ? m.iconEmoji : null,
-      createdAt,
-      summary: toSummary(m.summary),
-      transcript,
-      speakerLabels: labels,
-    }),
-  };
+  const title = typeof m.title === "string" ? m.title : "Untitled";
+  const content = { title, iconEmoji: typeof m.iconEmoji === "string" ? m.iconEmoji : null, createdAt, summary: toSummary(m.summary), transcript, speakerLabels: labels };
+  if (opts.format === "pdf") {
+    const bytes = await renderNotePdf({ ...content, footer: "Shared from One AI · read-only" });
+    return { status: 200, html: "", pdf: { bytes, fileName: pdfFileName(title) } };
+  }
+  return { status: 200, html: renderPage({ ...content, pdfHref: `?t=${encodeURIComponent(token)}&format=pdf` }) };
 }

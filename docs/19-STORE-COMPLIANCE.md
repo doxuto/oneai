@@ -72,13 +72,16 @@ Khai theo nhóm Apple, dựa trên §1. **[Toan]** điền trong App Store Conne
 
 - Families policy: **không** nhắm trẻ em → target audience 18+ (v1 cũng vậy).
 - Ads declaration: **Có quảng cáo** (AdMob). Kèm `AD_ID` permission (GMA tự thêm).
-- Account deletion URL (bắt buộc từ 2024): trang web nêu cách xoá — **[Toan]** tạo
-  `https://doxutostudio.top/delete-account` (nội dung §5).
+- Account deletion URL (bắt buộc từ 2024): đã có sẵn ở function `legal`:
+  `https://asia-southeast1-<project>.cloudfunctions.net/legal?doc=delete-account&lang=en`
+  (nội dung §5, EN + VI). Trỏ `doxutostudio.top/delete-account` về đó nếu muốn domain riêng.
 
 ## 4. Terms & Privacy — điều khoản phải có (S10-07, C6)
 
-Cập nhật `https://doxutostudio.top/privacy` và `/terms` **[Toan]**. Nội dung tối thiểu (đã
-khớp với cách v2 hoạt động):
+✅ **Đã viết EN + VI** trong `functions-v2/assets/legal/` và phục vụ tại
+`…/legal?doc=privacy|terms&lang=en|vi`; app mở đúng ngôn ngữ máy. **[Toan]** rà lại nội
+dung (tên pháp nhân, luật áp dụng, tuổi tối thiểu) rồi trỏ domain hoặc copy lên web.
+Danh sách điều khoản dưới đây là checklist đã được phủ:
 
 1. **Dữ liệu thu thập** — bảng §1 diễn giải thành văn.
 2. **Bên xử lý thứ ba** — liệt kê đích danh: Google (Firebase, Gemini, AdMob),

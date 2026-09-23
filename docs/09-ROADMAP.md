@@ -253,7 +253,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S10-04 | App Check chuyển sang **enforce** | traffic hợp lệ không bị chặn |
 | S10-05 | Alert: error rate, p95, chi phí/ngày — ✅ as-code `monitoring/apply.sh` (8 log-metric + 9 policy); Toan chạy sau deploy, budget cần billing id | bắn được khi test thủ công |
 | S10-06 | Runbook sự cố + rollback từng function — ✅ `15-RUNBOOK.md`; diễn tập chờ deploy | đã diễn tập 1 lần |
-| S10-07 | Terms + Privacy cập nhật theo UMP — ✍️ điều khoản cần có: `19-STORE-COMPLIANCE.md` §4; **[Toan]** đăng web | duyệt xong |
+| S10-07 | Terms + Privacy — ✅ **viết xong EN + VI** (Privacy, Terms, Delete-account) phục vụ từ function `legal`, app link theo ngôn ngữ; **[Toan]** rà nội dung + trỏ domain (tuỳ chọn) | duyệt xong |
 | S10-08 | App Store + Play Store listing, privacy labels, Data Safety — ✍️ bảng khai sẵn `19-STORE-COMPLIANCE.md` §2–§3, listing §6; **[Toan]** điền console | nộp được |
 | S10-09 | Deploy `functions:v2` lên prod (v1 vẫn sống) | |
 | S10-10 | Phased release iOS 1%→10%→50%→100%, staged rollout Android | crash-free ≥99.5% mới tăng bậc |
@@ -272,7 +272,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
-| S11-05 | **Share link chỉ đọc** (`createShareLink`/`revokeShareLink`, `shares/{token}`, trang HTML từ function `sharePage` — không cần Hosting), thu hồi được — ✅ BE; ✍️ app menu Share | người vắng họp mở được không cần app |
+| S11-05 | **Share link chỉ đọc** — ✅ BE: trang HTML + **PDF** (`format=pdf`, Noto Sans nhúng) — chốt 24/09 "note chia sẻ là PDF"; ✍️ app menu Share | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |

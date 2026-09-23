@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { unitDeps } from "../../src/lib/deps.js";
 import { createShareLinkHandler, newShareToken, revokeShareLinkHandler, shareUrl } from "../../src/share/handler.js";
 import { esc, notFoundPage, renderPage, sharePage } from "../../src/share/page.js";
+import { pdfFileName, renderNotePdf } from "../../src/share/pdf.js";
 import { CreateShareLinkInput } from "../../src/share/types.js";
 
 const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
@@ -51,5 +52,20 @@ describe("share links (S11-05)", () => {
     expect(html).toContain("Ana:</span> hi &lt;you&gt;");
     expect(html).toContain('name="robots" content="noindex');
     expect(esc("'\"")).toBe("&#39;&quot;");
+  });
+
+  it("renders a real PDF with Vietnamese text (embedded Noto Sans) and a safe file name", async () => {
+    const bytes = await renderNotePdf({
+      title: "Họp sprint — Quyết định", iconEmoji: "📝", createdAt: "2026-09-24",
+      summary: { title: "S", text: "Đã chốt lịch phát hành.", icon: null, sections: [{ title: "Quyết định", bullets: ["• Ship thứ Sáu", "    ◦ Ana chuẩn bị"] }] },
+      transcript: { durationSeconds: 2, text: "xin chào", languageCode: "vie", languageProbability: 1, segments: [{ startSeconds: 0, endSeconds: 2, text: "xin chào", speakerId: "speaker_0", speakerLabel: "Speaker 1" }] },
+      speakerLabels: new Map([["speaker_0", "Ana"]]),
+      footer: "Shared from One AI",
+    });
+    expect(bytes.subarray(0, 5).toString()).toBe("%PDF-");
+    expect(bytes.length).toBeGreaterThan(5_000); // a subset of Noto Sans is embedded
+    expect(bytes.toString("latin1")).toContain("/FontFile2"); // embedded TrueType, not built-in Helvetica
+    expect(pdfFileName("Họp sprint — Quyết định / v2")).toBe("Hop-sprint-Quyet-dinh-v2.pdf");
+    expect(pdfFileName("///")).toBe("note.pdf");
   });
 });

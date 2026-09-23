@@ -1,6 +1,6 @@
 {
   "name": "oneai-functions-v2",
-  "description": "One AI \u2014 Cloud Functions v2 (TypeScript)",
+  "description": "One AI — Cloud Functions v2 (TypeScript)",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -23,6 +23,7 @@
     "firebase-functions": "^6.5.0",
     "music-metadata": "^11.16.0",
     "pdf-parse": "^1.1.4",
+    "pdfkit": "^0.20.2",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.2"
   },
@@ -30,6 +31,7 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@types/node": "^22.10.0",
     "@types/pdf-parse": "^1.1.5",
+    "@types/pdfkit": "^0.17.6",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
     "@typescript-eslint/parser": "^8.18.0",
     "eslint": "^9.17.0",

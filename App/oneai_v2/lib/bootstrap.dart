@@ -30,7 +30,7 @@ Future<void> bootstrap(Widget Function() builder) async {
     FlutterError.presentError(details);
   };
 
-  final config = AppConfig.fromEnvironment();
+  final config = AppConfig.fromEnvironment(projectId: prod.DefaultFirebaseOptions.currentPlatform.projectId);
 
   // One Firebase project per flavor. dev/staging options files are generated
   // by `flutterfire configure` once those projects exist (S0-06); until then

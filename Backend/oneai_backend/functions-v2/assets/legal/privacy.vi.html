@@ -1,0 +1,64 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>One AI — Chính sách quyền riêng tư</title><link rel="stylesheet" href="?asset=style"></head><body><main>
+<a class="lang" href="?doc=privacy&lang=en">English</a>
+<h1>Chính sách quyền riêng tư</h1>
+<div class="meta">One AI: AI Note Taker &amp; Scribe · Doxuto Studio · Hiệu lực 24/09/2026</div>
+<div class="card">
+<p>One AI ("Ứng dụng") ghi âm hoặc nhập audio và tài liệu, chuyển thành văn bản và tạo ghi chú, tóm tắt, câu hỏi ôn tập và câu trả lời bằng AI. Chính sách này giải thích chúng tôi thu thập gì, vì sao, ai xử lý, giữ bao lâu và bạn có những lựa chọn nào. Áp dụng cho ứng dụng iOS, Android và trang chia sẻ chỉ đọc.</p>
+
+<h2>1. Dữ liệu thu thập</h2>
+<table><tr><th>Dữ liệu</th><th>Mục đích</th><th>Bên xử lý</th></tr>
+<tr><td>Tài khoản: email, tên, ảnh đại diện (từ Google hoặc Apple Sign-In)</td><td>Đăng nhập, quản lý tài khoản</td><td>Firebase Authentication (Google)</td></tr>
+<tr><td><b>Audio bạn ghi hoặc tải lên</b>, file PDF bạn tải lên</td><td>Tính năng chính: chuyển văn bản và ghi chú</td><td>Firebase Storage; nhận dạng giọng nói bởi ElevenLabs hoặc Google (Gemini)</td></tr>
+<tr><td>Transcript, ghi chú, tóm tắt, câu hỏi và trả lời trong chat, quiz, flashcard, bản dịch, tag, từ điển thuật ngữ</td><td>Hiển thị và cải thiện ghi chú; trả lời câu hỏi của bạn</td><td>Firebase Firestore; mô hình ngôn ngữ của OpenAI hoặc Google (Gemini)</td></tr>
+<tr><td>Trạng thái gói và lịch sử mua</td><td>Mở khoá Premium</td><td>Apple App Store / Google Play, RevenueCat</td></tr>
+<tr><td>Token thông báo đẩy</td><td>Thông báo "ghi chú đã xong" (tuỳ chọn)</td><td>Firebase Cloud Messaging</td></tr>
+<tr><td>Dữ liệu sự cố và hiệu năng (mẫu máy, hệ điều hành, phiên bản app)</td><td>Ổn định ứng dụng</td><td>Sentry (không kèm thông tin định danh)</td></tr>
+<tr><td>Mã định danh quảng cáo và tương tác với quảng cáo (gói miễn phí, chỉ khi bạn đồng ý)</td><td>Hiển thị quảng cáo ở gói miễn phí</td><td>Google AdMob</td></tr>
+<tr><td>Nguồn cài đặt và sự kiện trong app</td><td>Hiểu người dùng tìm thấy Ứng dụng bằng cách nào</td><td>AppsFlyer, Firebase Analytics</td></tr>
+</table>
+<p>Chúng tôi <b>không</b> thu thập vị trí, danh bạ, ảnh, dữ liệu sức khoẻ hay số thẻ thanh toán (cửa hàng ứng dụng xử lý thanh toán).</p>
+
+<h2>2. Xử lý bằng AI</h2>
+<ul>
+<li>Audio và văn bản chỉ được gửi tới các nhà cung cấp nêu trên để tạo transcript, ghi chú và câu trả lời cho bạn. Theo thoả thuận với họ, <b>nội dung của bạn không được dùng để huấn luyện mô hình</b>.</li>
+<li>Nhãn người nói, tóm tắt và câu trả lời được tạo tự động và có thể sai. Hãy đối chiếu chi tiết quan trọng với bản ghi.</li>
+</ul>
+
+<h2>3. Thời gian lưu trữ</h2>
+<ul>
+<li><b>File audio và PDF gốc</b>: tự động xoá <b>7 ngày</b> sau khi xử lý với gói miễn phí và <b>90 ngày</b> với Premium. Bạn có thể tải file về trước đó; sau đó chỉ còn transcript và ghi chú.</li>
+<li><b>Transcript, ghi chú và chat</b>: giữ đến khi bạn xoá ghi chú hoặc tài khoản.</li>
+<li><b>Liên kết chia sẻ</b>: còn hiệu lực đến khi bạn thu hồi hoặc xoá ghi chú.</li>
+<li><b>Xoá tài khoản</b> xoá ngay hồ sơ, ghi chú, audio, transcript, lịch sử chat, từ điển và token thiết bị; bản sao lưu được dọn trong 30 ngày. Hồ sơ mua hàng do cửa hàng ứng dụng giữ.</li>
+</ul>
+
+<h2>4. Quảng cáo và sự đồng ý</h2>
+<p>Gói miễn phí có quảng cáo (banner, toàn màn hình và khi mở app). Tại EEA, Anh và Thuỵ Sĩ chúng tôi xin đồng ý qua khung đồng ý của Google trước khi tải quảng cáo; trên iOS chúng tôi xin quyền theo dõi (App Tracking Transparency). Bạn có thể đổi lựa chọn bất cứ lúc nào ở <i>Cài đặt → Tuỳ chọn quyền riêng tư</i>. Premium không có quảng cáo. Chúng tôi không có quảng cáo đổi thưởng và không bao giờ bán dữ liệu cá nhân của bạn.</p>
+
+<h2>5. Chia sẻ dữ liệu</h2>
+<p>Chúng tôi chỉ chia sẻ dữ liệu với các bên xử lý nêu trên theo hợp đồng giới hạn họ ở việc cung cấp dịch vụ, và khi pháp luật yêu cầu. Ghi chú chỉ hiển thị cho người khác khi <b>bạn</b> tạo liên kết chia sẻ hoặc xuất ra.</p>
+
+<h2>6. Quyền của bạn</h2>
+<ul>
+<li>Xuất: chia sẻ bất kỳ ghi chú nào dưới dạng PDF hoặc văn bản ngay trong app.</li>
+<li>Xoá: xoá một ghi chú, hoặc toàn bộ tài khoản, ở <i>Cài đặt → Xoá tài khoản</i> (xem thêm <a href="?doc=delete-account&lang=vi">Cách xoá tài khoản</a>).</li>
+<li>Yêu cầu truy cập, sửa, phản đối và chuyển dữ liệu: email <a href="mailto:contact@doxutostudio.top">contact@doxutostudio.top</a>. Chúng tôi trả lời trong 30 ngày.</li>
+</ul>
+
+<h2>7. Bảo mật</h2>
+<p>Dữ liệu được mã hoá khi truyền (TLS) và khi lưu bởi Google Cloud. Quyền truy cập dữ liệu vận hành được giới hạn cho người vận hành và có ghi log. Liên kết chia sẻ dùng mã không thể đoán và có thể thu hồi.</p>
+
+<h2>8. Trẻ em</h2>
+<p>Ứng dụng không hướng tới trẻ dưới 13 tuổi và chúng tôi không cố ý thu thập dữ liệu của trẻ. Nếu bạn dưới 18 tuổi, hãy dùng Ứng dụng với sự cho phép của cha mẹ hoặc người giám hộ.</p>
+
+<h2>9. Chuyển dữ liệu quốc tế</h2>
+<p>Máy chủ của chúng tôi chạy trên Google Cloud (khu vực Singapore); các nhà cung cấp AI có thể xử lý dữ liệu tại Hoa Kỳ. Việc chuyển dữ liệu dựa trên điều khoản hợp đồng chuẩn của các nhà cung cấp.</p>
+
+<h2>10. Thay đổi</h2>
+<p>Chúng tôi sẽ đăng thay đổi tại đây và thông báo trong app với thay đổi quan trọng. Tiếp tục sử dụng sau ngày hiệu lực nghĩa là bạn chấp nhận chính sách cập nhật.</p>
+
+<h2>11. Liên hệ</h2>
+<p>Doxuto Studio · <a href="mailto:contact@doxutostudio.top">contact@doxutostudio.top</a> · <a href="https://doxutostudio.top">doxutostudio.top</a></p>
+</div>
+<footer>One AI · <a href="?doc=terms&lang=vi">Điều khoản dịch vụ</a> · <a href="?doc=delete-account&lang=vi">Xoá tài khoản</a></footer>
+</main></body></html>

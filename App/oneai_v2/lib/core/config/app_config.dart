@@ -26,9 +26,12 @@ class AppConfig {
     required this.termsUrl,
     required this.privacyUrl,
     required this.supportEmail,
+    this.legalBaseUrl,
   });
 
-  factory AppConfig.fromEnvironment() {
+  /// [projectId] (from the Firebase options) lets the legal pages served by
+  /// the `legal` function be linked before a website exists.
+  factory AppConfig.fromEnvironment({String? projectId}) {
     const name = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
     final flavor = switch (name) {
       'prod' => Flavor.prod,
@@ -62,6 +65,7 @@ class AppConfig {
       termsUrl: 'https://doxutostudio.top/terms',
       privacyUrl: 'https://doxutostudio.top/privacy',
       supportEmail: 'contact@doxutostudio.top',
+      legalBaseUrl: projectId == null ? null : 'https://asia-southeast1-$projectId.cloudfunctions.net/legal',
     );
   }
 
@@ -88,6 +92,17 @@ class AppConfig {
   final String termsUrl;
   final String privacyUrl;
   final String supportEmail;
+  /// Base of the `legal` function (S10-07); null → fall back to the website URLs.
+  final String? legalBaseUrl;
+
+  /// Localised legal page: `privacy` | `terms` | `delete-account`, in the
+  /// user's language (en/vi; everything else → en).
+  String legalUrl(String doc, String languageCode) {
+    final base = legalBaseUrl;
+    if (base == null) return doc == 'terms' ? termsUrl : privacyUrl;
+    final lang = languageCode == 'vi' ? 'vi' : 'en';
+    return '$base?doc=$doc&lang=$lang';
+  }
 
   bool get isProd => flavor == Flavor.prod;
 

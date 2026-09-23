@@ -55,6 +55,13 @@ describe("share links (S11-05)", () => {
 
     const { minute } = await getMinuteHandler(u1, { client, minuteId: "m1" }, deps);
     expect(minute.share?.url).toBe(share.url);
+
+    // Decided 24/09: the shared note is a PDF; the page links to it.
+    expect(page.html).toContain("format=pdf");
+    const pdf = await sharePage(deps, tokenOf(share.url), { format: "pdf" });
+    expect(pdf.status).toBe(200);
+    expect(pdf.pdf?.fileName).toBe("Standup-1.pdf");
+    expect(pdf.pdf?.bytes.subarray(0, 5).toString()).toBe("%PDF-");
   });
 
   it("is idempotent for the same options and rotates the token when includeTranscript changes", async () => {
