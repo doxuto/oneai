@@ -135,6 +135,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | S7-08 | App: tìm kiếm client-side title + `transcriptPreview` (AND theo từ, bỏ dấu tiếng Việt), ô search dưới "My Notes", trạng thái không kết quả | `home/{home_controller,home_screen}.dart`, 3 test | chưa compile — bước 1 OQ-07 |
 | [x] | S6-12a | BE: `setActionItemDone {minuteId,itemId,done}` — tick nằm trong artifact, không gọi model/không quota; `ActionItemsData.items[].done` | `ai/{types,handler,setActionItemDone}.ts`, 3 unit + 2 integration | `force` sinh lại xoá tick (ghi trong contract) |
 | [~] | S6-12b | App: tick action item optimistic → server (thay SharedPreferences), rollback + snack khi lỗi | `minute_detail_controller.dart` (`ActionItemsController.setDone`), `summary_tab.dart`, 2 test | chưa compile |
+| [~] | S10-07/08 | Store compliance: bảng dữ liệu thu thập theo SDK, App Privacy labels, Play Data safety, điều khoản Terms/Privacy, trang xoá tài khoản, listing, checklist nộp | `docs/19-STORE-COMPLIANCE.md` | **[Toan]** điền console + đăng web (T13) |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 
@@ -195,4 +196,5 @@ Chi tiết phần còn lại trong `09-ROADMAP.md`.
 | T10 | `cd Backend/oneai_backend/functions-v2 && sudo rm /usr/local/bin/firebase && npm i -D firebase-tools && npm run test:integration` (binary cũ là Intel — "Bad CPU type") — cần Java 11+ | 140 integration test |
 | T11 | Sau deploy dev: `PROJECT_ID=oneai-dev NOTIFY_EMAIL=… ./monitoring/apply.sh` | alert |
 | T12 | `npm run load-test` trên máy (emulator) — báo p95 | S10-02 |
+| T13 | Điền App Privacy (App Store Connect) + Data safety (Play Console) theo `19-STORE-COMPLIANCE.md` §2–§3; đăng Privacy/Terms/Delete-account theo §4–§5; app-ads.txt | S10-07, S10-08 |
 | T9 | (tuỳ chọn) đặt `STT_VENDOR=gemini` hoặc `STT_FALLBACK_VENDOR=gemini` trong `functions-v2/.env` rồi deploy — không cần sửa code | đổi vendor STT |

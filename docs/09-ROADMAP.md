@@ -250,8 +250,8 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S10-04 | App Check chuyển sang **enforce** | traffic hợp lệ không bị chặn |
 | S10-05 | Alert: error rate, p95, chi phí/ngày — ✅ as-code `monitoring/apply.sh` (8 log-metric + 9 policy); Toan chạy sau deploy, budget cần billing id | bắn được khi test thủ công |
 | S10-06 | Runbook sự cố + rollback từng function — ✅ `15-RUNBOOK.md`; diễn tập chờ deploy | đã diễn tập 1 lần |
-| S10-07 | Terms + Privacy cập nhật theo UMP | duyệt xong |
-| S10-08 | App Store + Play Store listing, privacy labels, Data Safety | nộp được |
+| S10-07 | Terms + Privacy cập nhật theo UMP — ✍️ điều khoản cần có: `19-STORE-COMPLIANCE.md` §4; **[Toan]** đăng web | duyệt xong |
+| S10-08 | App Store + Play Store listing, privacy labels, Data Safety — ✍️ bảng khai sẵn `19-STORE-COMPLIANCE.md` §2–§3, listing §6; **[Toan]** điền console | nộp được |
 | S10-09 | Deploy `functions:v2` lên prod (v1 vẫn sống) | |
 | S10-10 | Phased release iOS 1%→10%→50%→100%, staged rollout Android | crash-free ≥99.5% mới tăng bậc |
 | S10-11 | Theo dõi 7 ngày sau 100% | **M6** |
