@@ -114,13 +114,14 @@ class _TranslationSheetState extends ConsumerState<TranslationSheet> {
                   Expanded(child: Text(l10n.translate, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold))),
                   if (st.done)
                     IconButton(
+                      tooltip: l10n.copy,
                       icon: const Icon(Icons.copy, color: AppColors.brandBlueAlt),
                       onPressed: () async {
                         await Clipboard.setData(ClipboardData(text: st.text));
                         if (context.mounted) AppSnack.show(context, l10n.copied);
                       },
                     ),
-                  InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(8), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24))),
+                  Semantics(button: true, label: context.l10n.close, child: InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(10), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24, excludeFromSemantics: true)))),
                 ],
               ),
             ),

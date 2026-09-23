@@ -68,7 +68,7 @@ class _State extends ConsumerState<TranscriptionSummaryScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await _exit(); }),
+          leading: IconButton(tooltip: l10n.back, icon: const Icon(Icons.arrow_back, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await _exit(); }),
           title: Text(l10n.back, style: context.textTheme.titleMedium?.copyWith(color: AppColors.brandBlueAlt)),
           titleSpacing: 0,
           centerTitle: false,
@@ -278,10 +278,10 @@ class _PlayerFab extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(onPressed: () async { await HapticFeedback.lightImpact(); await ctl.cycleSpeed(); }, child: Text('${p.speed.toStringAsFixed(1)}x', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.brandBlueAlt))),
-                IconButton(icon: const Icon(Icons.replay_10, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.seekRelative(const Duration(seconds: -10)); }),
-                IconButton(icon: Icon(p.playing ? Icons.pause : Icons.play_arrow, color: AppColors.brandBlueAlt, size: 32), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.toggle(); }),
-                IconButton(icon: const Icon(Icons.forward_10, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.seekRelative(const Duration(seconds: 10)); }),
-                IconButton(icon: const Icon(Icons.close, color: AppColors.brandBlueAlt), onPressed: () { HapticFeedback.lightImpact(); ctl.collapse(); }),
+                IconButton(tooltip: context.l10n.rewind10, icon: const Icon(Icons.replay_10, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.seekRelative(const Duration(seconds: -10)); }),
+                IconButton(tooltip: p.playing ? context.l10n.pause : context.l10n.play, icon: Icon(p.playing ? Icons.pause : Icons.play_arrow, color: AppColors.brandBlueAlt, size: 32), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.toggle(); }),
+                IconButton(tooltip: context.l10n.forward10, icon: const Icon(Icons.forward_10, color: AppColors.brandBlueAlt), onPressed: () async { await HapticFeedback.lightImpact(); await ctl.seekRelative(const Duration(seconds: 10)); }),
+                IconButton(tooltip: context.l10n.close, icon: const Icon(Icons.close, color: AppColors.brandBlueAlt), onPressed: () { HapticFeedback.lightImpact(); ctl.collapse(); }),
               ],
             ),
             Padding(

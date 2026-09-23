@@ -649,5 +649,10 @@
   "gradeAgain": "Again",
   "gradeHard": "Hard",
   "gradeGood": "Good",
-  "gradeEasy": "Easy"
+  "gradeEasy": "Easy",
+  "rewind10": "Back 10 seconds",
+  "forward10": "Forward 10 seconds",
+  "play": "Play",
+  "pause": "Pause",
+  "copy": "Copy"
 }

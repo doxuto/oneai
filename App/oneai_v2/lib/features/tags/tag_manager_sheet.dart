@@ -51,7 +51,7 @@ class TagManagerSheet extends ConsumerWidget {
                   icon: const Icon(Icons.add_circle_rounded, color: AppColors.brandBlue, size: 18),
                   label: Text(l10n.createTag, style: const TextStyle(color: AppColors.brandBlue)),
                 ),
-                InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(8), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24))),
+                Semantics(button: true, label: context.l10n.close, child: InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(10), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24, excludeFromSemantics: true)))),
               ]),
             ),
             Expanded(
@@ -84,8 +84,8 @@ class _TagRow extends ConsumerWidget {
       title: Text(tag.name),
       subtitle: Text(l10n.noteCount(tag.minuteCount), style: context.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        IconButton(icon: SvgPicture.asset(Assets.editIcon, width: 18, height: 18), onPressed: () => _rename(context, ref)),
-        IconButton(icon: SvgPicture.asset(Assets.deleteIcon, width: 18, height: 18), onPressed: () => showDeleteTagDialog(context, ref, tag)),
+        IconButton(tooltip: l10n.editName, icon: SvgPicture.asset(Assets.editIcon, width: 18, height: 18), onPressed: () => _rename(context, ref)),
+        IconButton(tooltip: l10n.delete, icon: SvgPicture.asset(Assets.deleteIcon, width: 18, height: 18), onPressed: () => showDeleteTagDialog(context, ref, tag)),
       ]),
     );
   }

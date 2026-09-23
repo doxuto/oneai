@@ -250,5 +250,10 @@
   "gradeAgain": "Otra vez",
   "gradeHard": "Difícil",
   "gradeGood": "Bien",
-  "gradeEasy": "Fácil"
+  "gradeEasy": "Fácil",
+  "rewind10": "Retroceder 10 segundos",
+  "forward10": "Avanzar 10 segundos",
+  "play": "Reproducir",
+  "pause": "Pausar",
+  "copy": "Copiar"
 }

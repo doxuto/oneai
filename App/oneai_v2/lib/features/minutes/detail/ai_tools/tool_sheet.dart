@@ -39,7 +39,7 @@ class ToolSheet<T> extends ConsumerWidget {
                     Expanded(child: Text(title, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold))),
                     if (value.hasValue)
                       TextButton(onPressed: () { HapticFeedback.lightImpact(); onRegenerate(); }, child: Text(context.l10n.regenerate, style: const TextStyle(color: AppColors.brandBlueAlt))),
-                    InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(8), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24))),
+                    Semantics(button: true, label: context.l10n.close, child: InkWell(onTap: () => Navigator.pop(context), borderRadius: BorderRadius.circular(20), child: Padding(padding: const EdgeInsets.all(10), child: SvgPicture.asset(Assets.closeIcon, width: 24, height: 24, excludeFromSemantics: true)))),
                   ],
                 ),
               ),

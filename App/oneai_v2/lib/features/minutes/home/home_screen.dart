@@ -133,12 +133,12 @@ class _Header extends ConsumerWidget {
                   },
           ),
           const Spacer(),
-          _ActionButton(icon: Assets.messageIcon, onTap: () async {
+          _ActionButton(icon: Assets.messageIcon, label: context.l10n.giveFeedback, onTap: () async {
             await HapticFeedback.lightImpact();
             if (context.mounted) await showFeedbackDialog(context);
           }),
           gapW16,
-          _ActionButton(icon: Assets.settingsIcon, onTap: () { HapticFeedback.lightImpact(); context.push(Routes.settings); }),
+          _ActionButton(icon: Assets.settingsIcon, label: context.l10n.settings, onTap: () { HapticFeedback.lightImpact(); context.push(Routes.settings); }),
         ],
       ),
     );
@@ -182,6 +182,7 @@ class _SearchFieldState extends ConsumerState<_SearchField> {
           suffixIcon: query.isEmpty
               ? null
               : IconButton(
+                  tooltip: context.l10n.close,
                   icon: Icon(Icons.close, size: 18, color: Colors.grey[600]),
                   onPressed: () {
                     _ctl.clear();
@@ -263,14 +264,20 @@ class _NoSearchResults extends StatelessWidget {
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.onTap});
+  const _ActionButton({required this.icon, required this.label, required this.onTap});
   final String icon;
+  /// Screen-reader name; the icon has no text (S9-03).
+  final String label;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(padding: const EdgeInsets.all(8), child: SvgPicture.asset(icon, width: 24, height: 24)),
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(padding: const EdgeInsets.all(10), child: SvgPicture.asset(icon, width: 24, height: 24, excludeFromSemantics: true)),
+        ),
       );
 }
 

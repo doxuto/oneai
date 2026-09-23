@@ -129,7 +129,9 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | A6-04 | Paywall RevenueCat — đã có từ A3 (`paywallProvider`, `presentPaywallIfNeeded`) | `features/billing/paywall.dart` | |
 | [x] | A6-05 | Quyền push: xin sau lần xử lý đầu (`audio_processing_screen`) + toggle Settings — đã có từ A3/A5 | | |
 | [~] | A6-06 | Sentry bọc `runApp` (DSN rỗng ở dev), AppsFlyer start sau ATT (không chạy ở dev), debug log tắt ở prod | `core/observability/sentry_boot.dart`, `features/analytics/appsflyer_boot.dart`, `bootstrap.dart` | |
-| [ ] | A6-07 | Golden ≥30, widget test, a11y AA, cold start < 2s — **cần Flutter** (T1/T2) | `test/golden/*` | |
+| [~] | A6-07 | Widget test 3 màn (Login, Home, Settings — 10 test) qua `pumpScreen` dùng đúng theme + l10n delegates của app, mỗi màn chạy `expectAccessible` (tap target, nhãn, tương phản); golden ≥30 **cần Flutter** để sinh ảnh | `test/widget/*` | chưa compile |
+| [~] | S9-03 | a11y AA pass: tooltip cho mọi IconButton, `Semantics(button,label)` cho InkWell chỉ icon (Home actions, nút đóng sheet), padding 10 → target ≥44 | 8 file | |
+| [x] | — | **Bug**: `MaterialApp.router` thiếu `localizationsDelegates`/`supportedLocales` → mọi `context.l10n` sẽ throw ngay màn đầu; đã thêm | `app.dart` | phát hiện khi viết widget test |
 | [x] | S7-09a | BE: `updateMinute.pinned` → `pinned` + `pinnedAt`; `MinuteSummary.pinned/pinnedAt` | `minutes/{types,_shared,handler}.ts`, contract snapshot, 1 unit + 1 integration | |
 | [~] | S7-09b | App: menu Ghim/Bỏ ghim trên card, icon ghim, ghim lên đầu theo `pinnedAt` (thuần `filterMinutes`) | `home/{home_controller,minute_item_card}.dart`, 1 test | chưa compile |
 | [~] | S7-08 | App: tìm kiếm client-side title + `transcriptPreview` (AND theo từ, bỏ dấu tiếng Việt), ô search dưới "My Notes", trạng thái không kết quả | `home/{home_controller,home_screen}.dart`, 3 test | chưa compile — bước 1 OQ-07 |

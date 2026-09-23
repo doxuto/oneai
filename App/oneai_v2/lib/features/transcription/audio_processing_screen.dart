@@ -165,7 +165,7 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
             gapW8,
             Text(l10n.appName, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
           ]),
-          actions: [IconButton(icon: const Icon(Icons.close), onPressed: () async { await HapticFeedback.lightImpact(); await _close(); })],
+          actions: [IconButton(tooltip: l10n.close, icon: const Icon(Icons.close), onPressed: () async { await HapticFeedback.lightImpact(); await _close(); })],
         ),
         body: SafeArea(
           child: Padding(

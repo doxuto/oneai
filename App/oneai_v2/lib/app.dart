@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_ai/bootstrap.dart';
+import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/router/app_router.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/theme/app_theme.dart';
@@ -40,6 +41,10 @@ class OneAiApp extends ConsumerWidget {
       title: config.appShortName,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      // gen-l10n (l10n.yaml → core/l10n/generated). Without these every
+      // `context.l10n` throws; the device locale picks en / vi / es.
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       // v1 wrapped the whole app so a tap outside a field closes the keyboard.
       builder: (_, child) => GestureDetector(
         behavior: HitTestBehavior.translucent,

@@ -250,5 +250,10 @@
   "gradeAgain": "Chưa nhớ",
   "gradeHard": "Khó",
   "gradeGood": "Được",
-  "gradeEasy": "Dễ"
+  "gradeEasy": "Dễ",
+  "rewind10": "Lùi 10 giây",
+  "forward10": "Tới 10 giây",
+  "play": "Phát",
+  "pause": "Tạm dừng",
+  "copy": "Sao chép"
 }

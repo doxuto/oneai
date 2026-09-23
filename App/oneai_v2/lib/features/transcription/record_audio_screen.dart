@@ -95,6 +95,7 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
           backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
+            tooltip: context.l10n.back,
             icon: const Icon(Icons.arrow_back),
             onPressed: () async {
               await HapticFeedback.lightImpact();
