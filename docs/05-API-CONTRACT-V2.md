@@ -216,11 +216,26 @@ Sửa luôn lỗi v1 nơi `PUT /tags/:id` trả `tagId` còn `GET`/`POST` trả 
 
 | Callable | Input | Output |
 |---|---|---|
-| `getMe` | `{client}` | `{user: {id, email, displayName, photoUrl, plan, quota: {used, limit, resetAt, rewardBonus}}}` |
+| `getMe` | `{client}` | `{user: {id, email, displayName, photoUrl, plan, planExpiresAt, minuteCount, createdAt, notifications: {transcriptionDone}}, quota: {used, limit, resetAt, rewardBonus}}` |
 | `deleteAccount` | `{client, confirm: true}` | `{}` |
 
 v1 dùng ba field id khác nhau từ cùng một decoded token (`user_id`, `uid`,
 `email`) tuỳ file. v2 chỉ dùng `request.auth.uid`.
+
+### 2.5b push (FCM)
+
+| Callable | Input | Output |
+|---|---|---|
+| `registerDevice` | `{client, token: FCM ≤4096, locale?: BCP-47}` | `{}` — upsert `users/{uid}/devices/{sha256(token)}`; **token đang thuộc uid khác thì chuyển sang uid này** (cùng máy, đổi tài khoản) |
+| `unregisterDevice` | `{client, token}` | `{}` — gọi khi sign out; idempotent |
+| `updateNotificationPrefs` | `{client, transcriptionDone: boolean}` | `{notifications}` |
+
+Server gửi push khi job kết thúc (từ pipeline hoặc reaper), **không** khi user
+tự huỷ. Payload `data: {type: "minuteReady" \| "minuteFailed", minuteId}` để app
+deep-link; title/body theo `locale` của thiết bị (en/vi/es, mặc định en);
+`collapseKey = minute:{id}` nên nhiều push cho cùng note gộp một. Token FCM
+báo chết (`registration-token-not-registered`, …) bị xoá ngay. Client **không
+bao giờ** đọc/ghi `devices/` trực tiếp (rules chặn).
 
 ### 2.6 onRequest (webhook — ngoại lệ)
 
@@ -235,8 +250,32 @@ v1 dùng ba field id khác nhau từ cùng một decoded token (`user_id`, `uid`
 |---|---|---|
 | `onUserCreated` | v1 auth trigger (đánh dấu rõ trong code) | tạo `users/{uid}` + quota ngày đầu |
 | `onUserDeleted` | v1 auth trigger | xoá recursive Firestore + Storage, có retry, **không nuốt lỗi** |
-| `resetDailyQuota` | `onSchedule` 00:00 Asia/Ho_Chi_Minh | reset quota; xem OQ-03 về việc có giữ reward hay không |
-| `sweepOrphanFiles` | `onSchedule` hằng ngày | xoá file Storage không có minute tương ứng (v1 không có, rò rỉ vĩnh viễn) |
+| ~~`resetDailyQuota`~~ | — | **không cần**: quota là doc theo ngày + TTL |
+| `onMinuteWritten` | Firestore trigger | recount `minuteCount` user + tag (aggregation, idempotent) |
+| `processTranscription` | `onTaskDispatched` 2GiB/540s, retry 3, ≤10 song song | worker nặng; ghi `stt: {vendor, model}` lên note + job |
+| `reapStaleJobs` | `onSchedule` mỗi 15 phút | job `running` > 30 phút hoặc `queued` > 60 phút → fail + hoàn credit + push `minuteFailed` |
+| `sweepOrphanFiles` | `onSchedule` 03:00 VN hằng ngày | upload bỏ dở > 24h, note kẹt > 2h (backstop), prefix Storage mồ côi, job cũ > 7 ngày |
+
+**Trần đồng thời theo user:** `startTranscription` từ chối `resource-exhausted`
+`reason:"tooManyActiveJobs"` khi user đã có ≥ `maxActiveJobs` job queued/running
+(free 1, premium 3 — param `FREE_MAX_ACTIVE_JOBS`/`PREMIUM_MAX_ACTIVE_JOBS`),
+kiểm tra **trước** khi trừ quota.
+
+### 2.8 Speech-to-text — đổi vendor bằng config
+
+`Services.stt` là một `SttClient { vendor, model, transcribe(req) → SttResult }`
+trả về **cùng một `Transcript`** bất kể vendor. Có sẵn hai adapter:
+
+| Vendor | File | Ghi chú |
+|---|---|---|
+| `elevenlabs` (Scribe) | `lib/stt/elevenlabs.ts` | mặc định; timestamp chính xác theo word, có `language_probability` |
+| `gemini` | `lib/stt/gemini.ts` | audio ≤14MB gửi inline, lớn hơn qua Files API (upload → poll ACTIVE → xoá); JSON theo `responseSchema`; timestamp là ước lượng của model |
+
+Chọn bằng param `STT_VENDOR`; `STT_FALLBACK_VENDOR` (mặc định `none`) bật
+fallback **một lần** khi primary trả `unavailable`/`resource-exhausted`/`internal`
+(không fallback cho `deadline-exceeded` — ngân sách worker đã cạn — hay lỗi mô tả
+input như `safety`). Thêm vendor mới = 1 file adapter + 1 `case` trong
+`lib/stt/index.ts`. Note ghi `stt.vendor/model` để so sánh chất lượng sau này.
 
 ---
 

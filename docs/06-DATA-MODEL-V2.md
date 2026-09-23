@@ -31,6 +31,7 @@ transcriptionJobs/{jobId}           trạng thái task worker (chỉ server đ�
 | `planExpiresAt` | `Timestamp \| null` | **mới** — v1 không có, nên một webhook `EXPIRATION` bị miss = premium vĩnh viễn |
 | `createdAt` / `updatedAt` / `lastSeenAt` | `Timestamp` | |
 | `minuteCount` | `number` | denormalize, cập nhật bằng trigger |
+| `notifications` | `{transcriptionDone: boolean}` | thiếu = `true`; chỉ `updateNotificationPrefs` ghi |
 
 Bỏ `role` (không dùng ở đâu), bỏ `credit` / `dailyCreditUsed` / `totalCreditUsed`
 / `lastCreditReset` — chuyển hết vào `quota/{periodId}`.
@@ -111,10 +112,23 @@ Gộp từ `tags/{uid}/tagItems` của v1.
 `transaction_id` của Google làm document id ⇒ idempotency miễn phí bằng
 `tx.create()`, ném code 6 nếu trùng.
 
+### `users/{uid}/devices/{deviceId}` — **mới**
+
+`deviceId = sha256(token)[:40]`. `token`, `platform`, `locale`, `appVersion`,
+`createdAt`, `lastSeenAt`. Server-only (rules chặn cả owner). Một token chỉ nằm
+dưới một uid: `registerDevice` xoá bản ghi cùng token ở uid khác (collection-group
+query trên `token` — field override trong `firestore.indexes.json`). Token chết
+bị xoá khi FCM báo.
+
 ### `transcriptionJobs/{jobId}`
 
-`uid`, `minuteId`, `state`, `attempt`, `startedAt`, `finishedAt`, `error`,
-`creditRefunded: boolean`. Chỉ Admin SDK truy cập; rules chặn client hoàn toàn.
+`uid`, `minuteId`, `requestId`, `state` (queued|running|done|failed|cancelled),
+`attempt`, `periodId`, `quotaRefunded: boolean`, `options{audioLanguage,
+summaryLanguage, keywords, description, timezone}`, `createdAt`, `startedAt`,
+`finishedAt`, `error`, và khi `done`: `stt: {vendor, model}`, `durationMs`.
+Chỉ Admin SDK truy cập; rules chặn client hoàn toàn. `reapStaleJobs` (15 phút)
+đọc theo `(state, startedAt)` / `(state, createdAt)`; trần đồng thời đọc
+`(uid, state)`.
 
 ---
 

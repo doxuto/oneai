@@ -64,6 +64,9 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S3-00 | Quota module thuần | `quota/quota.ts`, `test/unit/quota.test.ts` | `canConsume(period, plan)`, `consume(tx)`, `refund(tx)`; premium ghi `used` nhưng không chặn |
 | [x] | S3-01 | `startTranscription` | `transcribe/startTranscription.ts` + handler | transaction: đọc minute + quota → trừ → set `queued` → enqueue; 20 song song với quota 1 → 1 qua |
 | [x] | S3-02 | `processTranscription` task worker | `transcribe/processTranscription.ts`, `transcribe/pipeline.ts` | `onTaskDispatched` 2GiB/540s retry 3; máy trạng thái `transcribing→summarizing→ready` |
+| [x] | S3-03b | **STT trừu tượng**: `SttClient` trả `SttResult{transcript, vendor, model}` chuẩn hoá; adapter Gemini (inline ≤14MB / Files API + poll, JSON `responseSchema`, MIME canonical); `makeStt` + `withSttFallback` theo `STT_VENDOR`/`STT_FALLBACK_VENDOR`; note + job ghi `stt{vendor,model}` | `lib/stt/{types,gemini,index}.ts`, `test/unit/stt.test.ts` (29) | fallback chỉ với lỗi vendor, không với deadline/safety |
+| [x] | S3-12 | **Quản lý job nặng**: `reapStaleJobs` 15 phút (running>30', queued>60' → `failJob`: hoàn credit 1 lần + note failed + push); `failJob` dùng chung pipeline/sweep/reaper; trần `maxActiveJobs` theo plan kiểm tra trước khi trừ quota; index `(uid,state)`, `(state,startedAt)`, `(state,createdAt)` | `jobs/{reap,reapStaleJobs}.ts`, `transcribe/{pipeline,handler}.ts` | integration: cap premium=2, reaper running/queued, không hoàn 2 lần |
+| [x] | S8-08 | **Push FCM**: `registerDevice` (token chuyển uid khi đổi tài khoản cùng máy) / `unregisterDevice` / `updateNotificationPrefs`; `notifyMinuteResult` từ pipeline done/failed + reaper, copy en/vi/es theo locale máy, `collapseKey` theo note, prune token chết, không bao giờ throw; `getMe.notifications` | `lib/push/{types,fcm}.ts`, `push/*`, `test/unit/push.test.ts` (9), `test/integration/push.test.ts` (9) + pipeline push tests | rules: `devices/` server-only |
 | [x] | S3-03 | ElevenLabs adapter | `lib/stt/elevenlabs.ts` | timeout 480s < 540s; 429→`resource-exhausted`; 5xx→`unavailable`; fetch native, không axios |
 | [x] | S3-04 | `convertTranscript` + ISO-639-3 | `lib/stt/convert.ts`, `lib/stt/languages.ts` | `startSeconds`/`endSeconds` số; test với fixture ElevenLabs thật |
 | [x] | S3-05 | Summarize prompt loader | `lib/llm/prompts.ts` | `__dirname`; prompt copy vào `src/prompts/`; test load được |
@@ -134,3 +137,5 @@ Chi tiết phần còn lại trong `09-ROADMAP.md`.
 | T5 | Bật App Check monitor trong console | S1-07 |
 | T6 | Chốt OQ-01, OQ-02 | S3-00 dùng mặc định tạm nếu chưa chốt |
 | T7 | Revoke SOCKS proxy credential ở nhà cung cấp | bảo mật |
+| T8 | Upload APNs key (.p8) vào Firebase console → Cloud Messaging; bật Push Notifications + Background Modes (Remote notifications) trong Xcode | push iOS |
+| T9 | (tuỳ chọn) đặt `STT_VENDOR=gemini` hoặc `STT_FALLBACK_VENDOR=gemini` trong `functions-v2/.env` rồi deploy — không cần sửa code | đổi vendor STT |

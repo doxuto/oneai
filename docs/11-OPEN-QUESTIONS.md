@@ -25,7 +25,7 @@ trong commit. Khi chốt xong: đổi trạng thái, ghi ngày, ghi quyết đ�
 | OQ-12 | Thêm tiếng Việt? | S8 | ✅ đã làm sẵn `app_vi.arb` (23/09) — Toan chỉ cần rà bản dịch |
 | OQ-13 | Giữ `contentKind` do LLM đoán? | S3 | **CHƯA CHỐT** |
 | OQ-14 | Nguồn timezone: header hay body? | S4 | **CHƯA CHỐT** |
-| OQ-15 | Có làm push notification? | S8 | **CHƯA CHỐT** |
+| OQ-15 | Có làm push notification? | S8 | ✅ **ĐÃ LÀM BE 23/09**: push khi job xong/hỏng; App đăng ký token chờ Flutter |
 | OQ-16 | Section tóm tắt theo chủ đề hay theo lượt nói? | S4 | **CHƯA CHỐT** — đang dùng mặc định tạm |
 
 ---
@@ -244,7 +244,12 @@ bất đồng bộ và user có thể thoát app. Skill `fcm-push-pro` đã có 
 Chưa nằm trong roadmap. Nếu có thì thêm vào S8 (+1 tuần: token registry,
 `onNoteReady` trigger, quyền, deep link).
 
-**Mặc định tạm:** không làm ở v1.0 của v2. → S8.
+**Chốt 23/09 (Toan yêu cầu):** làm. BE xong: `registerDevice`/`unregisterDevice`/
+`updateNotificationPrefs`, push `minuteReady`/`minuteFailed` từ pipeline + reaper,
+copy en/vi/es theo locale thiết bị, prune token chết. App: `PushRepository` +
+`NotificationsController` viết sẵn (chưa compile). Còn phía Toan: upload APNs
+key (.p8) vào Firebase console → Cloud Messaging; bật Push Notifications +
+Background Modes › Remote notifications trong Xcode; Android không cần gì thêm.
 
 ---
 

@@ -145,6 +145,20 @@ Bản v2 nạp qua `defineSecret`, không qua `.env`, không qua `functions.conf
 `GEMINI_MODEL`, `GROK_MODEL`, `OPENAI_MODEL` được code cũ đọc nhưng chưa bao giờ
 được khai báo — bản mới đưa vào `defineString` có default tường minh.
 
+Param không bí mật (`functions-v2/.env`, commit có chủ ý):
+
+| Tên | Mặc định | Ý nghĩa |
+|---|---|---|
+| `STT_VENDOR` | `elevenlabs` | `elevenlabs` \| `gemini` |
+| `STT_FALLBACK_VENDOR` | `none` | vendor thử lại một lần khi primary sập |
+| `GEMINI_STT_MODEL` | `gemini-2.5-flash` | model khi STT là Gemini |
+| `LLM_VENDOR` / `OPENAI_MODEL` / `OPENAI_MODEL_HEAVY` / `GEMINI_MODEL` | `openai` / `gpt-4o-mini` / `gpt-4o` / `gemini-2.0-flash` | LLM |
+| `FREE_MAX_ACTIVE_JOBS` / `PREMIUM_MAX_ACTIVE_JOBS` | 1 / 3 | job transcribe đồng thời tối đa mỗi user |
+| `FREE_DAILY_LIMIT` … `PREMIUM_AI_CALLS_DAILY` | xem `.env` | quota |
+
+Push (FCM) không cần secret: Admin SDK dùng ADC. Cần **APNs key** upload trong
+Firebase console (Project settings → Cloud Messaging → Apple app) — làm tay.
+
 `functions/service-account.json` — **không mang sang.** Runtime Cloud Functions
 đã có Application Default Credentials; file key chỉ là rủi ro.
 
