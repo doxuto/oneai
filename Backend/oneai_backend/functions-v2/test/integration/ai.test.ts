@@ -3,7 +3,7 @@ import { getStorage } from "firebase-admin/storage";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpsError } from "firebase-functions/v2/https";
-import { chatHandler, generateCalendarEventsHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { chatHandler, generateCalendarEventsHandler, generateFlashcardsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -82,6 +82,25 @@ describe("generate* with artifact cache", () => {
     const ok = await generateQuizHandler(u1, { client, minuteId: "m1" }, deps);
     expect(ok.cached).toBe(false);
     expect(ok.data.items[0]?.answerIndex).toBe(0);
+  });
+
+  it("flashcards and mindmap each live in their own artifact doc and cache independently", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ items: [{ question: "Who?", answer: "Ana" }] }));
+    const cards = await generateFlashcardsHandler(u1, { client, minuteId: "m1", languageCode: "vi" }, makeDeps(llm));
+    expect(cards).toEqual({ data: { items: [{ question: "Who?", answer: "Ana" }] }, cached: false });
+
+    const mm = fakeLlm(async () => ({ root: { id: "r", title: "Intro", icon: "🎯", children: [{ id: "n1", title: "Ana" }] } }));
+    const map = await generateMindmapHandler(u1, { client, minuteId: "m1" }, makeDeps(mm));
+    expect(map.cached).toBe(false);
+    expect(map.data.root.children[0]).toMatchObject({ id: "n1", title: "Ana" }); // the fake LLM returns its JSON verbatim; schema defaults are the adapter's job (unit-tested)
+
+    // Each kind has its own cache: a second flashcards call hits, mindmap untouched.
+    expect((await generateFlashcardsHandler(u1, { client, minuteId: "m1" }, makeDeps(llm))).cached).toBe(true);
+    expect(llm.calls).toBe(1);
+    expect(mm.calls).toBe(1);
+    const ids = (await db.collection("users/u1/minutes/m1/artifacts").get()).docs.map((d) => d.id).sort();
+    expect(ids).toEqual(["flashcards", "mindmap"]);
   });
 
   it("refuses a note that is not ready", async () => {

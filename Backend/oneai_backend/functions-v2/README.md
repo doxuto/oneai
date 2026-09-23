@@ -75,7 +75,7 @@ Param không bí mật nằm trong `.env` (commit có chủ đích).
 | jobs | `sweepOrphanFiles` | schedule 03:00 VN |
 | billing / ads | `revenueCatWebhook` · `adRewardSsv` | onRequest (webhook) |
 
-Test: **154 unit** (chạy mọi nơi) + **117 integration/rules** (chạy qua `npm run test:integration` với emulator).
+Test: **154 unit** (chạy mọi nơi) + **124 integration/rules** (chạy qua `npm run test:integration` với emulator).
 
 ## Cấu trúc test
 

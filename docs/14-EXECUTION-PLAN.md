@@ -50,6 +50,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S2-04 | `updateMinute` | `minutes/updateMinute.ts` | chỉ `title`\|`iconEmoji`\|`tagIds`; `tagIds` phải tồn tại dưới `users/{uid}/tags`; rỗng → `invalid-argument` |
 | [x] | S2-05 | `deleteMinute` | `minutes/deleteMinute.ts` | `recursiveDelete` + `deleteFiles(prefix)`; idempotent (xoá 2 lần → lần 2 `not-found`) |
 | [x] | S2-06 | Tags CRUD | `tags/types.ts`, `tags/handler.ts`, `tags/{create,list,update,delete}Tag.ts` | `nameLower` unique → `already-exists`; delete gỡ `tagIds` khỏi minutes bằng batch ≤500 |
+| [x] | S1-13 | Auth trigger tách handler: `users/lifecycle.ts` — `provisionUser` (transaction, **redeliver không reset profile/quota**), `wipeUser` (Firestore + Storage, báo cáo nửa hỏng → trigger throw để retry) | `users/{lifecycle,onUserCreated,onUserDeleted}.ts`, `test/integration/lifecycle.test.ts` (6 test) | wipe không đụng user khác; idempotent |
 | [x] | S2-07 | Trigger `onMinuteWritten` duy trì `minuteCount` (user + tag) | `minutes/onMinuteWritten.ts` | tạo/xoá/đổi tag → count đúng; idempotent theo `event.id` |
 | [x] | S2-08 | Output mapper tường minh | `minutes/_shared.ts` | không có `snap.data()` trả thẳng; `Timestamp` → ISO |
 | [x] | S2-09 | Contract snapshot test | `test/unit/contract.test.ts` | JSON shape từng output snapshot |
