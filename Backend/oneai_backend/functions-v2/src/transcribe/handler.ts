@@ -6,8 +6,8 @@ import { requireCaller, type Caller } from "../lib/handler.js";
 import { log, logDone } from "../lib/logging.js";
 import { periodIdFor } from "../lib/time.js";
 import { parse } from "../lib/validate.js";
-import { minuteRef, type MinuteDoc } from "../minutes/_shared.js";
-import type { MinuteStatus } from "../minutes/types.js";
+import { minuteRef, sourcePartPath, type MinuteDoc } from "../minutes/_shared.js";
+import { MAX_SOURCE_BYTES, type MinuteStatus } from "../minutes/types.js";
 import { glossaryTermsFor, mergeKeyterms } from "../glossary/handler.js";
 import { consumeQuota, refundQuota } from "../quota/quota.js";
 import { effectivePlan, type UserDoc } from "../users/_shared.js";
@@ -61,13 +61,29 @@ export async function startTranscriptionHandler(
     }
     if (!preDoc.sourcePath) throw new HttpsError("failed-precondition", "Nothing has been uploaded yet", { reason: "noSource" });
 
-    const file = deps.bucket.file(preDoc.sourcePath);
-    const [exists] = await file.exists();
-    if (!exists) throw new HttpsError("failed-precondition", "Upload has not finished", { reason: "noSource" });
-    const [meta] = await file.getMetadata();
-    const size = Number(meta.size ?? 0);
-    if (preDoc.sourceSizeBytes && size !== preDoc.sourceSizeBytes) {
-      throw new HttpsError("failed-precondition", "Uploaded file size does not match", { reason: "sizeMismatch" });
+    if (input.partCount) {
+      // Chunked recording: every part must be there; the worker joins them.
+      const ext = preDoc.sourcePath.split(".").pop() ?? "m4a";
+      let total = 0;
+      for (let i = 0; i < input.partCount; i++) {
+        const part = deps.bucket.file(sourcePartPath(uid, input.minuteId, i, ext));
+        const [exists] = await part.exists();
+        if (!exists) throw new HttpsError("failed-precondition", "Upload has not finished", { reason: "noSource", missingPart: i });
+        total += Number((await part.getMetadata())[0].size ?? 0);
+      }
+      if (total > MAX_SOURCE_BYTES) throw new HttpsError("failed-precondition", "Recording is too large", { reason: "tooLarge", maxSizeBytes: MAX_SOURCE_BYTES });
+      if (preDoc.sourceSizeBytes && total !== preDoc.sourceSizeBytes) {
+        throw new HttpsError("failed-precondition", "Uploaded file size does not match", { reason: "sizeMismatch" });
+      }
+    } else {
+      const file = deps.bucket.file(preDoc.sourcePath);
+      const [exists] = await file.exists();
+      if (!exists) throw new HttpsError("failed-precondition", "Upload has not finished", { reason: "noSource" });
+      const [meta] = await file.getMetadata();
+      const size = Number(meta.size ?? 0);
+      if (preDoc.sourceSizeBytes && size !== preDoc.sourceSizeBytes) {
+        throw new HttpsError("failed-precondition", "Uploaded file size does not match", { reason: "sizeMismatch" });
+      }
     }
 
     // 2. Plan + pre-check the client's declared duration against the cap.
@@ -128,6 +144,7 @@ export async function startTranscriptionHandler(
         description: input.description ?? null,
         template: input.template,
         timezone: input.timezone,
+        sourceParts: input.partCount ?? null,
         updatedAt: FieldValue.serverTimestamp(),
       });
     });

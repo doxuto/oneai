@@ -66,12 +66,21 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
         ),
       );
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = context.l10n;
+    ref.read(recorderProvider.notifier)
+      ..notificationTitle = l10n.appName
+      ..notificationText = l10n.recordingInProgress;
+  }
+
   Future<void> _transcribe() async {
     final seconds = ref.read(recorderProvider).seconds;
     await runWithCreditGate(context, ref, requestedSeconds: seconds, () async {
-      final file = await ref.read(recorderProvider.notifier).finish();
-      if (file == null || !mounted) return;
-      final request = buildNewMinuteRequest(file: file, settings: _currentSettings(), durationSeconds: seconds.toDouble());
+      final parts = await ref.read(recorderProvider.notifier).finish();
+      if (parts == null || parts.isEmpty || !mounted) return;
+      final request = buildNewMinuteRequest(file: parts.first, parts: parts, settings: _currentSettings(), durationSeconds: seconds.toDouble());
       await context.push(Routes.audioProcessing, extra: AudioProcessingArgs(request: request));
     });
   }

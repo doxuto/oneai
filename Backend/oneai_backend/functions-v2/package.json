@@ -19,6 +19,7 @@
     "load-test": "npm run build && firebase emulators:exec --only firestore,storage --project demo-oneai \"node tools/load-test.mjs\""
   },
   "dependencies": {
+    "ffmpeg-static": "^5.2.0",
     "firebase-admin": "^13.3.0",
     "firebase-functions": "^6.5.0",
     "music-metadata": "^11.16.0",

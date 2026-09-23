@@ -7,12 +7,15 @@ import 'package:one_ai/features/transcription/prompt_language_sheet.dart';
 import 'package:one_ai/features/transcription/transcription_language.dart';
 
 /// From a picked/recorded file + the sheet's settings to what `/audioProcessing` needs.
-NewMinuteRequest buildNewMinuteRequest({required File file, required PromptSettings settings, double? durationSeconds}) {
+/// `parts` (S11-09): the chunks of a chunked recording, `file` being the first.
+NewMinuteRequest buildNewMinuteRequest({required File file, required PromptSettings settings, double? durationSeconds, List<File> parts = const []}) {
   final name = file.uri.pathSegments.isNotEmpty ? file.uri.pathSegments.last : 'audio.m4a';
+  final all = parts.length > 1 ? parts : [file];
   return NewMinuteRequest(
     file: file,
+    parts: parts.length > 1 ? parts : const [],
     fileName: name,
-    sizeBytes: file.existsSync() ? file.lengthSync() : 0,
+    sizeBytes: all.fold<int>(0, (n, f) => n + (f.existsSync() ? f.lengthSync() : 0)),
     contentType: contentTypeFor(name),
     options: TranscriptionOptions(
       summaryLanguage: settings.summaryLanguage.englishName,

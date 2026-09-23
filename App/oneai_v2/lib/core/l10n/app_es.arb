@@ -295,5 +295,6 @@
   "askAllExample1": "¿Qué decidimos la semana pasada?",
   "askAllExample2": "Mis tareas pendientes",
   "askAllExample3": "Resume las reuniones de este mes",
-  "newConversation": "Nueva conversación"
+  "newConversation": "Nueva conversación",
+  "recordingInProgress": "Grabación en curso"
 }

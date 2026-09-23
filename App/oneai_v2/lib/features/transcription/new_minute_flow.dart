@@ -22,13 +22,20 @@ class NewMinuteRequest {
     required this.sizeBytes,
     required this.contentType,
     required this.options,
+    this.parts = const [],
   });
 
+  /// The whole file, or the first chunk of a chunked recording (S11-09).
   final File file;
   final String fileName;
+  /// Total bytes (all chunks).
   final int sizeBytes;
   final String contentType;
   final TranscriptionOptions options;
+  /// S11-09: every chunk in order when the recording was chunked; empty = one file.
+  final List<File> parts;
+  bool get isChunked => parts.length > 1;
+  int get partCount => isChunked ? parts.length : 1;
 
   SourceType get sourceType => TranscriptionRepository.sourceTypeFor(contentType);
 
@@ -216,7 +223,7 @@ class NewMinuteFlow extends Notifier<NewMinuteState> {
   void _upload(CreateMinuteResult target) {
     state = NewMinuteUploading(target.minuteId, const UploadProgress(bytesTransferred: 0, totalBytes: 0));
     unawaited(_sub?.cancel());
-    _sub = _gw.upload(file: request.file, target: target).listen(
+    _sub = (request.isChunked ? _gw.uploadParts(parts: request.parts, target: target) : _gw.upload(file: request.file, target: target)).listen(
       (p) {
         if (state is NewMinuteUploading) state = NewMinuteUploading(target.minuteId, p);
       },
@@ -242,7 +249,7 @@ class NewMinuteFlow extends Notifier<NewMinuteState> {
   Future<void> _start(String minuteId) async {
     state = NewMinuteStarting(minuteId);
     try {
-      await _gw.start(minuteId: minuteId, options: request.options, requestId: _requestId);
+      await _gw.start(minuteId: minuteId, options: request.options, requestId: _requestId, partCount: request.isChunked ? request.parts.length : null);
     } on Object catch (e) {
       // Quota / precondition are final; transient ones may be retried with
       // the same requestId (idempotent on the server).

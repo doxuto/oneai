@@ -41,6 +41,7 @@ function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<SttResult>; 
       llmHeavy: { vendor: "openai", streamText: async () => { throw new Error("unused"); }, generateJson: async () => ({ data: (await (over.llm ?? (async () => goodSummary))()) as never, model: "fake", tokens: { input: 1, output: 1 } }) },
       audioDurationSeconds: async () => over.duration === undefined ? 3.9 : over.duration,
       pdfText: async (b) => Buffer.from(b).toString("utf8"),
+      concatAudio: async (parts) => Buffer.concat(parts.map((p) => Buffer.from(p))),
       push: { send: async (ms) => { over.pushed?.push(...ms); return ms.map((m) => ({ token: m.token, ok: true, unregistered: false })); } },
     },
   });
@@ -405,4 +406,29 @@ describe("job management", () => {
     await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 });
     expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "done", stt: { vendor: "fake", model: "fake-1" } });
   });
+
+  it("S11-09 chunked recording: partCount checks every part, the worker joins them into sourcePath and deletes the parts", async () => {
+    await db.doc("users/u1").set({ plan: "free", planExpiresAt: null });
+    await db.doc("users/u1/minutes/m1").set({ title: "a", status: "uploading", sourceType: "audio", sourcePath: "users/u1/minutes/m1/source/a.m4a", sourceContentType: "audio/x-m4a", sourceSizeBytes: 6, tagIds: [], createdAt: Timestamp.now(), updatedAt: Timestamp.now() });
+    await bucket.file("users/u1/minutes/m1/source/parts/part-000.m4a").save("abc", { resumable: false });
+    const deps = makeDeps();
+    await expect(startTranscriptionHandler(u1, { ...startInput, partCount: 2 }, deps)).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "noSource", missingPart: 1 } });
+    await bucket.file("users/u1/minutes/m1/source/parts/part-001.m4a").save("def", { resumable: false });
+    await startTranscriptionHandler(u1, { ...startInput, partCount: 2 }, deps);
+    expect((await db.doc("users/u1/minutes/m1").get()).data()?.sourceParts).toBe(2);
+    const seen: string[] = [];
+    const d2 = makeDeps({ stt: async () => { return asResult(scribe); } });
+    const sttSpy = d2.services.stt.transcribe;
+    d2.services.stt.transcribe = async (req, signal) => { seen.push(Buffer.from(req.audio).toString("utf8")); return sttSpy(req, signal); };
+    await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, d2, { attempt: 0, maxAttempts: 3 });
+    expect(seen).toEqual(["abcdef"]);
+    const [merged] = await bucket.file("users/u1/minutes/m1/source/a.m4a").download();
+    expect(merged.toString("utf8")).toBe("abcdef");
+    expect((await bucket.file("users/u1/minutes/m1/source/parts/part-000.m4a").exists())[0]).toBe(false);
+    const m = (await db.doc("users/u1/minutes/m1").get()).data();
+    expect(m?.status).toBe("ready");
+    expect(m?.sourceParts).toBeNull();
+    expect(m?.sourceSizeBytes).toBe(6);
+  });
 });
+

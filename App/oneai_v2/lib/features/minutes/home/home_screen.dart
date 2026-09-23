@@ -271,7 +271,8 @@ class _UnfinishedRecordingBanner extends ConsumerWidget {
                 await UnfinishedRecording.clear();
                 ref.invalidate(unfinishedRecordingProvider);
                 if (!context.mounted) return;
-                final request = buildNewMinuteRequest(file: File(r.path), settings: defaultPromptSettings(ref.read(languageSettingsProvider)), durationSeconds: r.seconds.toDouble());
+                final files = r.usableFiles();
+                final request = buildNewMinuteRequest(file: files.first, parts: files, settings: defaultPromptSettings(ref.read(languageSettingsProvider)), durationSeconds: r.seconds.toDouble());
                 await runWithCreditGate(context, ref, requestedSeconds: r.seconds, () => context.push(Routes.audioProcessing, extra: AudioProcessingArgs(request: request)));
               },
               child: Text(l10n.recover, style: const TextStyle(color: AppColors.brandBlueAlt, fontWeight: FontWeight.w600)),
@@ -281,7 +282,7 @@ class _UnfinishedRecordingBanner extends ConsumerWidget {
               icon: const Icon(Icons.close, size: 18, color: Color(0xFF9A6B00)),
               onPressed: () async {
                 await UnfinishedRecording.clear();
-                try { File(r.path).deleteSync(); } on Object catch (_) {}
+                for (final p in r.paths) { try { File(p).deleteSync(); } on Object catch (_) {} }
                 ref.invalidate(unfinishedRecordingProvider);
               },
             ),

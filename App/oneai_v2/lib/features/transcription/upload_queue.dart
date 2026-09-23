@@ -25,6 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Map<String, Object?> requestToJson(NewMinuteRequest r) => {
       'path': r.file.path,
+      'parts': [for (final f in r.parts) f.path],
       'fileName': r.fileName,
       'sizeBytes': r.sizeBytes,
       'contentType': r.contentType,
@@ -45,6 +46,7 @@ NewMinuteRequest? requestFromJson(Map<String, dynamic> j) {
   final opt = Map<String, dynamic>.from(o);
   return NewMinuteRequest(
     file: File(path),
+    parts: [for (final p in (j['parts'] as List?)?.whereType<String>() ?? const <String>[]) File(p)],
     fileName: j['fileName'] as String? ?? path.split('/').last,
     sizeBytes: (j['sizeBytes'] as num?)?.toInt() ?? 0,
     contentType: j['contentType'] as String? ?? 'audio/mp4',

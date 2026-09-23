@@ -702,5 +702,6 @@
   "askAllExample1": "What did we decide last week?",
   "askAllExample2": "Open action items for me",
   "askAllExample3": "Summarize this month's meetings",
-  "newConversation": "New conversation"
+  "newConversation": "New conversation",
+  "recordingInProgress": "Recording in progress"
 }

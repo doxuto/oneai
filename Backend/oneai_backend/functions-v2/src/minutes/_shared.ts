@@ -32,6 +32,8 @@ export interface MinuteDoc {
   sourceExpiresAt?: Timestamp | null;
   sourceContentType?: string | null;
   sourceSizeBytes?: number | null;
+  /** S11-09: number of uploaded chunks under source/parts/ still to be joined; absent/0 = single file. */
+  sourceParts?: number | null;
   languageCode?: string | null;
   languageProbability?: number | null;
   /** Vendor/model that produced the transcript. */
@@ -64,6 +66,9 @@ export const tagsCol = (db: Firestore, uid: string) => db.collection(`users/${ui
 export const minutePrefix = (uid: string, id: string) => `users/${uid}/minutes/${id}/`;
 export const sourcePath = (uid: string, id: string, fileName: string) =>
   `${minutePrefix(uid, id)}source/${fileName}`;
+/** S11-09 chunked recordings: `source/parts/part-000.m4a` … joined by the worker into `sourcePath`. */
+export const sourcePartPath = (uid: string, id: string, index: number, ext: string) =>
+  `${minutePrefix(uid, id)}source/parts/part-${String(index).padStart(3, "0")}.${ext}`;
 export const transcriptPath = (uid: string, id: string) => `${minutePrefix(uid, id)}transcript.json`;
 
 // ---------- ownership ----------

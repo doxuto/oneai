@@ -26,9 +26,11 @@ class FakeGateway implements NewMinuteGateway {
   @override
   Stream<UploadProgress> upload({required File file, required CreateMinuteResult target}) { calls.add('upload'); return upload.stream; }
   @override
+  Stream<UploadProgress> uploadParts({required List<File> parts, required CreateMinuteResult target}) { calls.add('uploadParts'); return upload.stream; }
+  @override
   Future<void> cancelUpload() async {}
   @override
-  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, required String requestId}) { calls.add('start'); return start.future; }
+  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, required String requestId, int? partCount}) { calls.add('start'); return start.future; }
   @override
   Future<void> cancelTranscription(String minuteId) async {}
   @override

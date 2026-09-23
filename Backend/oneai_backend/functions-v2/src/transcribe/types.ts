@@ -18,6 +18,8 @@ export const StartTranscriptionInput = withClient({
   timezone: IanaTimezone,
   /** Client's best guess, untrusted; the worker measures the real one. */
   durationSeconds: z.number().min(0).max(24 * 3600).optional(),
+  /** S11-09: the recording was uploaded as this many chunks (`source/parts/part-NNN.<ext>`); the worker joins them. */
+  partCount: z.number().int().min(2).max(300).optional(),
 }).strict();
 export type StartTranscriptionInput = z.infer<typeof StartTranscriptionInput>;
 

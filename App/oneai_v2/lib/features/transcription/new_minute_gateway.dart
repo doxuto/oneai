@@ -20,6 +20,10 @@ abstract interface class NewMinuteGateway {
   /// Emits progress until the upload completes, then closes. Errors close it.
   Stream<UploadProgress> upload({required File file, required CreateMinuteResult target});
 
+  /// S11-09: uploads the chunks of a recording one after another to
+  /// `source/parts/part-NNN.<ext>`; progress is over the total bytes.
+  Stream<UploadProgress> uploadParts({required List<File> parts, required CreateMinuteResult target});
+
   /// Aborts the in-flight upload started by [upload], if any. Idempotent.
   Future<void> cancelUpload();
 
@@ -27,6 +31,7 @@ abstract interface class NewMinuteGateway {
     required String minuteId,
     required TranscriptionOptions options,
     required String requestId,
+    int? partCount,
   });
 
   Future<void> cancelTranscription(String minuteId);
@@ -71,6 +76,20 @@ class RepositoryNewMinuteGateway implements NewMinuteGateway {
   }
 
   @override
+  Stream<UploadProgress> uploadParts({required List<File> parts, required CreateMinuteResult target}) async* {
+    final total = parts.fold<int>(0, (n, f) => n + (f.existsSync() ? f.lengthSync() : 0));
+    var done = 0;
+    for (var i = 0; i < parts.length; i++) {
+      final task = _task = _transcription.uploadPart(file: parts[i], index: i, target: target);
+      await for (final s in task.snapshotEvents) {
+        yield UploadProgress(bytesTransferred: done + s.bytesTransferred, totalBytes: total);
+      }
+      done += parts[i].lengthSync();
+    }
+    _task = null;
+  }
+
+  @override
   Future<void> cancelUpload() async {
     final t = _task;
     _task = null;
@@ -87,8 +106,9 @@ class RepositoryNewMinuteGateway implements NewMinuteGateway {
     required String minuteId,
     required TranscriptionOptions options,
     required String requestId,
+    int? partCount,
   }) =>
-      _transcription.start(minuteId: minuteId, options: options, requestId: requestId);
+      _transcription.start(minuteId: minuteId, options: options, requestId: requestId, partCount: partCount);
 
   @override
   Future<void> cancelTranscription(String minuteId) => _transcription.cancel(minuteId);

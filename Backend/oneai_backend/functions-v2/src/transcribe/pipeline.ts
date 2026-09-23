@@ -14,7 +14,7 @@ import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
 import { previewOf } from "../lib/stt/convert.js";
 import { sttLanguageCode } from "../lib/stt/languages.js";
-import { minuteRef, transcriptPath, type MinuteDoc } from "../minutes/_shared.js";
+import { minuteRef, sourcePartPath, transcriptPath, type MinuteDoc } from "../minutes/_shared.js";
 import type { Transcript } from "../minutes/types.js";
 import { sourceExpiryFor } from "../jobs/retention.js";
 import { notifyMinuteResult } from "../push/notify.js";
@@ -67,8 +67,8 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
 
     // ---- transcribing ---------------------------------------------------
     await mRef.update({ status: "transcribing", statusUpdatedAt: FieldValue.serverTimestamp() });
-    const [bytes] = await deps.bucket.file(minute.sourcePath).download();
     const contentType = minute.sourceContentType ?? "application/octet-stream";
+    const bytes = await loadSource(deps, uid, minuteId, minute);
 
     let transcript: Transcript;
     let durationSeconds: number | null = null;
@@ -234,3 +234,24 @@ function userMessage(err: unknown): string {
   }
   return "Something went wrong while processing. Please try again.";
 }
+
+/**
+ * S11-09: a chunked recording is joined into `sourcePath` on first use, the
+ * parts deleted, and `sourceParts` cleared — so a retry of the job, the
+ * player and retention all see one ordinary source file.
+ */
+async function loadSource(deps: Deps, uid: string, minuteId: string, minute: MinuteDoc): Promise<Uint8Array> {
+  const sourcePath = minute.sourcePath!;
+  const count = minute.sourceParts ?? 0;
+  if (count < 2) return (await deps.bucket.file(sourcePath).download())[0];
+  const ext = sourcePath.split(".").pop() ?? "m4a";
+  const parts: Uint8Array[] = [];
+  for (let i = 0; i < count; i++) parts.push((await deps.bucket.file(sourcePartPath(uid, minuteId, i, ext)).download())[0]);
+  const merged = await deps.services.concatAudio(parts, ext);
+  await deps.bucket.file(sourcePath).save(Buffer.from(merged), { resumable: false, contentType: minute.sourceContentType ?? "audio/mp4" });
+  await deps.db.doc(`users/${uid}/minutes/${minuteId}`).update({ sourceParts: null, sourceSizeBytes: merged.length });
+  for (let i = 0; i < count; i++) await deps.bucket.file(sourcePartPath(uid, minuteId, i, ext)).delete({ ignoreNotFound: true });
+  log.info("pipeline.parts_joined", { uid, minuteId, parts: count, bytes: merged.length });
+  return merged;
+}
+

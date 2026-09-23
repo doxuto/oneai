@@ -33,7 +33,20 @@ class TranscriptionRepository {
   UploadTask upload({required File file, required CreateMinuteResult target}) =>
       _storage.ref(target.uploadPath).putFile(file, SettableMetadata(contentType: target.contentType));
 
-  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, String? requestId}) async {
+  /// S11-09: chunk `index` of a chunked recording → `source/parts/part-NNN.<ext>`
+  /// next to the final path; the worker joins them into `uploadPath`.
+  UploadTask uploadPart({required File file, required int index, required CreateMinuteResult target}) =>
+      _storage.ref(partPathFor(target.uploadPath, index)).putFile(file, SettableMetadata(contentType: target.contentType));
+
+  static String partPathFor(String uploadPath, int index) {
+    final slash = uploadPath.lastIndexOf('/');
+    final dir = uploadPath.substring(0, slash);
+    final name = uploadPath.substring(slash + 1);
+    final ext = name.contains('.') ? name.split('.').last : 'm4a';
+    return '$dir/parts/part-${index.toString().padLeft(3, '0')}.$ext';
+  }
+
+  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, String? requestId, int? partCount}) async {
     final tz = await FlutterTimezone.getLocalTimezone();
     return StartTranscriptionResult.fromJson(await _fns.call('startTranscription', {
       'minuteId': minuteId,
@@ -45,6 +58,7 @@ class TranscriptionRepository {
       'template': options.template.wire,
       'timezone': tz,
       if (options.durationSeconds != null) 'durationSeconds': options.durationSeconds,
+      if (partCount != null && partCount > 1) 'partCount': partCount,
     }));
   }
 

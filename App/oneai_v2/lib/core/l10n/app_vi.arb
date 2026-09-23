@@ -295,5 +295,6 @@
   "askAllExample1": "Tuần trước đã chốt gì?",
   "askAllExample2": "Việc tôi cần làm còn dở",
   "askAllExample3": "Tóm tắt các cuộc họp tháng này",
-  "newConversation": "Cuộc trò chuyện mới"
+  "newConversation": "Cuộc trò chuyện mới",
+  "recordingInProgress": "Đang ghi âm"
 }

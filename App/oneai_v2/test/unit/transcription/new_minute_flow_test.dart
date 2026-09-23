@@ -37,14 +37,20 @@ class FakeGateway implements NewMinuteGateway {
   }
 
   @override
+  Stream<UploadProgress> uploadParts({required List<File> parts, required CreateMinuteResult target}) {
+    calls.add('uploadParts:${target.minuteId}:${parts.length}');
+    return upload.stream;
+  }
+
+  @override
   Future<void> cancelUpload() async {
     calls.add('cancelUpload');
     if (!upload.isClosed) upload.addError(StateError('cancelled'));
   }
 
   @override
-  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, required String requestId}) {
-    calls.add('start:$minuteId:$requestId');
+  Future<StartTranscriptionResult> start({required String minuteId, required TranscriptionOptions options, required String requestId, int? partCount}) {
+    calls.add('start:$minuteId:$requestId${partCount == null ? '' : ':parts=$partCount'}');
     return start.future;
   }
 
@@ -332,5 +338,22 @@ void main() {
     h.container.dispose();
     await settle();
     expect(h.gw.progress.hasListener, isFalse);
+  });
+
+  test('S11-09 a chunked recording uploads every part and starts with partCount', () async {
+    final gw = FakeGateway();
+    final container = ProviderContainer.test(overrides: [newMinuteGatewayProvider.overrideWithValue(gw)]);
+    final chunked = NewMinuteRequest(file: File('/tmp/p0.m4a'), parts: [File('/tmp/p0.m4a'), File('/tmp/p1.m4a')], fileName: 'p0.m4a', sizeBytes: 10, contentType: 'audio/mp4', options: req.options);
+    expect(chunked.isChunked, isTrue);
+    container.listen(newMinuteFlowProvider(chunked), (_, __) {});
+    await settle();
+    gw.create.complete(gw.target('m9'));
+    await settle();
+    expect(gw.calls, contains('uploadParts:m9:2'));
+    gw.upload.add(const UploadProgress(bytesTransferred: 10, totalBytes: 10));
+    await gw.upload.close();
+    await settle();
+    expect(gw.calls.last, startsWith('start:m9:'));
+    expect(gw.calls.last, endsWith(':parts=2'));
   });
 }

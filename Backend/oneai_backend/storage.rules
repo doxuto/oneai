@@ -22,6 +22,16 @@ service firebase.storage {
       allow delete: if false;
     }
 
+    // S11-09 chunked recordings: source/parts/part-NNN.m4a, joined by the
+    // worker into source/{fileName}. Audio only; each chunk is a few minutes.
+    match /users/{uid}/minutes/{minuteId}/source/parts/{partName} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.size < 300 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+      allow delete: if false;
+    }
+
     match /users/{uid}/{allPaths=**} {
       allow read: if isOwner(uid);
       allow write: if false;

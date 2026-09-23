@@ -45,6 +45,7 @@ dependencies:
 
   # --- Media ---
   record: ^6.0.0
+  flutter_foreground_task: ^9.1.0 # S11-09: Android foreground service while recording (manifest in PLATFORM-SETUP.md)
   just_audio: ^0.10.3
   file_picker: ^10.1.9
 

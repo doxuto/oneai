@@ -270,3 +270,30 @@ Deployment target của extension ≥ iOS 13; extension không có Firebase.
 
 Kiểm tra: Voice Memos › … › Share › One AI (iOS); Files › chia sẻ .m4a (Android).
 
+## Ghi âm chống ngắt — chunk + foreground service Android (S11-09)
+
+App ghi theo **chunk 5 phút** (`recordingChunk`): mỗi chunk là một file m4a hoàn
+chỉnh ngay khi đóng, crash/kill chỉ mất tối đa chunk đang mở; Home khôi phục các
+chunk còn nguyên. Các chunk upload lên `source/parts/part-NNN.m4a`, server ghép
+bằng ffmpeg (`partCount` trong `startTranscription`) — không cần gì ở app.
+
+### Android — `AndroidManifest.xml` (plugin `flutter_foreground_task`)
+```xml
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<!-- trong <application> -->
+<service
+    android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+    android:foregroundServiceType="microphone"
+    android:exported="false" />
+```
+Không có mục này thì app vẫn ghi được khi ở foreground; `RecordingService`
+nuốt lỗi. Android 13+: xin quyền thông báo (đã có luồng push) để thấy
+notification "Đang ghi âm".
+
+### iOS
+`UIBackgroundModes` đã có `audio` (mục ghi âm nền ở trên) — đủ; không dùng
+foreground service.
+
