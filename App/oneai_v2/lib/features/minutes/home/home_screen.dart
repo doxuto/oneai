@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/config/assets.dart';
 import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/router/routes.dart';
+import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/core/theme/gaps.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
@@ -22,6 +23,7 @@ import 'package:one_ai/features/minutes/home/home_controller.dart';
 import 'package:one_ai/features/minutes/home/intro_basic_popup.dart';
 import 'package:one_ai/features/minutes/home/minute_item_card.dart';
 import 'package:one_ai/features/minutes/home/new_minutes_bottom_sheet.dart';
+import 'package:one_ai/features/transcription/upload_queue.dart';
 import 'package:one_ai/features/tags/tag_chip.dart';
 import 'package:one_ai/features/tags/tag_dialogs.dart';
 
@@ -62,6 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               gapH16,
               Text(context.l10n.myNotes, style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
               gapH16,
+              const _PendingUploadsBanner(),
               const _SearchField(),
               gapH16,
               const _TagRow(),
@@ -190,6 +193,39 @@ class _SearchFieldState extends ConsumerState<_SearchField> {
           filled: true,
           fillColor: TagChip.idleColor,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+        ),
+      ),
+    );
+  }
+}
+
+/// S11-07: recordings waiting for the network (or a retry). Tap reopens the
+/// processing screen for that recording.
+class _PendingUploadsBanner extends ConsumerWidget {
+  const _PendingUploadsBanner();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final queue = ref.watch(uploadQueueProvider);
+    if (queue.isEmpty) return const SizedBox.shrink();
+    final online = ref.watch(onlineProvider).valueOrNull ?? true;
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Material(
+        color: const Color(0xFFFFF6E5),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () { HapticFeedback.lightImpact(); context.push(Routes.audioProcessing, extra: AudioProcessingArgs(request: queue.first)); },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(children: [
+              Icon(online ? Icons.cloud_upload_outlined : Icons.cloud_off_outlined, size: 20, color: const Color(0xFF9A6B00)),
+              gapW8,
+              Expanded(child: Text(online ? l10n.uploadsInProgress(queue.length) : l10n.uploadsWaitingForNetwork(queue.length), style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF6B4A00)))),
+              const Icon(Icons.chevron_right, size: 20, color: Color(0xFF9A6B00)),
+            ]),
+          ),
         ),
       ),
     );

@@ -237,5 +237,8 @@
   "linkRevoked": "Đã thu hồi liên kết",
   "shareLinkExplain": "Ai có liên kết đều đọc được ghi chú này trên web mà không cần app. Bạn có thể thu hồi bất cứ lúc nào.",
   "shareSummaryOnly": "Chỉ tóm tắt",
-  "shareWithTranscript": "Kèm transcript"
+  "shareWithTranscript": "Kèm transcript",
+  "waitingForNetwork": "Đang chờ mạng… bản ghi đã được lưu và sẽ tự tải lên.",
+  "uploadsInProgress": "{count, plural, =1{1 bản ghi đang tải lên} other{{count} bản ghi đang tải lên}}",
+  "uploadsWaitingForNetwork": "{count, plural, =1{1 bản ghi đang chờ mạng} other{{count} bản ghi đang chờ mạng}}"
 }

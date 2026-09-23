@@ -7,6 +7,7 @@ import 'package:one_ai/core/theme/app_theme.dart';
 import 'package:one_ai/features/ads/runtime/ads_runtime.dart';
 import 'package:one_ai/features/auth/splash_gate.dart';
 import 'package:one_ai/features/notifications/push_registrar.dart';
+import 'package:one_ai/features/transcription/upload_queue.dart';
 
 class OneAiApp extends ConsumerWidget {
   const OneAiApp({super.key});
@@ -23,6 +24,9 @@ class OneAiApp extends ConsumerWidget {
     // Ads runtime: consent → SDK init → preload, all after first frame; also
     // owns the app-open-on-resume hook. Premium users get no ads from it.
     ref.watch(adsRuntimeProvider);
+
+    // Upload queue (S11-07): resumes saved recordings and retries when online.
+    ref.watch(uploadQueueProvider);
 
     // A tapped "your note is ready" notification opens that note. Failed
     // notes open too — the summary screen shows the failure and the retry.

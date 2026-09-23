@@ -237,5 +237,8 @@
   "linkRevoked": "Enlace revocado",
   "shareLinkExplain": "Cualquiera con el enlace podrá leer esta nota en la web sin la app. Puedes revocarlo en cualquier momento.",
   "shareSummaryOnly": "Solo resumen",
-  "shareWithTranscript": "Incluir transcripción"
+  "shareWithTranscript": "Incluir transcripción",
+  "waitingForNetwork": "Esperando red… tu grabación está guardada y se subirá automáticamente.",
+  "uploadsInProgress": "{count, plural, =1{1 grabación subiendo} other{{count} grabaciones subiendo}}",
+  "uploadsWaitingForNetwork": "{count, plural, =1{1 grabación esperando red} other{{count} grabaciones esperando red}}"
 }

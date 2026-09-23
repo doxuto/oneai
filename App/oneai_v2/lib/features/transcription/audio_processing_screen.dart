@@ -17,6 +17,7 @@ import 'package:one_ai/core/widgets/styled_dialog.dart';
 import 'package:one_ai/data/models/minute_models.dart';
 import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
 import 'package:one_ai/features/billing/entitlement.dart';
+import 'package:one_ai/features/transcription/upload_queue.dart';
 import 'package:one_ai/features/billing/paywall.dart';
 import 'package:one_ai/features/credits/credit_gate_ui.dart';
 import 'package:one_ai/features/credits/credits_provider.dart';
@@ -40,6 +41,15 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
 
   NewMinuteRequest get _req => widget.args.request;
 
+  @override
+  void initState() {
+    super.initState();
+    // S11-07: the queue keeps this flow alive after the screen is left and
+    // retries when the network returns; the "leave while processing" dialog
+    // below therefore only asks about cancelling, never about losing work.
+    WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) ref.read(uploadQueueProvider.notifier).enqueue(_req); });
+  }
+
   Future<void> _close() async {
     final state = ref.read(newMinuteFlowProvider(_req));
     if (state.isTerminal) {
@@ -57,6 +67,11 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
         onConfirm: () async {
           Navigator.of(ctx).pop();
           await ref.read(newMinuteFlowProvider(_req).notifier).cancel();
+          if (context.mounted) context.pop();
+        },
+        // "Keep in background": go back to Home, the queue carries on.
+        onCancel: () {
+          Navigator.of(ctx).pop();
           if (context.mounted) context.pop();
         },
       ),
@@ -291,7 +306,10 @@ class _FailureCard extends ConsumerWidget {
         child: Column(
           children: [
             Text(message, textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onErrorContainer)),
-            if (state.retryable) ...[
+            if (state.retryable && !(ref.watch(onlineProvider).valueOrNull ?? true)) ...[
+              gapH12,
+              Text(context.l10n.waitingForNetwork, textAlign: TextAlign.center, style: context.textTheme.bodySmall?.copyWith(color: context.colorScheme.onErrorContainer)),
+            ] else if (state.retryable) ...[
               gapH12,
               TextButton(onPressed: () => ref.read(newMinuteFlowProvider(request).notifier).retry(), child: Text(context.l10n.retry)),
             ],

@@ -631,5 +631,10 @@
   "linkRevoked": "Link revoked",
   "shareLinkExplain": "Anyone with the link can read this note on the web, without the app. You can revoke it at any time.",
   "shareSummaryOnly": "Summary only",
-  "shareWithTranscript": "Include transcript"
+  "shareWithTranscript": "Include transcript",
+  "waitingForNetwork": "Waiting for network… your recording is saved and will upload automatically.",
+  "uploadsInProgress": "{count, plural, =1{1 recording is uploading} other{{count} recordings are uploading}}",
+  "@uploadsInProgress": {"placeholders": {"count": {"type": "int"}}},
+  "uploadsWaitingForNetwork": "{count, plural, =1{1 recording is waiting for network} other{{count} recordings are waiting for network}}",
+  "@uploadsWaitingForNetwork": {"placeholders": {"count": {"type": "int"}}}
 }

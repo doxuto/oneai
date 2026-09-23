@@ -271,7 +271,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
 | S11-05 | **Share link chỉ đọc** (`createShareLink`/`revokeShareLink`, `shares/{token}`, trang HTML từ function `sharePage` — không cần Hosting), thu hồi được — ✅ BE; ✍️ app menu Share | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
-| S11-07 | Ghi âm offline, tự upload khi có mạng | |
+| S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |
 
 ## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
