@@ -73,4 +73,9 @@ void main() {
       expect(d.speakerLabelFor('speaker_0'), 'Ana');
     });
   });
+
+  test('ShareInfo.pdfUrl appends format=pdf to the page URL', () {
+    final s = ShareInfo.fromJson({'url': 'https://x.test/sharePage?t=abc', 'includeTranscript': false, 'createdAt': '2026-09-24T00:00:00.000Z', 'views': 0});
+    expect(s.pdfUrl, 'https://x.test/sharePage?t=abc&format=pdf');
+  });
 }

@@ -212,7 +212,7 @@ class _ShareMenu extends ConsumerWidget {
         share = await repo.createShareLink(detail.id, includeTranscript: withTranscript);
         ref.invalidate(minuteDetailProvider(detail.id));
       }
-      await Clipboard.setData(ClipboardData(text: share.url));
+      await Clipboard.setData(ClipboardData(text: share.pdfUrl));
       if (context.mounted) AppSnack.show(context, l10n.linkCopied);
     } on Object catch (e) {
       if (context.mounted) AppSnack.failure(context, e);

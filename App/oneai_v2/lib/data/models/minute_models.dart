@@ -319,6 +319,10 @@ class ShareInfo {
   final bool includeTranscript;
   final DateTime createdAt;
   final int views;
+
+  /// Decided 24/09: what we hand to people is the PDF. The HTML page behind
+  /// [url] stays as the fallback (and carries a Download PDF button).
+  String get pdfUrl => '$url${url.contains('?') ? '&' : '?'}format=pdf';
 }
 
 ShareInfo? _shareOf(Map<String, dynamic> j) {
