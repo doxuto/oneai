@@ -58,6 +58,7 @@ dependencies:
   url_launcher: ^6.3.1
   package_info_plus: ^8.3.0
   connectivity_plus: ^6.1.4
+  battery_plus: ^6.2.1 # S11-09b: low-battery warning before a long recording
   flutter_svg: ^2.1.0
   in_app_review: ^2.0.8
   add_2_calendar: ^3.0.1

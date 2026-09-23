@@ -711,5 +711,6 @@
   "sharedFilesWaiting": "{count, plural, =1{1 file shared from another app is waiting} other{{count} files shared from another app are waiting}}",
   "continueLabel": "Continue",
   "@moreSharedFilesWaiting": {"placeholders": {"count": {"type": "int"}}},
-  "@sharedFilesWaiting": {"placeholders": {"count": {"type": "int"}}}
+  "@sharedFilesWaiting": {"placeholders": {"count": {"type": "int"}}},
+  "lowBatteryWarning": "Battery is low — plug in so the recording is not cut short."
 }

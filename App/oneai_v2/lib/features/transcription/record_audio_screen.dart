@@ -14,6 +14,7 @@ import 'package:one_ai/core/widgets/app_snack.dart';
 import 'package:one_ai/core/widgets/styled_dialog.dart';
 import 'package:one_ai/features/credits/credit_gate_ui.dart';
 import 'package:one_ai/features/settings/language_settings.dart';
+import 'package:one_ai/features/transcription/battery_check.dart';
 import 'package:one_ai/features/transcription/consent_notice.dart';
 import 'package:one_ai/features/transcription/new_minute_request_builder.dart';
 import 'package:one_ai/features/transcription/prompt_language_sheet.dart';
@@ -217,6 +218,7 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
                               onTap: () async {
                                 await HapticFeedback.lightImpact();
                                 if (isInitial && !await _consentOk()) return;
+                                if (isInitial && await batteryTooLow() && context.mounted) AppSnack.show(context, l10n.lowBatteryWarning);
                                 await ref.read(recorderProvider.notifier).toggle();
                               },
                               child: Container(

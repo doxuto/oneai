@@ -302,5 +302,6 @@
   "gotIt": "Entendido",
   "moreSharedFilesWaiting": "{count, plural, =1{1 archivo compartido más en espera — se abrirá aquí después de este.} other{{count} archivos compartidos más en espera — se abrirán aquí de uno en uno.}}",
   "sharedFilesWaiting": "{count, plural, =1{1 archivo compartido desde otra app en espera} other{{count} archivos compartidos desde otra app en espera}}",
-  "continueLabel": "Continuar"
+  "continueLabel": "Continuar",
+  "lowBatteryWarning": "Batería baja: conecta el cargador para que la grabación no se interrumpa."
 }

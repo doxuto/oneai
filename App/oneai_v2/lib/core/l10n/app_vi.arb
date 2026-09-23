@@ -302,5 +302,6 @@
   "gotIt": "Đã hiểu",
   "moreSharedFilesWaiting": "{count, plural, other{Còn {count} file được chia sẻ đang chờ — sẽ mở lần lượt ở đây.}}",
   "sharedFilesWaiting": "{count, plural, other{{count} file chia sẻ từ ứng dụng khác đang chờ}}",
-  "continueLabel": "Tiếp tục"
+  "continueLabel": "Tiếp tục",
+  "lowBatteryWarning": "Pin yếu — hãy cắm sạc để bản ghi không bị ngắt giữa chừng."
 }
