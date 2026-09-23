@@ -8,6 +8,7 @@ import 'package:one_ai/features/auth/auth_models.dart';
 import 'package:one_ai/features/auth/auth_service.dart';
 import 'package:one_ai/features/auth/billing_identity.dart';
 import 'package:one_ai/features/auth/login_method_store.dart';
+import 'package:one_ai/features/notifications/push_registrar.dart';
 
 // ---- Wiring (overridden in tests) ----
 
@@ -99,6 +100,7 @@ class AuthController extends Notifier<AuthFlow> {
     if (state.isBusy) return;
     state = const AuthBusy(AuthAction.signOut);
     try {
+      await _guarded(ref.read(pushRegistrarProvider.notifier).unregisterBeforeSignOut, 'push unregister');
       await _guarded(_billing.logOut, 'RevenueCat logOut');
       await _auth.signOut();
       state = const AuthIdle();
@@ -115,6 +117,7 @@ class AuthController extends Notifier<AuthFlow> {
     if (state.isBusy) return;
     state = const AuthBusy(AuthAction.deleteAccount);
     try {
+      await _guarded(ref.read(pushRegistrarProvider.notifier).unregisterBeforeSignOut, 'push unregister');
       await _users.deleteAccount();
     } on Object catch (e) {
       state = AuthFailed(AuthAction.deleteAccount, e);

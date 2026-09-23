@@ -9,6 +9,7 @@ import 'package:one_ai/features/auth/auth_models.dart';
 import 'package:one_ai/features/auth/auth_service.dart';
 import 'package:one_ai/features/auth/billing_identity.dart';
 import 'package:one_ai/features/auth/login_method_store.dart';
+import 'package:one_ai/features/notifications/push_registrar.dart';
 
 // ---- Fakes: record calls, throw on demand ----
 
@@ -71,14 +72,24 @@ class FakeUsers implements UserRepository {
       throw UnimplementedError();
 }
 
+class FakePushRegistrar extends PushRegistrar {
+  static final calls = <String>[];
+  @override
+  PushState build() => const PushState();
+  @override
+  Future<void> unregisterBeforeSignOut() async => calls.add('unregister');
+}
+
 class Harness {
   Harness() {
+    FakePushRegistrar.calls.clear();
     container = ProviderContainer.test(
       overrides: [
         authServiceProvider.overrideWithValue(auth),
         billingIdentityProvider.overrideWithValue(billing),
         loginMethodStoreProvider.overrideWithValue(store),
         userRepositoryProvider.overrideWithValue(users),
+        pushRegistrarProvider.overrideWith(FakePushRegistrar.new),
       ],
     );
   }
@@ -169,6 +180,7 @@ void main() {
       h.billing.calls.clear();
       await h.ctl.signOut();
       expect(h.state, isA<AuthIdle>());
+      expect(FakePushRegistrar.calls, ['unregister'], reason: 'device token released while auth is still valid');
       expect(h.billing.calls, ['logOut']);
       expect(h.auth.calls.last, 'signOut');
       expect(h.auth.account, isNull);

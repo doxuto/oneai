@@ -35,6 +35,7 @@ class OneAiUser {
     required this.planExpiresAt,
     required this.minuteCount,
     required this.createdAt,
+    this.notifications = const NotificationPrefs(),
   });
   factory OneAiUser.fromJson(Map<String, dynamic> j) => OneAiUser(
         id: readRequiredString(j, 'id'),
@@ -45,6 +46,7 @@ class OneAiUser {
         planExpiresAt: readDateTime(j, 'planExpiresAt'),
         minuteCount: readInt(j, 'minuteCount') ?? 0,
         createdAt: readDateTime(j, 'createdAt'),
+        notifications: NotificationPrefs.fromJson(readObject(j, 'notifications')),
       );
   final String id;
   final String? email;
@@ -54,8 +56,18 @@ class OneAiUser {
   final DateTime? planExpiresAt;
   final int minuteCount;
   final DateTime? createdAt;
+  final NotificationPrefs notifications;
 
   bool get isPremium => plan == Plan.premium;
+}
+
+class NotificationPrefs {
+  const NotificationPrefs({this.transcriptionDone = true});
+  factory NotificationPrefs.fromJson(Map<String, dynamic>? j) =>
+      NotificationPrefs(transcriptionDone: j == null ? true : (readBool(j, 'transcriptionDone', orElse: true)));
+
+  /// Push when a note finishes or fails. Server default: on.
+  final bool transcriptionDone;
 }
 
 class Me {
