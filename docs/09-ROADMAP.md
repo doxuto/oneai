@@ -14,14 +14,14 @@ dưới đây giữ nguyên cho phía App; phía backend còn lại chỉ là vi
 | Sprint | Tên | Dài | Từ → đến | Trạng thái |
 |---|---|---|---|---|
 | **S0** | Nền móng, secrets, môi trường | 1 tuần | 23/09 → 29/09 | 🔶 chờ Toan (T1–T7) |
-| **S1** | Skeleton BE + App | 2 tuần | 30/09 → 13/10 | ✅ BE · 🔶 App chờ `flutter create` |
+| **S1** | Skeleton BE + App | 2 tuần | 30/09 → 13/10 | ✅ BE · 🔶 App: auth viết xong, chờ `flutter create` để compile |
 | **S2** | BE: data model + CRUD | 2 tuần | 14/10 → 27/10 | ✅ 23/09 |
 | **S3** | BE: pipeline transcribe bất đồng bộ | 2 tuần | 28/10 → 10/11 | ✅ 23/09 |
 | **S4** | BE: tính năng AI | 2 tuần | 11/11 → 24/11 | ✅ 23/09 |
-| **S5** | App: auth + home + danh sách note | 2 tuần | 25/11 → 08/12 | ⬜ có thể bắt đầu ngay khi T1+T2 xong |
-| **S6** | App: tạo note → xử lý → xem kết quả | 3 tuần | 09/12 → 29/12 | ⬜ |
-| **S7** | App: tag, settings, l10n, share/PDF | 2 tuần | 30/12 → 12/01/27 | ⬜ |
-| **S8** | Monetization: quota + ads + SSV | 2 tuần | 13/01 → 26/01 | ✅ BE (quota, webhook, SSV) · ⬜ App (AdGate, UMP) |
+| **S5** | App: auth + home + danh sách note | 2 tuần | 25/11 → 08/12 | 🔶 tầng logic viết sẵn 23/09 (auth, home state, minute actions) — **chưa compile**; màn hình chờ T1+T2 |
+| **S6** | App: tạo note → xử lý → xem kết quả | 3 tuần | 09/12 → 29/12 | 🔶 tầng logic viết sẵn 23/09 (`NewMinuteFlow`, chat, detail + artifacts, speakers) — **chưa compile**; màn hình chờ T1+T2 |
+| **S7** | App: tag, settings, l10n, share/PDF | 2 tuần | 30/12 → 12/01/27 | 🔶 l10n en/es/vi, language settings, lọc tag, BE `deleteAccount` xong — còn màn hình, PDF/share, Sentry/AppsFlyer |
+| **S8** | Monetization: quota + ads + SSV | 2 tuần | 13/01 → 26/01 | ✅ BE (quota, webhook, SSV, trần AI call/ngày) · 🔶 App: AdGate/AdLedger, credit gate, entitlement, chờ SSV viết sẵn — còn SDK runtime + UMP + paywall UI |
 | **S9** | Parity sweep + chất lượng | 2 tuần | 27/01 → 09/02 | ⬜ |
 | **S10** | Phát hành | 2 tuần | 10/02 → 23/02/27 | ⬜ |
 
@@ -143,14 +143,14 @@ Từ đây trở đi mọi màn phải khớp `07-APP-UI-FLOW-SPEC.md` §3.
 
 | ID | Task | Xong khi |
 |---|---|---|
-| S5-01 | Feature `auth`: Google + Apple, `AsyncNotifier`, **không nuốt lỗi** | lỗi đăng nhập hiện đúng nguyên nhân |
+| S5-01 | Feature `auth`: Google + Apple, `Notifier`, **không nuốt lỗi** — ✍️ viết xong (`SignInFailure` sealed, nonce CSPRNG), chưa compile | lỗi đăng nhập hiện đúng nguyên nhân |
 | S5-02 | Màn Login khớp bố cục v1 | golden xanh |
-| S5-03 | RevenueCat `logIn(uid)` sau đăng nhập, `logOut()` khi thoát | |
-| S5-04 | Repository + model cho minutes, đọc bằng `json_read.dart` | |
-| S5-05 | Home: danh sách qua Firestore `snapshots()` + `withConverter` | tạo note máy khác → máy này tự hiện |
+| S5-03 | RevenueCat `logIn(uid)` sau đăng nhập, `logOut()` khi thoát — ✍️ `BillingIdentity`, best-effort | |
+| S5-04 | Repository + model cho minutes, đọc bằng `json_read.dart` — ✍️ viết xong, chưa compile | |
+| S5-05 | Home: danh sách qua Firestore `snapshots()` + `withConverter` — ✍️ `minutesListProvider`, lọc tag AND, `visibleMinutesProvider` | tạo note máy khác → máy này tự hiện |
 | S5-06 | `MinuteItemCard`, `TagChip`, empty state, loading, error | golden cho 4 trạng thái |
 | S5-07 | Phân trang cursor khi cuộn | |
-| S5-08 | Xoá / đổi tên / đổi emoji / gắn tag từ card | |
+| S5-08 | Xoá / đổi tên / đổi emoji / gắn tag từ card — ✍️ `MinuteActions` (xoá optimistic) | |
 | S5-09 | Widget test + golden cho Home và Login | ≥12 golden |
 
 **Cổng ra (M3):** đăng nhập thật, thấy note thật từ BE mới.
@@ -165,14 +165,14 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 |---|---|---|
 | S6-01 | `NewMinutesBottomSheet` + 2 màn tạo (record / upload) khớp v1. **Không còn lối YouTube** — sheet chỉ còn 2 mục | golden xanh |
 | S6-02 | Ghi âm: `record`, waveform, tạm dừng/tiếp tục, huỷ | |
-| S6-03 | Upload trực tiếp Storage resumable — progress **thật**, huỷ, tiếp tục | ngắt mạng rồi nối lại vẫn xong |
-| S6-04 | `AudioProcessingScreen`: bỏ progress giả, dùng Firestore listener, nút đóng gọi `cancelTranscription` | **bố cục/màu/chữ không đổi** |
+| S6-03 | Upload trực tiếp Storage resumable — progress **thật**, huỷ, tiếp tục — ✍️ `NewMinuteFlow` + `NewMinuteGateway` | ngắt mạng rồi nối lại vẫn xong |
+| S6-04 | `AudioProcessingScreen`: bỏ progress giả, dùng Firestore listener, nút đóng gọi `cancelTranscription` — ✍️ state machine xong, còn màn | **bố cục/màu/chữ không đổi** |
 | S6-05 | Màn Summary: 3 tab Summary / Transcript / Chat | golden cho từng tab |
-| S6-06 | Chat streaming trên UI | chữ chạy dần |
-| S6-07 | Speaker: hiện tên, đổi tên inline | |
-| S6-08 | Quiz / flashcards / mindmap / câu hỏi gợi ý | |
+| S6-06 | Chat streaming trên UI — ✍️ `ChatController` xong, còn màn | chữ chạy dần |
+| S6-07 | Speaker: hiện tên, đổi tên inline — ✍️ `SpeakersController.rename` | |
+| S6-08 | Quiz / flashcards / mindmap / câu hỏi gợi ý — ✍️ `ArtifactController<T>` (cache server, regenerate) | |
 | S6-09 | Audio player trong tab Transcript | |
-| S6-10 | `QuotaFailure` → dialog "Premium Required" | test: hết quota → paywall hiện |
+| S6-10 | `QuotaFailure` → dialog "Premium Required" — ✍️ `creditGateDecide` + `NewMinuteFailed.isOutOfCredits` | test: hết quota → paywall hiện |
 | S6-11 | Golden + widget test cho toàn bộ màn mới | ≥30 golden tổng |
 
 **Cổng ra (M4):** ghi âm → transcribe → xem summary → chat, tất cả trên BE mới.
@@ -183,12 +183,12 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 
 | ID | Task | Xong khi |
 |---|---|---|
-| S7-01 | Quản lý tag: tạo, sửa, xoá, lọc | |
-| S7-02 | Màn Settings đầy đủ mục như v1 | golden xanh |
+| S7-01 | Quản lý tag: tạo, sửa, xoá, lọc — ✍️ lọc (`SelectedTagIds`) xong; CRUD sheet còn | |
+| S7-02 | Màn Settings đầy đủ mục như v1 — ✍️ `LanguageSettings` (audio/summary, key v1) xong; còn màn | golden xanh |
 | S7-03 | Xuất PDF + text, share | file mở được, nội dung đúng |
 | S7-04 | l10n: **mọi** chuỗi qua ARB ngay từ đầu, không hardcode | grep literal tiếng Anh trong widget = 0 |
 | S7-05 | `en` + `es` + **`vi`** đủ key — chờ OQ-12 | |
-| S7-06 | Xoá tài khoản + xoá dữ liệu | |
+| S7-06 | Xoá tài khoản + xoá dữ liệu — ✅ BE `deleteAccount`; ✍️ `AuthController.deleteAccount` | |
 | S7-07 | Sentry + AppsFlyer, debug flag tắt ở prod | |
 | S7-08 | Tìm kiếm client-side — chờ OQ-07 | |
 
