@@ -636,5 +636,18 @@
   "uploadsInProgress": "{count, plural, =1{1 recording is uploading} other{{count} recordings are uploading}}",
   "@uploadsInProgress": {"placeholders": {"count": {"type": "int"}}},
   "uploadsWaitingForNetwork": "{count, plural, =1{1 recording is waiting for network} other{{count} recordings are waiting for network}}",
-  "@uploadsWaitingForNetwork": {"placeholders": {"count": {"type": "int"}}}
+  "@uploadsWaitingForNetwork": {"placeholders": {"count": {"type": "int"}}},
+  "reviewDue": "Review",
+  "cardsDue": "{count, plural, =0{Nothing due today} =1{1 card due} other{{count} cards due}}",
+  "@cardsDue": {"placeholders": {"count": {"type": "int"}}},
+  "cardsLeft": "{count, plural, =1{1 card left} other{{count} cards left}}",
+  "@cardsLeft": {"placeholders": {"count": {"type": "int"}}},
+  "reviewDone": "{count, plural, =0{No cards reviewed} =1{1 card reviewed} other{{count} cards reviewed}}",
+  "@reviewDone": {"placeholders": {"count": {"type": "int"}}},
+  "reviewComeBack": "Come back when the next cards are due — spacing is what makes it stick.",
+  "questionLabel": "Question",
+  "gradeAgain": "Again",
+  "gradeHard": "Hard",
+  "gradeGood": "Good",
+  "gradeEasy": "Easy"
 }

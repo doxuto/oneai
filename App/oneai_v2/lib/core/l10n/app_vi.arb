@@ -240,5 +240,15 @@
   "shareWithTranscript": "Kèm transcript",
   "waitingForNetwork": "Đang chờ mạng… bản ghi đã được lưu và sẽ tự tải lên.",
   "uploadsInProgress": "{count, plural, =1{1 bản ghi đang tải lên} other{{count} bản ghi đang tải lên}}",
-  "uploadsWaitingForNetwork": "{count, plural, =1{1 bản ghi đang chờ mạng} other{{count} bản ghi đang chờ mạng}}"
+  "uploadsWaitingForNetwork": "{count, plural, =1{1 bản ghi đang chờ mạng} other{{count} bản ghi đang chờ mạng}}",
+  "reviewDue": "Ôn tập",
+  "cardsDue": "{count, plural, =0{Hôm nay không có thẻ nào} =1{1 thẻ đến hạn} other{{count} thẻ đến hạn}}",
+  "cardsLeft": "{count, plural, =1{Còn 1 thẻ} other{Còn {count} thẻ}}",
+  "reviewDone": "{count, plural, =0{Chưa ôn thẻ nào} =1{Đã ôn 1 thẻ} other{Đã ôn {count} thẻ}}",
+  "reviewComeBack": "Quay lại khi thẻ tiếp theo đến hạn — giãn cách mới giúp nhớ lâu.",
+  "questionLabel": "Câu hỏi",
+  "gradeAgain": "Chưa nhớ",
+  "gradeHard": "Khó",
+  "gradeGood": "Được",
+  "gradeEasy": "Dễ"
 }

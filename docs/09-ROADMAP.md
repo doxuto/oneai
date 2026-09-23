@@ -267,7 +267,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 |---|---|---|
 | S11-01 | **Hỏi đáp xuyên nhiều note**: embedding mỗi note lúc ready, Firestore vector search `findNearest`, callable `askAll` streaming | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
 | S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
-| S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có | |
+| S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
 | S11-05 | **Share link chỉ đọc** (`createShareLink`/`revokeShareLink`, `shares/{token}`, trang HTML từ function `sharePage` — không cần Hosting), thu hồi được — ✅ BE; ✍️ app menu Share | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |

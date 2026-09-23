@@ -240,5 +240,15 @@
   "shareWithTranscript": "Incluir transcripción",
   "waitingForNetwork": "Esperando red… tu grabación está guardada y se subirá automáticamente.",
   "uploadsInProgress": "{count, plural, =1{1 grabación subiendo} other{{count} grabaciones subiendo}}",
-  "uploadsWaitingForNetwork": "{count, plural, =1{1 grabación esperando red} other{{count} grabaciones esperando red}}"
+  "uploadsWaitingForNetwork": "{count, plural, =1{1 grabación esperando red} other{{count} grabaciones esperando red}}",
+  "reviewDue": "Repasar",
+  "cardsDue": "{count, plural, =0{Nada pendiente hoy} =1{1 tarjeta pendiente} other{{count} tarjetas pendientes}}",
+  "cardsLeft": "{count, plural, =1{Queda 1 tarjeta} other{Quedan {count} tarjetas}}",
+  "reviewDone": "{count, plural, =0{Ninguna tarjeta repasada} =1{1 tarjeta repasada} other{{count} tarjetas repasadas}}",
+  "reviewComeBack": "Vuelve cuando toquen las próximas tarjetas: el espaciado es lo que hace que se fije.",
+  "questionLabel": "Pregunta",
+  "gradeAgain": "Otra vez",
+  "gradeHard": "Difícil",
+  "gradeGood": "Bien",
+  "gradeEasy": "Fácil"
 }
