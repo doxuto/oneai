@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { unitDeps } from "../../src/lib/deps.js";
 import { createShareLinkHandler, newShareToken, revokeShareLinkHandler, shareUrl } from "../../src/share/handler.js";
 import { esc, notFoundPage, renderPage, sharePage } from "../../src/share/page.js";
+import { ImportSharedNoteInput, importSharedNoteHandler } from "../../src/share/importSharedNote.js";
 import { pdfFileName, renderNotePdf } from "../../src/share/pdf.js";
 import { CreateShareLinkInput } from "../../src/share/types.js";
 
@@ -67,5 +68,11 @@ describe("share links (S11-05)", () => {
     expect(bytes.toString("latin1")).toContain("/FontFile2"); // embedded TrueType, not built-in Helvetica
     expect(pdfFileName("Họp sprint — Quyết định / v2")).toBe("Hop-sprint-Quyet-dinh-v2.pdf");
     expect(pdfFileName("///")).toBe("note.pdf");
+  });
+
+  it("importSharedNote: token format enforced, auth required", async () => {
+    expect(() => ImportSharedNoteInput.parse({ client, token: "short" })).toThrow();
+    expect(ImportSharedNoteInput.parse({ client, token: "a".repeat(32) }).token).toBe("a".repeat(32));
+    await expect(importSharedNoteHandler(undefined, { client, token: "a".repeat(32) }, unitDeps())).rejects.toMatchObject({ code: "unauthenticated" });
   });
 });

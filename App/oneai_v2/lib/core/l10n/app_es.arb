@@ -280,5 +280,11 @@
   "deleteGlossaryTermConfirm": "¿Quitar \"{term}\" del glosario?",
   "addToGlossaryPrompt": "¿Recordar \"{term}\" para futuras grabaciones?",
   "addedToGlossary": "\"{term}\" añadido al glosario.",
-  "add": "Añadir"
+  "add": "Añadir",
+  "sharedNote": "Nota compartida",
+  "openPdf": "Abrir PDF",
+  "saveToMyNotes": "Guardar en mis notas",
+  "savedToYourNotes": "Guardada en tus notas.",
+  "alreadyInYourNotes": "Esta nota ya está en tus notas.",
+  "sharedReadOnlyFooter": "Compartida en modo lectura desde One AI. El propietario puede revocar este enlace en cualquier momento."
 }

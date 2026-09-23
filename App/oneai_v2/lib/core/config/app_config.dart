@@ -27,6 +27,7 @@ class AppConfig {
     required this.privacyUrl,
     required this.supportEmail,
     this.legalBaseUrl,
+    this.shareBaseUrl,
   });
 
   /// [projectId] (from the Firebase options) lets the legal pages served by
@@ -66,6 +67,7 @@ class AppConfig {
       privacyUrl: 'https://doxutostudio.top/privacy',
       supportEmail: 'contact@doxutostudio.top',
       legalBaseUrl: projectId == null ? null : 'https://asia-southeast1-$projectId.cloudfunctions.net/legal',
+      shareBaseUrl: projectId == null ? null : 'https://asia-southeast1-$projectId.cloudfunctions.net/sharePage',
     );
   }
 
@@ -94,6 +96,9 @@ class AppConfig {
   final String supportEmail;
   /// Base of the `legal` function (S10-07); null → fall back to the website URLs.
   final String? legalBaseUrl;
+  /// Where `sharePage` answers (`?t=&format=json|pdf`); the function URL works
+  /// whether or not Hosting (`/s`) is deployed.
+  final String? shareBaseUrl;
 
   /// Localised legal page: `privacy` | `terms` | `delete-account`, in the
   /// user's language (en/vi; everything else → en).

@@ -14,8 +14,13 @@ export const sharePage_ = onRequest(
   async (req, res) => {
     if (req.method !== "GET" && req.method !== "HEAD") { res.status(405).send("Method Not Allowed"); return; }
     const t = typeof req.query.t === "string" ? req.query.t : undefined;
-    const format = req.query.format === "pdf" ? "pdf" : "html";
+    const format = req.query.format === "pdf" ? "pdf" : req.query.format === "json" ? "json" : "html";
     const out = await sharePage(liveDeps(), t, { format });
+    if (out.json) {
+      res.status(200).set("Cache-Control", "private, no-store").set("Access-Control-Allow-Origin", "*").json(out.json);
+      return;
+    }
+    if (format === "json") { res.status(404).set("Cache-Control", "private, no-store").json({ error: "not-found" }); return; }
     if (out.pdf) {
       res.status(200)
         .set("Cache-Control", "private, no-store")

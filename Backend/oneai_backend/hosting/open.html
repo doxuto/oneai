@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Open in One AI</title>
+<style>body{margin:0;background:#f6f8fb;color:#1a1a1a;font:16px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}main{max-width:520px;margin:0 auto;padding:48px 20px;text-align:center}.card{background:#fff;border:1px solid #e3e8ef;border-radius:12px;padding:28px 22px}h1{font-size:22px;margin:0 0 8px}p{color:#666}a.btn{display:inline-block;margin:8px 6px;padding:12px 20px;border-radius:24px;background:#0767f8;color:#fff;text-decoration:none;font-weight:600}a.alt{background:#edf4ff;color:#0767f8}</style></head>
+<body><main><div class="card"><h1>Open in One AI</h1><p>This note lives in the One AI app. If the app did not open automatically, install it and tap the link again.</p>
+<a class="btn" id="ios" href="https://apps.apple.com/app/id6743523150">App Store</a>
+<a class="btn" id="android" href="https://play.google.com/store/apps/details?id=top.doxutostudio.one.ai">Google Play</a>
+<p><a class="btn alt" id="deep" href="#">Try opening the app</a></p></div></main>
+<script>
+// Custom-scheme fallback for devices where the universal/app link did not fire.
+var p=location.pathname+location.search; document.getElementById('deep').href='oneai://'+p.replace(/^\//,'');
+</script></body></html>

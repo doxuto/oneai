@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.top.doxutostudio.one.ai"],
+        "components": [
+          { "/": "/s", "?": { "t": "*" }, "comment": "shared note (PDF / in-app viewer)" },
+          { "/": "/n/*", "comment": "owner's own note" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": { "apps": ["TEAMID.top.doxutostudio.one.ai"] }
+}

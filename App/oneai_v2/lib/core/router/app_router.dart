@@ -7,6 +7,7 @@ import 'package:one_ai/features/auth/login_screen.dart';
 import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/features/minutes/detail/summary_screen.dart';
 import 'package:one_ai/features/minutes/home/home_screen.dart';
+import 'package:one_ai/features/minutes/share/shared_note_screen.dart';
 import 'package:one_ai/features/settings/glossary_screen.dart';
 import 'package:one_ai/features/settings/settings_screen.dart';
 import 'package:one_ai/features/transcription/audio_processing_screen.dart';
@@ -27,8 +28,16 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       final atLogin = state.matchedLocation == Routes.login;
-      if (!isSignedIn && !atLogin) return Routes.login;
-      if (isSignedIn && atLogin) return Routes.root;
+      if (!isSignedIn && !atLogin) {
+        // Keep a deep link alive across sign-in (`/s?t=…` from a share,
+        // `/n/<id>` from a notification link); Home has nothing to keep.
+        final target = state.uri.toString();
+        return target == Routes.root ? Routes.login : Uri(path: Routes.login, queryParameters: {'from': target}).toString();
+      }
+      if (isSignedIn && atLogin) {
+        final from = state.uri.queryParameters['from'];
+        return (from != null && from.startsWith('/') && !from.startsWith('//')) ? from : Routes.root;
+      }
       return null;
     },
     errorBuilder: (context, state) => _ErrorPage(path: state.uri.path),
@@ -61,6 +70,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+      // ---- Deep links ----
+      GoRoute(
+        path: Routes.sharedNote,
+        pageBuilder: (_, state) {
+          final t = state.uri.queryParameters['t'];
+          if (t == null || t.isEmpty) return _slide(state, _ErrorPage(path: state.uri.path));
+          return _slide(state, SharedNoteScreen(token: t));
+        },
+      ),
+      GoRoute(
+        path: Routes.ownNote,
+        redirect: (_, state) {
+          final id = state.pathParameters['minuteId'];
+          return id == null || id.isEmpty ? Routes.root : Uri(path: Routes.transcriptionSummary, queryParameters: {'minuteId': id}).toString();
+        },
       ),
       GoRoute(
         path: Routes.recordAudio,

@@ -272,7 +272,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
-| S11-05 | **Share link chỉ đọc** — ✅ BE: trang HTML + **PDF** (`format=pdf`, Noto Sans nhúng) — chốt 24/09 "note chia sẻ là PDF"; ✍️ app menu Share | người vắng họp mở được không cần app |
+| S11-05 | **Share link chỉ đọc** — ✅ BE: PDF (`format=pdf`, Noto Sans nhúng) + HTML + JSON; **deep link / universal link / app link** `/s?t=` và `/n/<id>` qua Firebase Hosting (`.well-known` sẵn, Toan điền TEAMID + SHA-256), scheme `oneai://`; `importSharedNote` "Lưu vào ghi chú của tôi"; ✍️ app `SharedNoteScreen`, router giữ deep link qua đăng nhập | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |

@@ -687,5 +687,11 @@
   "@addToGlossaryPrompt": {"placeholders": {"term": {"type": "String"}}},
   "addedToGlossary": "\"{term}\" added to the glossary.",
   "@addedToGlossary": {"placeholders": {"term": {"type": "String"}}},
-  "add": "Add"
+  "add": "Add",
+  "sharedNote": "Shared note",
+  "openPdf": "Open PDF",
+  "saveToMyNotes": "Save to my notes",
+  "savedToYourNotes": "Saved to your notes.",
+  "alreadyInYourNotes": "This note is already in your notes.",
+  "sharedReadOnlyFooter": "Shared read-only from One AI. The owner can revoke this link at any time."
 }

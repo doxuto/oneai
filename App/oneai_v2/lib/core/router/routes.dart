@@ -14,4 +14,8 @@ abstract final class Routes {
   static const String audioProcessing = '/audioProcessing';
   static const String settings = '/settings';
   static const String glossary = '/settings/glossary';
+  /// Deep links (universal / app links + `oneai://` scheme): a shared note and
+  /// one of the user's own notes. Same paths as Firebase Hosting rewrites.
+  static const String sharedNote = '/s';
+  static const String ownNote = '/n/:minuteId';
 }

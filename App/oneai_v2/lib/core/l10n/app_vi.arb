@@ -280,5 +280,11 @@
   "deleteGlossaryTermConfirm": "Xoá \"{term}\" khỏi từ điển?",
   "addToGlossaryPrompt": "Ghi nhớ \"{term}\" cho các bản ghi sau?",
   "addedToGlossary": "Đã thêm \"{term}\" vào từ điển.",
-  "add": "Thêm"
+  "add": "Thêm",
+  "sharedNote": "Ghi chú được chia sẻ",
+  "openPdf": "Mở PDF",
+  "saveToMyNotes": "Lưu vào ghi chú của tôi",
+  "savedToYourNotes": "Đã lưu vào ghi chú của bạn.",
+  "alreadyInYourNotes": "Ghi chú này đã có trong ghi chú của bạn.",
+  "sharedReadOnlyFooter": "Chia sẻ chỉ đọc từ One AI. Chủ ghi chú có thể thu hồi liên kết bất cứ lúc nào."
 }

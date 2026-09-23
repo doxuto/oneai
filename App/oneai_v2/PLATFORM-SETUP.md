@@ -166,3 +166,50 @@ Tên dài dưới icon bị cắt thành "One AI: AI No…", nên chỉ dùng ch
   thể không mở được (moov atom ghi lúc stop) — nếu server báo lỗi đọc audio thì
   khuyên user bỏ; giải pháp triệt để là ghi theo chunk (S11-09 phần còn lại).
 
+## Deep link / Universal Link / App Link (24/09)
+
+Host: Firebase Hosting của project (`https://<project>.web.app`, hoặc domain riêng
+trỏ vào Hosting). `Backend/oneai_backend/hosting/.well-known/` đã có
+`apple-app-site-association` và `assetlinks.json` — **[Toan]** thay `TEAMID` (Apple
+Team ID) và 2 SHA-256 (Play App Signing + upload key, lấy ở Play Console › App
+integrity) rồi `firebase deploy --only hosting`.
+
+Đường dẫn app nhận: `/s?t=<token>` (ghi chú chia sẻ → màn xem + Lưu vào ghi chú),
+`/n/<minuteId>` (note của mình → màn Summary). Scheme dự phòng: `oneai://s?t=…`,
+`oneai://n/<id>` (đã có `oneai` trong `CFBundleURLSchemes`).
+
+### iOS — `Runner/Runner.entitlements`
+```xml
+<key>com.apple.developer.associated-domains</key>
+<array>
+  <string>applinks:<project>.web.app</string>
+  <!-- thêm domain riêng nếu có: applinks:share.doxutostudio.top -->
+</array>
+```
+`Info.plist` thêm `<key>FlutterDeepLinkingEnabled</key><true/>` (go_router nhận
+link qua kênh Flutter mặc định, không cần plugin).
+
+### Android — `AndroidManifest.xml` trong `<activity android:name=".MainActivity">`
+```xml
+<meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+<intent-filter android:autoVerify="true">
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data android:scheme="https" android:host="<project>.web.app" android:pathPrefix="/s" />
+  <data android:scheme="https" android:host="<project>.web.app" android:pathPrefix="/n/" />
+</intent-filter>
+<intent-filter>
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data android:scheme="oneai" />
+</intent-filter>
+```
+Kiểm tra: `adb shell pm verify-app-links --re-verify top.doxutostudio.one.ai` (Android 12+),
+iOS: cài app từ TestFlight rồi mở link trong Notes/Messages (Safari nhập tay không kích hoạt).
+
+Sau khi Hosting chạy, đặt `SHARE_BASE_URL=https://<project>.web.app/s` trong
+`functions-v2/.env` để link chia sẻ dùng domain này (link cũ dạng cloudfunctions.net
+vẫn mở được — cùng function).
+

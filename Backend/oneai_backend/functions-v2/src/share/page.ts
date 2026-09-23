@@ -6,7 +6,55 @@ import type { Summary, Transcript } from "../minutes/types.js";
 import { pdfFileName, renderNotePdf } from "./pdf.js";
 import type { ShareDoc } from "./types.js";
 
-export interface PageResult { status: number; html: string; pdf?: { bytes: Buffer; fileName: string } }
+export interface PageResult { status: number; html: string; pdf?: { bytes: Buffer; fileName: string }; json?: SharedNote }
+
+/** What the app's in-app viewer (deep link `/s?t=`) and `importSharedNote` read. */
+export interface SharedNote {
+  token: string;
+  title: string;
+  iconEmoji: string | null;
+  createdAt: string;
+  sourceType: string;
+  summary: Summary | null;
+  transcript: Transcript | null;
+  speakers: { id: string; label: string }[];
+  pdfUrl: string;
+}
+
+/** Resolves a live token to its note, or null when it is invalid / revoked / gone. Never counts a view. */
+export async function loadShared(deps: Deps, token: string | undefined): Promise<{ share: ShareDoc; shareRef: FirebaseFirestore.DocumentReference; note: SharedNote; minute: Record<string, unknown> } | null> {
+  if (!token || !/^[A-Za-z0-9_-]{16,64}$/.test(token)) return null;
+  const shareSnap = await deps.db.collection("shares").doc(token).get();
+  const share = shareSnap.data() as ShareDoc | undefined;
+  if (!shareSnap.exists || !share || share.revokedAt) return null;
+  const minuteRef = deps.db.doc(`users/${share.uid}/minutes/${share.minuteId}`);
+  const [minuteSnap, speakersSnap] = await Promise.all([minuteRef.get(), minuteRef.collection("artifacts").doc("speakers").get()]);
+  const m = minuteSnap.data() as Record<string, unknown> | undefined;
+  if (!minuteSnap.exists || !m || m.status !== "ready" || m.shareToken !== token) return null;
+  let transcript: Transcript | null = null;
+  if (share.includeTranscript && typeof m.transcriptPath === "string") {
+    try {
+      const [buf] = await deps.bucket.file(m.transcriptPath).download();
+      transcript = toTranscript(JSON.parse(buf.toString("utf8")));
+    } catch (err) {
+      log.warn("share.transcript_unreadable", { minuteId: share.minuteId, error: String(err) });
+    }
+  }
+  const speakers = toSpeakers((speakersSnap.data() as { data?: unknown } | undefined)?.data).map((s) => ({ id: s.id, label: s.label }));
+  const createdAt = m.createdAt && typeof (m.createdAt as { toDate?: unknown }).toDate === "function" ? (m.createdAt as { toDate: () => Date }).toDate().toISOString().slice(0, 10) : "";
+  const note: SharedNote = {
+    token,
+    title: typeof m.title === "string" ? m.title : "Untitled",
+    iconEmoji: typeof m.iconEmoji === "string" ? m.iconEmoji : null,
+    createdAt,
+    sourceType: typeof m.sourceType === "string" ? m.sourceType : "audio",
+    summary: toSummary(m.summary),
+    transcript,
+    speakers,
+    pdfUrl: `${deps.shareBaseUrl}${deps.shareBaseUrl.includes("?") ? "&" : "?"}t=${token}&format=pdf`,
+  };
+  return { share, shareRef: shareSnap.ref, note, minute: m };
+}
 
 export const esc = (s: string): string =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[c] ?? c);
@@ -57,37 +105,20 @@ export function notFoundPage(): string {
 }
 
 /** Pure-ish: everything the HTTP wrapper needs, testable without Express. */
-export async function sharePage(deps: Deps, token: string | undefined, opts: { format?: "html" | "pdf" } = {}): Promise<PageResult> {
-  if (!token || !/^[A-Za-z0-9_-]{16,64}$/.test(token)) return { status: 404, html: notFoundPage() };
-  const shareSnap = await deps.db.collection("shares").doc(token).get();
-  const share = shareSnap.data() as ShareDoc | undefined;
-  if (!shareSnap.exists || !share || share.revokedAt) return { status: 404, html: notFoundPage() };
-
-  const minuteRef = deps.db.doc(`users/${share.uid}/minutes/${share.minuteId}`);
-  const [minuteSnap, speakersSnap] = await Promise.all([minuteRef.get(), minuteRef.collection("artifacts").doc("speakers").get()]);
-  const m = minuteSnap.data() as Record<string, unknown> | undefined;
-  if (!minuteSnap.exists || !m || m.status !== "ready" || m.shareToken !== token) return { status: 404, html: notFoundPage() };
-
-  let transcript: Transcript | null = null;
-  if (share.includeTranscript && typeof m.transcriptPath === "string") {
-    try {
-      const [buf] = await deps.bucket.file(m.transcriptPath).download();
-      transcript = toTranscript(JSON.parse(buf.toString("utf8")));
-    } catch (err) {
-      log.warn("share.transcript_unreadable", { minuteId: share.minuteId, error: String(err) });
-    }
-  }
-  const labels = new Map(toSpeakers((speakersSnap.data() as { data?: unknown } | undefined)?.data).map((s) => [s.id, s.label]));
-  const createdAt = m.createdAt && typeof (m.createdAt as { toDate?: unknown }).toDate === "function" ? (m.createdAt as { toDate: () => Date }).toDate().toISOString().slice(0, 10) : "";
+export async function sharePage(deps: Deps, token: string | undefined, opts: { format?: "html" | "pdf" | "json" } = {}): Promise<PageResult> {
+  const loaded = await loadShared(deps, token);
+  if (!loaded) return { status: 404, html: notFoundPage() };
+  const { note, shareRef } = loaded;
 
   // Best-effort view counter; never delays or fails the page.
-  void shareSnap.ref.update({ views: FieldValue.increment(1), lastViewedAt: FieldValue.serverTimestamp() }).catch(() => undefined);
+  void shareRef.update({ views: FieldValue.increment(1), lastViewedAt: FieldValue.serverTimestamp() }).catch(() => undefined);
 
-  const title = typeof m.title === "string" ? m.title : "Untitled";
-  const content = { title, iconEmoji: typeof m.iconEmoji === "string" ? m.iconEmoji : null, createdAt, summary: toSummary(m.summary), transcript, speakerLabels: labels };
+  if (opts.format === "json") return { status: 200, html: "", json: note };
+  const title = note.title;
+  const content = { title, iconEmoji: note.iconEmoji, createdAt: note.createdAt, summary: note.summary, transcript: note.transcript, speakerLabels: new Map(note.speakers.map((s) => [s.id, s.label])) };
   if (opts.format === "pdf") {
     const bytes = await renderNotePdf({ ...content, footer: "Shared from One AI · read-only" });
     return { status: 200, html: "", pdf: { bytes, fileName: pdfFileName(title) } };
   }
-  return { status: 200, html: renderPage({ ...content, pdfHref: `?t=${encodeURIComponent(token)}&format=pdf` }) };
+  return { status: 200, html: renderPage({ ...content, pdfHref: `?t=${encodeURIComponent(note.token)}&format=pdf` }) };
 }

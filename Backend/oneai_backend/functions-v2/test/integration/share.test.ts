@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import { deleteMinuteHandler, getMinuteHandler } from "../../src/minutes/handler.js";
 import { createShareLinkHandler, revokeShareLinkHandler } from "../../src/share/handler.js";
+import { importSharedNoteHandler } from "../../src/share/importSharedNote.js";
 import { sharePage } from "../../src/share/page.js";
 import { wipeUser } from "../../src/users/lifecycle.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -104,5 +105,37 @@ describe("share links (S11-05)", () => {
     const t = tokenOf((await createShareLinkHandler(u1, { client, minuteId: "m1" }, deps)).share.url);
     await db.doc("users/u1/minutes/m1").update({ shareToken: "something-else-entirely-1234567890" });
     expect((await sharePage(deps, t)).status).toBe(404);
+  });
+
+  it("format=json feeds the in-app viewer; importSharedNote copies the note (transcript only when included), once, never for the owner", async () => {
+    await seedReady();
+    const u2 = { uid: "u2", signInProvider: "apple.com" };
+    const summaryOnly = tokenOf((await createShareLinkHandler(u1, { client, minuteId: "m1" }, deps)).share.url);
+    const j = await sharePage(deps, summaryOnly, { format: "json" });
+    expect(j.status).toBe(200);
+    expect(j.json).toMatchObject({ token: summaryOnly, title: "Standup <1>", sourceType: "audio", transcript: null });
+    expect(j.json?.pdfUrl).toContain("format=pdf");
+    expect(j.json?.summary?.sections[0]?.title).toBe("Decisions");
+
+    const a = await importSharedNoteHandler(u2, { client, token: summaryOnly }, deps);
+    expect(a.duplicate).toBe(false);
+    const copy = (await db.doc(`users/u2/minutes/${a.minuteId}`).get()).data()!;
+    expect(copy).toMatchObject({ status: "ready", title: "Standup <1>", transcriptPath: null, sourceState: "none", importedFromToken: summaryOnly, importedFromUid: "u1" });
+    expect(copy.summary.sections[0].bullets).toEqual(["• Ship Friday"]);
+    expect((await importSharedNoteHandler(u2, { client, token: summaryOnly }, deps))).toEqual({ minuteId: a.minuteId, duplicate: true });
+    expect(await importSharedNoteHandler(u1, { client, token: summaryOnly }, deps)).toEqual({ minuteId: "m1", duplicate: true });
+
+    // with transcript → the transcript file is copied under the importer
+    const withT = tokenOf((await createShareLinkHandler(u1, { client, minuteId: "m1", includeTranscript: true }, deps)).share.url);
+    const b = await importSharedNoteHandler(u2, { client, token: withT }, deps);
+    const copy2 = (await db.doc(`users/u2/minutes/${b.minuteId}`).get()).data()!;
+    expect(copy2.transcriptPath).toBe(`users/u2/minutes/${b.minuteId}/transcript.json`);
+    expect((await bucket.file(copy2.transcriptPath).exists())[0]).toBe(true);
+    expect(copy2.transcriptPreview).toContain("Hello everyone");
+
+    // revoked → not-found for both json and import
+    await revokeShareLinkHandler(u1, { client, minuteId: "m1" }, deps);
+    expect((await sharePage(deps, withT, { format: "json" })).status).toBe(404);
+    await expect(importSharedNoteHandler(u2, { client, token: withT }, deps)).rejects.toMatchObject({ code: "not-found" });
   });
 });
