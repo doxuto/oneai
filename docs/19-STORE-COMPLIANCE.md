@@ -48,7 +48,7 @@ Khai theo nhóm Apple, dựa trên §1. **[Toan]** điền trong App Store Conne
 - Apple 5.1.1(v) **xoá tài khoản trong app**: đã có (Settings → Delete account →
   `deleteAccount` callable → `onUserDeleted` dọn sạch). Ghi vào Review Notes.
 - Review Notes nên kèm: tài khoản test (Google), 1 file audio mẫu ngắn, giải thích
-  ad rewarded chỉ cộng credit qua SSV.
+  gói free = 10 phút audio/ngày, không có rewarded ad (24/09).
 - Export compliance: chỉ dùng HTTPS chuẩn → `ITSAppUsesNonExemptEncryption = false`.
 
 ## 3. Google Play — Data safety form
@@ -91,7 +91,7 @@ khớp với cách v2 hoạt động):
    hoặc tài khoản; xoá tài khoản → xoá toàn bộ trong 30 ngày (thực tế: ngay qua
    `onUserDeleted`). Nếu Toan đổi tham số retention thì sửa trang này.
 4. **Quảng cáo & consent** — UMP/GDPR cho EEA/UK, CCPA "Do not sell", ATT trên iOS; user
-   đổi lựa chọn ở Settings → Privacy options. Reward ad: xem xong được credit.
+   đổi lựa chọn ở Settings → Privacy options. Quảng cáo chỉ hiển thị (banner/interstitial/app-open); không có ad đổi lấy phút.
 5. **Thanh toán** — subscription qua App Store/Google Play, tự gia hạn, huỷ ở store;
    RevenueCat xử lý biên lai.
 6. **Quyền của người dùng** — xem/xuất (share Markdown/PDF trong app), xoá (trong app),
@@ -113,7 +113,7 @@ thiết bị; dữ liệu giữ lại: biên lai mua hàng (nghĩa vụ kế to�
 - Subtitle (iOS, ≤30): `Transcribe, summarize, ask AI`.
 - Mô tả: viết từ use-case matrix `17-FEATURE-RESEARCH.md` §1 — họp (action items,
   decisions, calendar events) và bài giảng (chapters, key terms, quiz, flashcards);
-  nêu rõ "audio processed by AI providers", "free credits daily, watch an ad for more".
+  nêu rõ "audio processed by AI providers", "10 free minutes every day, unlimited with Premium".
 - Từ khoá iOS (≤100 ký tự): `transcribe,meeting notes,lecture,summary,ai notes,voice memo,speech to text,study`.
 - Ảnh: Login, Home, Record, Summary (3 tab), Study tools — chụp từ golden (A6-07).
 - Rating: 4+ (iOS) / Everyone (Play) nhưng target 18+ vì có quảng cáo cá nhân hoá.
@@ -125,7 +125,7 @@ thiết bị; dữ liệu giữ lại: biên lai mua hàng (nghĩa vụ kế to�
 - [ ] PLATFORM-SETUP.md áp xong: `GADApplicationIdentifier`, `SKAdNetworkItems`, ATT string, mic string, Push capability (T8).
 - [ ] App Privacy (§2) và Data safety (§3) điền đúng bảng §1.
 - [ ] Privacy/Terms/Delete-account pages live (§4, §5); link trong Settings trỏ đúng (`AppConfig.privacyUrl/termsUrl`).
-- [ ] AdMob: app-ads.txt trên `doxutostudio.top`, SSV bật trên rewarded unit (T-S8-05).
+- [ ] AdMob: app-ads.txt trên `doxutostudio.top` (rewarded unit không dùng nữa — có thể tắt trong console).
 - [ ] RevenueCat: products/entitlement `pro` khớp 2 store; sandbox test mua + restore.
 - [ ] App Check enforce (S10-04) **sau** khi có traffic thật 1 tuần ở monitor.
 - [ ] Review Notes + tài khoản test + audio mẫu.

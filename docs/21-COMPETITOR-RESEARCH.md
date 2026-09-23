@@ -100,7 +100,7 @@ theo thời gian chỉ Coconote. **Không app nào quảng bá độ chính xác
 | Bilingual (transcript VI, note EN hoặc ngược lại) | Turbo chê vì đơn ngữ | một phần (`summaryLanguage` ≠ audio) | thêm toggle ở note (§6 #6) |
 | MCP / connector ra Notion, Google Docs | Fathom, Otter, Plaud, Voicenotes | share sheet thôi | S12 |
 | Đồng bộ slide ↔ mốc thời gian lecture | chỉ Notability/Goodnotes, không VI | ✘ | S12 |
-| Ads + rewarded | **không ai** | ✔ (A6) | giữ, nhưng chỉnh theo §4 |
+| Ads (banner/interstitial/app-open) | **không ai** | ✔ (A6) | giữ; **rewarded đã bỏ 24/09** theo đúng kết luận §4 (eCPM VN không bù STT) — free = 10 phút/ngày cố định |
 
 ## 6. Việc bổ sung vào roadmap (theo thứ tự ưu tiên)
 

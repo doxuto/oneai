@@ -48,7 +48,7 @@ thay BLoC bằng provider đã viết ở tầng logic.
 | A3-02 | `RecordAudioScreen`: `record` package (AAC m4a), timer, waveform amplitude, pause/resume, huỷ, xin quyền mic, khoá màn hình không dừng ghi | `features/transcription/record_audio_screen.dart` + `recorder_controller.dart` | `home/screens/record_audio_screen.dart` |
 | A3-03 | `UploadFileScreen`: `file_picker` audio/PDF, hiện tên/kích thước, kiểm size theo `maxSizeBytes` | `features/transcription/upload_file_screen.dart` | `home/screens/upload_file_screen.dart` |
 | A3-04 | `AudioProcessingScreen` trên `NewMinuteFlow`: 5 bước hiển thị như v1 nhưng theo trạng thái thật, tiến trình upload thật, nút huỷ theo pha, lỗi + retry, hết credit → paywall/ad | `features/transcription/audio_processing_screen.dart` | `transcription/screens/audio_processing_screen.dart` |
-| A3-05 | `CreditGate` nối UI: `creditGateDecide` → chạy / rewarded ad / paywall; `waitForRewardCredit` | `features/credits/credit_gate_ui.dart` | `premium_status_builder.dart` |
+| A3-05 | `CreditGate` nối UI: `creditGateDecide` → chạy / dialog Premium Required → paywall (rewarded bỏ 24/09) | `features/credits/credit_gate_ui.dart` | `premium_status_builder.dart` |
 
 ## A4 — Xem note
 
