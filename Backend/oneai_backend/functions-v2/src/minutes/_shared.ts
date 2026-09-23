@@ -1,6 +1,7 @@
 import { HttpsError } from "firebase-functions/v2/https";
 import type { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp } from "firebase-admin/firestore";
 import { toIso } from "../lib/time.js";
+import type { ShareInfo } from "../share/types.js";
 import {
   ARTIFACT_KINDS,
   MinuteStatus,
@@ -37,6 +38,8 @@ export interface MinuteDoc {
   stt?: { vendor?: string; model?: string } | null;
   timezone?: string | null;
   template?: string | null;
+  /** Live share token (S11-05); absent when no link. */
+  shareToken?: string;
   summaryLanguage?: string | null;
   keywords?: string[];
   description?: string | null;
@@ -229,7 +232,7 @@ export function talkTimeOf(transcript: Transcript | null, speakers: Speaker[]): 
 export function toMinuteDetail(
   id: string,
   raw: DocumentData | undefined,
-  extras: { transcript: Transcript | null; speakers: Speaker[]; calendarEvents?: CalendarEvent[]; availableArtifacts?: ArtifactKind[] },
+  extras: { transcript: Transcript | null; speakers: Speaker[]; calendarEvents?: CalendarEvent[]; availableArtifacts?: ArtifactKind[]; share?: ShareInfo | null },
 ): MinuteDetail {
   const d = (raw ?? {}) as MinuteDoc;
   return {
@@ -251,5 +254,6 @@ export function toMinuteDetail(
     calendarEvents: extras.calendarEvents ?? [],
     availableArtifacts: extras.availableArtifacts ?? [],
     talkTime: talkTimeOf(extras.transcript, extras.speakers),
+    share: extras.share ?? null,
   };
 }

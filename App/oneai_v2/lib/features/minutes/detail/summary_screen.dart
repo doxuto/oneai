@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/config/assets.dart';
+import 'package:one_ai/core/di/providers.dart';
+import 'package:one_ai/core/widgets/styled_dialog.dart';
 import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/core/theme/app_colors.dart';
@@ -138,6 +140,10 @@ class _ShareMenu extends ConsumerWidget {
     final l10n = context.l10n;
     return PopupMenuButton<ShareOption>(
       onSelected: (o) async {
+        if (o == ShareOption.copyLink || o == ShareOption.revokeLink) {
+          await _shareLink(context, ref, o);
+          return;
+        }
         // v1 blocked with "Preparing content..." while the PDF was built or
         // the audio downloaded; the share sheet then opens on top.
         final nav = Navigator.of(context, rootNavigator: true);
@@ -169,8 +175,48 @@ class _ShareMenu extends ConsumerWidget {
         _divider,
         _item(context, ShareOption.transcriptAsText, l10n.shareTranscriptAsText, Assets.noteTextIcon),
         if (detail.canPlaySource) ...[_divider, _item(context, ShareOption.audioFile, l10n.shareAudioFile, Assets.audioLinesIcon)],
+        _divider,
+        _item(context, ShareOption.copyLink, detail.share == null ? l10n.shareLink : l10n.copyLink, Assets.shareIcon),
+        if (detail.share != null) ...[_divider, _item(context, ShareOption.revokeLink, l10n.revokeLink, Assets.deleteIcon)],
       ],
     );
+  }
+
+  /// S11-05: a read-only web link for people without the app. First tap
+  /// creates it (summary only — the transcript is opt-in via the confirm),
+  /// later taps copy the same link; revoke kills it for everyone.
+  Future<void> _shareLink(BuildContext context, WidgetRef ref, ShareOption o) async {
+    final l10n = context.l10n;
+    final repo = ref.read(minutesRepositoryProvider);
+    try {
+      if (o == ShareOption.revokeLink) {
+        await repo.revokeShareLink(detail.id);
+        ref.invalidate(minuteDetailProvider(detail.id));
+        if (context.mounted) AppSnack.show(context, l10n.linkRevoked);
+        return;
+      }
+      var share = detail.share;
+      if (share == null) {
+        final withTranscript = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => StyledDialog(
+            title: l10n.shareLink,
+            content: Text(l10n.shareLinkExplain, textAlign: TextAlign.center, style: ctx.textTheme.bodyMedium),
+            cancelLabel: l10n.shareSummaryOnly,
+            confirmLabel: l10n.shareWithTranscript,
+            onCancel: () => Navigator.of(ctx).pop(false),
+            onConfirm: () => Navigator.of(ctx).pop(true),
+          ),
+        );
+        if (withTranscript == null) return; // dismissed
+        share = await repo.createShareLink(detail.id, includeTranscript: withTranscript);
+        ref.invalidate(minuteDetailProvider(detail.id));
+      }
+      await Clipboard.setData(ClipboardData(text: share.url));
+      if (context.mounted) AppSnack.show(context, l10n.linkCopied);
+    } on Object catch (e) {
+      if (context.mounted) AppSnack.failure(context, e);
+    }
   }
 
   PopupMenuItem<ShareOption> _item(BuildContext context, ShareOption o, String text, String icon) => PopupMenuItem<ShareOption>(

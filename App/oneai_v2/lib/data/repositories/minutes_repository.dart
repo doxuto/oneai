@@ -69,4 +69,10 @@ class MinutesRepository {
       }))['minute'] as Map<String, dynamic>);
 
   Future<void> delete(String minuteId) => _fns.call('deleteMinute', {'minuteId': minuteId});
+
+  /// S11-05: one live read-only link per note (idempotent for the same options).
+  Future<ShareInfo> createShareLink(String minuteId, {bool includeTranscript = false}) async =>
+      ShareInfo.fromJson((await _fns.call('createShareLink', {'minuteId': minuteId, 'includeTranscript': includeTranscript}))['share'] as Map<String, dynamic>);
+
+  Future<void> revokeShareLink(String minuteId) => _fns.call('revokeShareLink', {'minuteId': minuteId});
 }

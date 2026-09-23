@@ -269,7 +269,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
-| S11-05 | **Share link chỉ đọc** (`createShareLink`, `shares/{token}`, trang Hosting), thu hồi được | người vắng họp mở được không cần app |
+| S11-05 | **Share link chỉ đọc** (`createShareLink`/`revokeShareLink`, `shares/{token}`, trang HTML từ function `sharePage` — không cần Hosting), thu hồi được — ✅ BE; ✍️ app menu Share | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |

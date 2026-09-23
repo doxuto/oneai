@@ -132,6 +132,7 @@ interface MinuteDetail extends MinuteSummary {
   keywords: string[];
   summaryLanguage: string | null;
   template: string;                  // "auto" | "standup" | "one_on_one" | "interview" | "lecture" | "brainstorm"
+  share: {url, includeTranscript, createdAt, views} | null;   // link chia sẻ đang sống (S11-05)
   calendarEvents: CalendarEvent[];   // rút lúc summarize; sinh lại bằng generateCalendarEvents
   availableArtifacts: ("shortQuestions"|"quiz"|"flashcards"|"mindmap"|"speakers"|"calendarEvents"|"actionItems"|"keyTerms"|"chapters")[];
                                      // artifact đã tồn tại — app hiện tab mà không cần gọi generate*
@@ -190,6 +191,9 @@ là stub hardcode "Demo Meeting" (audit §1).
 | `generateMindmap` | như trên | `{data: {root: {id, title, icon, children: [{id, title, children: [{id, title, children: [{id,title}]}]}]}}, cached}` — sâu tối đa 4 |
 | `generateCalendarEvents` | `{client, minuteId, languageCode ="en", force =false, timezone?: IANA}` | `{data: {events: CalendarEvent[]}, cached}` — `timezone` mặc định là zone đã gửi ở `startTranscription`, rồi UTC. Sự kiện đã được rút sẵn lúc summarize và nằm trong `getMinute().calendarEvents`; gọi cái này chỉ khi muốn sinh lại (đổi ngôn ngữ) |
 | `generateActionItems` | như `generateCalendarEvents` (có `timezone?`) | `{data: {items: {id, text, owner\|null, due: ISO\|null, quote, done}[], decisions: string[]}, cached}` — họp: ai làm gì đến khi nào, đã chốt gì; `done` do user tick (mặc định false) |
+| `createShareLink` | `{client, minuteId, includeTranscript =false}` | `{share: {url, includeTranscript, createdAt, views}}` — 1 link sống/note; gọi lại cùng option → trả link cũ; đổi `includeTranscript` → thu hồi token cũ, cấp token mới. Note chưa `ready` → `failed-precondition` |
+| `revokeShareLink` | `{client, minuteId}` | `{}` — không có link → no-op |
+| `sharePage` (HTTP GET `?t=token`) | public, không auth/App Check | HTML chỉ đọc (summary, tuỳ chọn transcript với tên speaker đã đổi), `noindex`, `no-store`; token hỏng/thu hồi/note đã xoá → 404. Base URL = `SHARE_BASE_URL` hoặc URL cloudfunctions.net của chính function |
 | `translate` | `{client, minuteId, part: "summary"\|"transcript", languageCode, force =false}` | **streaming** như `chat`: chunk `{delta}` rồi kết quả `{part, languageCode, text, cached}` — cache ở `minutes/{id}/translations/{part}_{lang}` theo hash transcript; transcript dịch theo từng khối ≤6.000 ký tự nối lại; 1 AI call/lần dù nhiều khối; chưa có summary → `failed-precondition reason:"noSummary"` |
 | `setActionItemDone` | `{client, minuteId, itemId, done}` | như trên (`cached: true`) — không gọi model, không trừ quota; cờ nằm trong artifact nên đồng bộ mọi máy; `force` sinh lại sẽ **xoá tick**. Chưa sinh → `failed-precondition reason:"noActionItems"`; `itemId` lạ → `not-found` |
 | `generateKeyTerms` | `{client, minuteId, languageCode ="en", force =false}` | `{data: {terms: {term, definition, quote}[]}, cached}` — glossary theo ngữ cảnh |

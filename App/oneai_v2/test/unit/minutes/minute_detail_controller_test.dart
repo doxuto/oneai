@@ -57,6 +57,10 @@ class FakeMinutes implements MinutesRepository {
       throw UnimplementedError();
   @override
   Future<void> delete(String minuteId) => throw UnimplementedError();
+  @override
+  Future<ShareInfo> createShareLink(String minuteId, {bool includeTranscript = false}) => throw UnimplementedError();
+  @override
+  Future<void> revokeShareLink(String minuteId) => throw UnimplementedError();
 }
 
 class FakeAi implements AiRepository {

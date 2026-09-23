@@ -86,6 +86,7 @@ describe("wire shapes", () => {
         ],
         "pinned": false,
         "pinnedAt": null,
+        "share": null,
         "sourceExpiresAt": null,
         "sourcePath": "users/u1/minutes/m1/source/a.pdf",
         "sourceState": "available",

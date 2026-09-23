@@ -229,5 +229,13 @@
   "templateLecture": "Bài giảng",
   "templateBrainstorm": "Brainstorm",
   "translate": "Dịch",
-  "copied": "Đã sao chép"
+  "copied": "Đã sao chép",
+  "shareLink": "Chia sẻ liên kết",
+  "copyLink": "Sao chép liên kết",
+  "revokeLink": "Thu hồi liên kết",
+  "linkCopied": "Đã sao chép liên kết",
+  "linkRevoked": "Đã thu hồi liên kết",
+  "shareLinkExplain": "Ai có liên kết đều đọc được ghi chú này trên web mà không cần app. Bạn có thể thu hồi bất cứ lúc nào.",
+  "shareSummaryOnly": "Chỉ tóm tắt",
+  "shareWithTranscript": "Kèm transcript"
 }

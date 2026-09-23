@@ -71,6 +71,14 @@ export interface WipeReport {
 export async function wipeUser(deps: Deps, uid: string): Promise<WipeReport> {
   const report: WipeReport = { firestoreOk: true, storageOk: true };
   try {
+    // Share links are top-level (public page needs no uid) — sweep them first
+    // so a link never outlives its owner (single-field index on uid is automatic).
+    const shares = await deps.db.collection("shares").where("uid", "==", uid).get();
+    if (!shares.empty) {
+      const batch = deps.db.batch();
+      for (const d of shares.docs) batch.delete(d.ref);
+      await batch.commit();
+    }
     await deps.db.recursiveDelete(deps.db.doc(`users/${uid}`));
   } catch (err) {
     report.firestoreOk = false;

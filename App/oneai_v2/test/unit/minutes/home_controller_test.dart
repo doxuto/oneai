@@ -41,6 +41,10 @@ class FakeMinutes implements MinutesRepository {
     return list.stream;
   }
   @override
+  Future<ShareInfo> createShareLink(String minuteId, {bool includeTranscript = false}) => throw UnimplementedError();
+  @override
+  Future<void> revokeShareLink(String minuteId) => throw UnimplementedError();
+  @override
   Future<void> delete(String minuteId) async {
     calls.add('delete:$minuteId');
     if (deleteError != null) throw deleteError!;

@@ -229,5 +229,13 @@
   "templateLecture": "Clase",
   "templateBrainstorm": "Lluvia de ideas",
   "translate": "Traducir",
-  "copied": "Copiado"
+  "copied": "Copiado",
+  "shareLink": "Compartir enlace",
+  "copyLink": "Copiar enlace",
+  "revokeLink": "Revocar enlace",
+  "linkCopied": "Enlace copiado",
+  "linkRevoked": "Enlace revocado",
+  "shareLinkExplain": "Cualquiera con el enlace podrá leer esta nota en la web sin la app. Puedes revocarlo en cualquier momento.",
+  "shareSummaryOnly": "Solo resumen",
+  "shareWithTranscript": "Incluir transcripción"
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ShareInfo } from "../share/types.js";
 import { Cursor, DocId, ShortText, withClient } from "../types/common.js";
 
 // ---------- enums (string literals on the wire, never integers) ----------
@@ -151,6 +152,8 @@ export interface MinuteDetail extends MinuteSummary {
   summaryLanguage: string | null;
   /** S11-08 template the summary was written with; "auto" when none. */
   template: string;
+  /** Live read-only share link (S11-05), or null. */
+  share: ShareInfo | null;
   /** Extracted at summarise time; regenerate with `generateCalendarEvents`. */
   calendarEvents: CalendarEvent[];
   /** Which `artifacts/{kind}` docs exist, so the app can show tabs without a generate call. */

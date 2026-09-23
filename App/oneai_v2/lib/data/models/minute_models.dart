@@ -306,6 +306,26 @@ class MinuteProgress {
   final String title;
 }
 
+/// S11-05 read-only share link.
+class ShareInfo {
+  const ShareInfo({required this.url, required this.includeTranscript, required this.createdAt, required this.views});
+  factory ShareInfo.fromJson(Map<String, dynamic> j) => ShareInfo(
+        url: readString(j, 'url') ?? '',
+        includeTranscript: readBool(j, 'includeTranscript'),
+        createdAt: readDateTime(j, 'createdAt') ?? DateTime.fromMillisecondsSinceEpoch(0),
+        views: readInt(j, 'views') ?? 0,
+      );
+  final String url;
+  final bool includeTranscript;
+  final DateTime createdAt;
+  final int views;
+}
+
+ShareInfo? _shareOf(Map<String, dynamic> j) {
+  final s = readObject(j, 'share');
+  return s == null ? null : ShareInfo.fromJson(s);
+}
+
 class MinuteDetail {
   const MinuteDetail({
     required this.summaryInfo,
@@ -323,6 +343,7 @@ class MinuteDetail {
     this.sourceExpiresAt,
     this.talkTime = const [],
     this.template = MinuteTemplate.auto,
+    this.share,
   });
 
   factory MinuteDetail.fromJson(Map<String, dynamic> j) {
@@ -340,6 +361,7 @@ class MinuteDetail {
       keywords: readStringList(j, 'keywords'),
       summaryLanguage: readString(j, 'summaryLanguage'),
       template: MinuteTemplate.fromWire(readString(j, 'template')),
+      share: _shareOf(j),
       calendarEvents: readObjectList(j, 'calendarEvents').map(CalendarEvent.fromJson).toList(),
       availableArtifacts: readStringList(j, 'availableArtifacts').map(ArtifactKind.fromName).nonNulls.toSet(),
       sourceState: j.containsKey('sourceState') ? SourceState.from(j, 'sourceState') : (readString(j, 'sourcePath') == null ? SourceState.none : SourceState.available),
@@ -361,6 +383,8 @@ class MinuteDetail {
   final String? summaryLanguage;
   /// S11-08 template the summary was written with.
   final MinuteTemplate template;
+  /// Live read-only share link (S11-05), or null.
+  final ShareInfo? share;
 
   /// Extracted at summarise time. Empty when nothing was scheduled.
   final List<CalendarEvent> calendarEvents;

@@ -106,6 +106,10 @@ describe("server-only collections", () => {
     await assertFails(getDocs(collection(owner(), "users/u1/devices")));
     await assertFails(setDoc(doc(owner(), "users/u1/devices/d1"), { token: "x" }));
   });
+  it("shares/{token} is server-only: the public page reads it with the Admin SDK, never a client", async () => {
+    await assertFails(getDoc(doc(owner(), "shares/tok")));
+    await assertFails(setDoc(doc(owner(), "shares/tok"), { uid: "u1", minuteId: "m1" }));
+  });
   it("an unknown top-level collection is closed", async () => {
     await assertFails(getDoc(doc(owner(), "whatever/x")));
     await assertFails(setDoc(doc(owner(), "whatever/x"), { a: 1 }));

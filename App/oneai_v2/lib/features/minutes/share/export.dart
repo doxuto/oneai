@@ -137,6 +137,8 @@ class ShareSheetSharer implements MinuteSharer {
           final dir = await getTemporaryDirectory();
           final file = await _ref.read(transcriptionRepositoryProvider).downloadSource(path, File('${dir.path}/${path.split('/').last}'));
           await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], subject: title));
+        case ShareOption.copyLink || ShareOption.revokeLink:
+          return; // handled by the summary screen (server link, no file)
       }
     } on Object catch (e) {
       if (context.mounted) AppSnack.show(context, option == ShareOption.notesAsPdf || option == ShareOption.transcriptAsPdf ? l10n.errorSharingPdf : l10n.errorSharingContent);

@@ -6,6 +6,7 @@ import { mapFirestoreError, rethrow } from "../lib/errors.js";
 import { requireCaller, type Caller } from "../lib/handler.js";
 import { log, logDone } from "../lib/logging.js";
 import { parse } from "../lib/validate.js";
+import { shareInfoFor } from "../share/handler.js";
 import { contentTypeMatches, loadOwnedMinute, minutePrefix, minuteRef, minutesCol, presentArtifactKinds, safeFileName, sourcePath, tagsCol, toCalendarEvents, toMinuteDetail, toMinuteSummary, toSpeakers, toTranscript } from "./_shared.js";
 import {
   CreateMinuteInput,
@@ -164,9 +165,10 @@ export async function getMinuteHandler(
     // One read of the whole artifacts subcollection (≤6 small docs) instead of
     // one get per kind: speakers + calendar events come back in it, and its
     // ids tell the app which tabs already exist.
-    const [artifacts, transcript] = await Promise.all([
+    const [artifacts, transcript, share] = await Promise.all([
       ref.collection("artifacts").get(),
       readTranscript(deps, doc.transcriptPath ?? null),
+      shareInfoFor(deps, doc),
     ]);
     const byKind = new Map(artifacts.docs.map((d) => [d.id, d.data() as { data?: unknown }]));
 
@@ -175,6 +177,7 @@ export async function getMinuteHandler(
       speakers: toSpeakers(byKind.get("speakers")?.data),
       calendarEvents: toCalendarEvents(byKind.get("calendarEvents")?.data),
       availableArtifacts: presentArtifactKinds(byKind.keys()),
+      share,
     });
     logDone("minute.get", startedAt, { uid, minuteId: input.minuteId, status: minute.status });
     return { minute };
@@ -253,9 +256,13 @@ export async function deleteMinuteHandler(
   const input = parse(DeleteMinuteInput, raw, deps.minClientVersion);
 
   try {
-    await loadOwnedMinute(deps.db, uid, input.minuteId);
+    const { doc } = await loadOwnedMinute(deps.db, uid, input.minuteId);
     const ref = minuteRef(deps.db, uid, input.minuteId);
 
+    // A live share link dies with the note (the page also 404s on a missing note).
+    if (typeof doc.shareToken === "string") {
+      await deps.db.collection("shares").doc(doc.shareToken).delete().catch(() => undefined);
+    }
     // Firestore first so a retry after a storage failure still sees the doc gone.
     await deps.db.recursiveDelete(ref);
     try {

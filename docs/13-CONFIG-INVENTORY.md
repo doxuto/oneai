@@ -151,6 +151,7 @@ Param không bí mật (`functions-v2/.env`, commit có chủ ý):
 |---|---|---|
 | `STT_VENDOR` | `elevenlabs` | `elevenlabs` \| `gemini` |
 | `STT_FALLBACK_VENDOR` | `none` | vendor thử lại một lần khi primary sập |
+| `SHARE_BASE_URL` | `""` | base URL trang share link (S11-05); rỗng = URL cloudfunctions.net của `sharePage`; đặt khi có domain riêng |
 | `GEMINI_STT_MODEL` | `gemini-2.5-flash` | model khi STT là Gemini |
 | `LLM_VENDOR` / `OPENAI_MODEL` / `OPENAI_MODEL_HEAVY` / `GEMINI_MODEL` | `openai` / `gpt-4o-mini` / `gpt-4o` / `gemini-2.0-flash` | LLM |
 | `FREE_MAX_ACTIVE_JOBS` / `PREMIUM_MAX_ACTIVE_JOBS` | 1 / 3 | job transcribe đồng thời tối đa mỗi user |

@@ -43,6 +43,7 @@ service cloud.firestore {
     // Server-only collections.
     match /adRewards/{transactionId}   { allow read, write: if false; }
     match /transcriptionJobs/{jobId}   { allow read, write: if false; }
+    match /shares/{token}              { allow read, write: if false; } // public page reads via Admin SDK only
 
     match /{document=**} { allow read, write: if false; }
   }

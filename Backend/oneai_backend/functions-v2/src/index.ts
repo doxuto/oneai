@@ -46,6 +46,10 @@ export { generateCalendarEvents } from "./ai/generateCalendarEvents.js";
 export { generateActionItems } from "./ai/generateActionItems.js";
 export { setActionItemDone } from "./ai/setActionItemDone.js";
 export { translate } from "./ai/translate.js";
+
+export { createShareLink } from "./share/createShareLink.js";
+export { revokeShareLink } from "./share/revokeShareLink.js";
+export { sharePage } from "./share/sharePage.js";
 export { generateKeyTerms } from "./ai/generateKeyTerms.js";
 export { generateChapters } from "./ai/generateChapters.js";
 

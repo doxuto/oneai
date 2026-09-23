@@ -623,5 +623,13 @@
   "templateLecture": "Lecture",
   "templateBrainstorm": "Brainstorm",
   "translate": "Translate",
-  "copied": "Copied"
+  "copied": "Copied",
+  "shareLink": "Share link",
+  "copyLink": "Copy link",
+  "revokeLink": "Revoke link",
+  "linkCopied": "Link copied",
+  "linkRevoked": "Link revoked",
+  "shareLinkExplain": "Anyone with the link can read this note on the web, without the app. You can revoke it at any time.",
+  "shareSummaryOnly": "Summary only",
+  "shareWithTranscript": "Include transcript"
 }

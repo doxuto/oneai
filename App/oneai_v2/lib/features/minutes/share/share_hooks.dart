@@ -4,7 +4,7 @@ import 'package:one_ai/data/models/minute_models.dart';
 import 'package:one_ai/features/minutes/share/export.dart';
 
 /// v1's five share options.
-enum ShareOption { notesAsPdf, notesAsText, transcriptAsPdf, transcriptAsText, audioFile }
+enum ShareOption { notesAsPdf, notesAsText, transcriptAsPdf, transcriptAsText, audioFile, copyLink, revokeLink }
 
 /// Implemented in A5 (export.dart). Defined here so the summary screen's
 /// menu compiles without the export code.
