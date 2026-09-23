@@ -6,6 +6,7 @@ import 'package:one_ai/core/di/providers.dart';
 import 'package:one_ai/core/errors/api_failure.dart';
 import 'package:one_ai/data/models/ai_models.dart';
 import 'package:one_ai/data/repositories/ai_repository.dart';
+import 'package:one_ai/features/settings/language_settings.dart';
 
 // ---- State ----
 
@@ -104,9 +105,8 @@ const String _keepStr = '\u0000keep';
 
 // ---- Wiring ----
 
-/// Language the assistant answers in. The settings feature overrides this
-/// with the user's summary language; 'en' until then.
-final chatLanguageCodeProvider = Provider<String>((_) => 'en');
+/// Language the assistant answers in: the user's summary language.
+final chatLanguageCodeProvider = Provider<String>((ref) => ref.watch(aiLanguageCodeProvider));
 
 final chatControllerProvider =
     NotifierProvider.autoDispose.family<ChatController, ChatState, String>(ChatController.new);
