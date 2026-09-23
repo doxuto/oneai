@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The screens call ads through these two hooks only. Until A6 wires the
@@ -41,4 +42,17 @@ abstract final class AdPlacement {
   static const summaryExit = 'summary_exit';
   static const afterShare = 'after_share';
   static const settingsExit = 'settings_exit';
+}
+
+/// Inline adaptive banner slot (v1 showed one at the top of each tab).
+/// Renders nothing until A6 provides a builder; the layout reserves no space
+/// so the page never jumps when there is no fill.
+typedef BannerBuilder = Widget Function(BuildContext context, String placement);
+final bannerBuilderProvider = Provider<BannerBuilder>((_) => (_, __) => const SizedBox.shrink());
+
+class AdBannerSlot extends ConsumerWidget {
+  const AdBannerSlot({required this.placement, super.key});
+  final String placement;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ref.watch(bannerBuilderProvider)(context, placement);
 }

@@ -58,6 +58,7 @@ dependencies:
   connectivity_plus: ^6.1.4
   flutter_svg: ^2.1.0
   in_app_review: ^2.0.8
+  add_2_calendar: ^3.0.1
 
   # --- Export ---
   pdf: ^3.11.3

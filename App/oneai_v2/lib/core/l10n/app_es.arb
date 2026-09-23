@@ -195,5 +195,20 @@
   "transcribing": "Transcribiendo",
   "identifyingSpeakers": "Identificando hablantes",
   "takingNotes": "Tomando notas",
-  "finishingTouches": "Últimos retoques"
+  "finishingTouches": "Últimos retoques",
+  "calendarEvents": "Eventos",
+  "addToCalendar": "Añadir al calendario",
+  "actionItems": "Tareas",
+  "decisions": "Decisiones",
+  "noActionItems": "No se encontraron tareas ni decisiones.",
+  "generate": "Generar",
+  "studyTools": "Herramientas de estudio",
+  "quiz": "Cuestionario",
+  "flashcards": "Tarjetas",
+  "mindmap": "Mapa mental",
+  "keyTerms": "Términos clave",
+  "generateChapters": "Capítulos",
+  "audioExpired": "El audio original expiró y se eliminó. La transcripción y las notas se conservan.",
+  "loadOlder": "Cargar mensajes anteriores",
+  "answerLabel": "Respuesta"
 }

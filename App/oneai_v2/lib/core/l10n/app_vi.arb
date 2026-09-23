@@ -195,5 +195,20 @@
   "transcribing": "Đang chuyển thành văn bản",
   "identifyingSpeakers": "Nhận diện người nói",
   "takingNotes": "Đang ghi chú",
-  "finishingTouches": "Hoàn thiện"
+  "finishingTouches": "Hoàn thiện",
+  "calendarEvents": "Sự kiện",
+  "addToCalendar": "Thêm vào Lịch",
+  "actionItems": "Việc cần làm",
+  "decisions": "Quyết định",
+  "noActionItems": "Không tìm thấy việc cần làm hay quyết định nào.",
+  "generate": "Tạo",
+  "studyTools": "Công cụ ôn tập",
+  "quiz": "Trắc nghiệm",
+  "flashcards": "Thẻ ghi nhớ",
+  "mindmap": "Sơ đồ tư duy",
+  "keyTerms": "Thuật ngữ",
+  "generateChapters": "Chương",
+  "audioExpired": "Audio gốc đã hết hạn lưu trữ và bị xoá. Transcript và ghi chú vẫn còn.",
+  "loadOlder": "Tải tin nhắn cũ hơn",
+  "answerLabel": "Đáp án"
 }

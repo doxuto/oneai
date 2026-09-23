@@ -112,6 +112,12 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | A3-04 | `AudioProcessingScreen` trên `NewMinuteFlow`: 5 bước v1 theo trạng thái thật, % upload thật, đóng = huỷ theo pha (dialog), lỗi + Retry, hết credit → paywall, Congratulation lần đầu → xin quyền push + in-app review, reward card chỉ khi ad đã load | `features/transcription/audio_processing_screen.dart` | |
 | [~] | A3-05 | `runWithCreditGate` (thay `premiumActionWrapper`) + `creditGateLabel`; `quotaStreamProvider` cho chờ SSV | `features/credits/credit_gate_ui.dart` | |
 | [~] | A3-06 | Router: record/upload/processing là màn thật, transition slide v1, `AudioProcessingArgs` bắt buộc | `core/router/app_router.dart` | |
+| [~] | A4-01 | `TranscriptionSummaryScreen` port: app bar Back + share menu 5 mục (audio chỉ khi `canPlaySource`), title, "date • duration", `TranscriptTabSelector` v1, tab theo `initialTab`, exit → interstitial `summary_exit`, note chưa ready/failed → màn chờ; `_PlayerFab` mini → dashboard (speed/±10s/play/close/slider) | `features/minutes/detail/{summary_screen,transcript_tab_selector,audio_player_controller}.dart` | player stream từ download URL, không tải cả file |
+| [~] | A4-02 | Tab Summary: sections v1, **Events** (Thêm vào Lịch qua `add_2_calendar`), **Action items + decisions** (sinh theo yêu cầu, tick lưu local), `AiToolsRow`, FeedbackWidget | `features/minutes/detail/{summary_tab,feedback_widget}.dart` | |
+| [~] | A4-03 | Tab Transcript: dòng speaker v1 (màu theo thứ tự xuất hiện, rename), timestamp tua được, highlight segment đang phát, **talk-time bar**, **chapters strip** (sinh theo yêu cầu, tap → tua), thông báo audio hết hạn | `features/minutes/detail/transcript_tab.dart` | |
+| [~] | A4-04 | Tab Chat trên `ChatController`: bubble v1, typing dots, câu hỏi gợi ý (`shortQuestions`), pill input, retry, tải tin cũ | `features/minutes/detail/chat_tab.dart` | |
+| [~] | A4-05 | Study tools: `ToolSheet<T>` chung + Quiz (chấm điểm), Flashcards (lật thẻ, PageView), Mindmap (cây thu gọn), Key terms; regenerate | `features/minutes/detail/ai_tools/*` | |
+| [~] | A4-06 | `MinuteSharer` hook (A5 hiện thực), `AdBannerSlot` (A6), router `/transcriptionSummary` nhận `SummaryArgs` hoặc `?minuteId=` | `features/minutes/share/share_hooks.dart`, `features/ads/runtime/ad_hooks.dart`, `core/router/app_router.dart` | |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

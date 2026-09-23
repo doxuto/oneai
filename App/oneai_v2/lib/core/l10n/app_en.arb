@@ -589,5 +589,20 @@
   "transcribing": "Transcribing",
   "identifyingSpeakers": "Identifying Speakers",
   "takingNotes": "Taking Notes",
-  "finishingTouches": "Finishing Touches"
+  "finishingTouches": "Finishing Touches",
+  "calendarEvents": "Events",
+  "addToCalendar": "Add to Calendar",
+  "actionItems": "Action items",
+  "decisions": "Decisions",
+  "noActionItems": "No action items or decisions were found.",
+  "generate": "Generate",
+  "studyTools": "Study tools",
+  "quiz": "Quiz",
+  "flashcards": "Flashcards",
+  "mindmap": "Mind map",
+  "keyTerms": "Key terms",
+  "generateChapters": "Chapters",
+  "audioExpired": "The original audio has expired and was removed. Your transcript and notes are kept.",
+  "loadOlder": "Load earlier messages",
+  "answerLabel": "Answer"
 }
