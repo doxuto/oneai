@@ -210,5 +210,10 @@
   "generateChapters": "Capítulos",
   "audioExpired": "El audio original expiró y se eliminó. La transcripción y las notas se conservan.",
   "loadOlder": "Cargar mensajes anteriores",
-  "answerLabel": "Respuesta"
+  "answerLabel": "Respuesta",
+  "noteCount": "{n} notas",
+  "@noteCount": {"placeholders": {"n": {"type": "int"}}},
+  "notifyWhenReady": "Avisarme cuando una nota esté lista",
+  "deleteAccountConfirm": "¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
+  "accountDeleted": "Cuenta eliminada correctamente."
 }

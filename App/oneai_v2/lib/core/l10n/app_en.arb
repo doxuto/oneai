@@ -604,5 +604,10 @@
   "generateChapters": "Chapters",
   "audioExpired": "The original audio has expired and was removed. Your transcript and notes are kept.",
   "loadOlder": "Load earlier messages",
-  "answerLabel": "Answer"
+  "answerLabel": "Answer",
+  "noteCount": "{n} notes",
+  "@noteCount": {"placeholders": {"n": {"type": "int"}}},
+  "notifyWhenReady": "Notify me when a note is ready",
+  "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+  "accountDeleted": "Account deleted successfully."
 }

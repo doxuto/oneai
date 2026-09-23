@@ -118,6 +118,11 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | A4-04 | Tab Chat trên `ChatController`: bubble v1, typing dots, câu hỏi gợi ý (`shortQuestions`), pill input, retry, tải tin cũ | `features/minutes/detail/chat_tab.dart` | |
 | [~] | A4-05 | Study tools: `ToolSheet<T>` chung + Quiz (chấm điểm), Flashcards (lật thẻ, PageView), Mindmap (cây thu gọn), Key terms; regenerate | `features/minutes/detail/ai_tools/*` | |
 | [~] | A4-06 | `MinuteSharer` hook (A5 hiện thực), `AdBannerSlot` (A6), router `/transcriptionSummary` nhận `SummaryArgs` hoặc `?minuteId=` | `features/minutes/share/share_hooks.dart`, `features/ads/runtime/ad_hooks.dart`, `core/router/app_router.dart` | |
+| [~] | A5-01 | `SettingsScreen` port: 5 section v1 + Manage tags + toggle "Báo khi ghi chú xong" (server prefs, bật → xin quyền OS), Privacy options hook (UMP ở A6), credits từ quota live, exit → interstitial `settings_exit` | `features/settings/settings_screen.dart`, `features/notifications/notification_prefs.dart` | |
+| [~] | A5-02 | `TagManagerSheet`: tạo/sửa/xoá, số note | `features/tags/tag_manager_sheet.dart` | |
+| [~] | A5-03 | Export: `MinuteExport.notesMarkdown` (sections, action items, decisions, events, chapters — chỉ artifact đã sinh, không gọi AI), `transcriptText`, PDF từ cùng cấu trúc; `ShareSheetSharer` 5 lựa chọn v1 (audio tải từ Storage) | `features/minutes/share/export.dart`, `test/unit/share/export_test.dart` (4 test) | |
+| [~] | A5-04 | Xoá tài khoản: dialog xác nhận → `AuthController.deleteAccount` → snack | trong A5-01 | |
+| [~] | A5-05 | Router: không còn placeholder nào — mọi route là màn thật | `core/router/app_router.dart` | |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

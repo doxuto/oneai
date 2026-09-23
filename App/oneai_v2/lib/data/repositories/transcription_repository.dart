@@ -53,6 +53,12 @@ class TranscriptionRepository {
   /// Storage auth — the server hands out paths, never signed URLs.
   Future<String> downloadUrl(String storagePath) => _storage.ref(storagePath).getDownloadURL();
 
+  /// Copies the source file to [target] (for "share audio file").
+  Future<File> downloadSource(String storagePath, File target) async {
+    await _storage.ref(storagePath).writeToFile(target);
+    return target;
+  }
+
   /// Convenience for the record/upload screens: pick the source type from the file.
   static SourceType sourceTypeFor(String contentType) =>
       contentType.toLowerCase() == 'application/pdf' ? SourceType.pdf : SourceType.audio;

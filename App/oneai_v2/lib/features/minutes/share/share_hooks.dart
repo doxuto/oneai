@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:one_ai/data/models/minute_models.dart';
+import 'package:one_ai/features/minutes/share/export.dart';
 
 /// v1's five share options.
 enum ShareOption { notesAsPdf, notesAsText, transcriptAsPdf, transcriptAsText, audioFile }
@@ -17,4 +18,4 @@ class NoopSharer implements MinuteSharer {
   Future<void> share(BuildContext context, MinuteDetail detail, ShareOption option) async {}
 }
 
-final minuteSharerProvider = Provider<MinuteSharer>((_) => const NoopSharer());
+final minuteSharerProvider = Provider<MinuteSharer>((ref) => ShareSheetSharer(ref));

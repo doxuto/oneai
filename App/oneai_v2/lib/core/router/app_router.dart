@@ -7,6 +7,7 @@ import 'package:one_ai/features/auth/login_screen.dart';
 import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/features/minutes/detail/summary_screen.dart';
 import 'package:one_ai/features/minutes/home/home_screen.dart';
+import 'package:one_ai/features/settings/settings_screen.dart';
 import 'package:one_ai/features/transcription/audio_processing_screen.dart';
 import 'package:one_ai/features/transcription/record_audio_screen.dart';
 import 'package:one_ai/features/transcription/upload_file_screen.dart';
@@ -53,7 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'settings',
-            builder: (_, __) => const _Placeholder('Settings'),
+            pageBuilder: (_, state) => _slide(state, const SettingsScreen()),
           ),
         ],
       ),
@@ -86,18 +87,6 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) => CustomTr
         child: child,
       ),
     );
-
-/// Replaced feature by feature during S3–S6.
-class _Placeholder extends StatelessWidget {
-  const _Placeholder(this.name);
-  final String name;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(name)),
-        body: Center(child: Text('$name — not built yet')),
-      );
-}
 
 class _ErrorPage extends StatelessWidget {
   const _ErrorPage({required this.path});

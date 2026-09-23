@@ -210,5 +210,10 @@
   "generateChapters": "Chương",
   "audioExpired": "Audio gốc đã hết hạn lưu trữ và bị xoá. Transcript và ghi chú vẫn còn.",
   "loadOlder": "Tải tin nhắn cũ hơn",
-  "answerLabel": "Đáp án"
+  "answerLabel": "Đáp án",
+  "noteCount": "{n} ghi chú",
+  "@noteCount": {"placeholders": {"n": {"type": "int"}}},
+  "notifyWhenReady": "Báo khi ghi chú xong",
+  "deleteAccountConfirm": "Bạn chắc chắn muốn xoá tài khoản? Hành động này không thể hoàn tác.",
+  "accountDeleted": "Đã xoá tài khoản."
 }
