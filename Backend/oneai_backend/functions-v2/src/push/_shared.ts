@@ -7,9 +7,12 @@ export const deviceIdOf = (token: string): string => createHash("sha256").update
 
 export const devicesCol = (db: Firestore, uid: string): CollectionReference => db.collection(`users/${uid}/devices`);
 
-export const DEFAULT_PREFS: NotificationPrefs = { transcriptionDone: true };
+export const DEFAULT_PREFS: NotificationPrefs = { transcriptionDone: true, reviewReminders: true };
 
 export function toPrefs(raw: unknown): NotificationPrefs {
   const d = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  return { transcriptionDone: typeof d.transcriptionDone === "boolean" ? d.transcriptionDone : DEFAULT_PREFS.transcriptionDone };
+  return {
+    transcriptionDone: typeof d.transcriptionDone === "boolean" ? d.transcriptionDone : DEFAULT_PREFS.transcriptionDone,
+    reviewReminders: typeof d.reviewReminders === "boolean" ? d.reviewReminders : DEFAULT_PREFS.reviewReminders,
+  };
 }

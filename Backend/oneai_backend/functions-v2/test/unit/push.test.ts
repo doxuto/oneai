@@ -41,10 +41,10 @@ describe("fcm mapping", () => {
 
 describe("prefs + device ids", () => {
   it("prefs default to on and tolerate junk", () => {
-    expect(toPrefs(undefined)).toEqual({ transcriptionDone: true });
-    expect(toPrefs({ transcriptionDone: "no" })).toEqual({ transcriptionDone: true });
-    expect(toPrefs({ transcriptionDone: false })).toEqual({ transcriptionDone: false });
-    expect(toUserOutput("u1", {}, new Date()).notifications).toEqual({ transcriptionDone: true });
+    expect(toPrefs(undefined)).toEqual({ transcriptionDone: true, reviewReminders: true });
+    expect(toPrefs({ transcriptionDone: "no" })).toEqual({ transcriptionDone: true, reviewReminders: true });
+    expect(toPrefs({ transcriptionDone: false })).toEqual({ transcriptionDone: false, reviewReminders: true });
+    expect(toUserOutput("u1", {}, new Date()).notifications).toEqual({ transcriptionDone: true, reviewReminders: true });
   });
   it("device id is a stable hash, safe as a doc id for any token", () => {
     const t = "a:b/c".repeat(200);

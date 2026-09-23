@@ -36,6 +36,20 @@ export function notificationCopy(kind: PushKind, locale: string | null | undefin
   return { title: c.title, body: c.body(t) };
 }
 
+interface ReviewCopy { title: string; one: (n: number, title: string) => string; many: (n: number, notes: number) => string }
+const REVIEW_COPY: Record<string, ReviewCopy> = {
+  en: { title: "Time to review", one: (n, t) => `${n} ${n === 1 ? "card is" : "cards are"} due in "${t}".`, many: (n, m) => `${n} cards are due across ${m} notes.` },
+  vi: { title: "Đến giờ ôn tập", one: (n, t) => `${n} thẻ đến hạn trong "${t}".`, many: (n, m) => `${n} thẻ đến hạn trong ${m} ghi chú.` },
+  es: { title: "Hora de repasar", one: (n, t) => `${n} ${n === 1 ? "tarjeta vence" : "tarjetas vencen"} en "${t}".`, many: (n, m) => `${n} tarjetas vencen en ${m} notas.` },
+};
+
+/** S11-03b: "N cards are due" — one note names it, several just count. */
+export function reviewDueCopy(locale: string | null | undefined, dueCount: number, noteCount: number, singleTitle: string): { title: string; body: string } {
+  const c = REVIEW_COPY[pickLocale(locale)]!;
+  const t = singleTitle.trim().length > 0 ? truncate(singleTitle.trim(), 60) : "Untitled";
+  return { title: c.title, body: noteCount === 1 ? c.one(dueCount, t) : c.many(dueCount, noteCount) };
+}
+
 function truncate(s: string, max: number): string {
   return s.length <= max ? s : `${s.slice(0, max - 1)}…`;
 }

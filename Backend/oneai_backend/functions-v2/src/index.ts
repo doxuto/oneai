@@ -73,3 +73,7 @@ export { askAll } from "./search/askAll.js";
 export { searchNotes } from "./search/searchNotes.js";
 export { backfillEmbeddings } from "./jobs/backfillEmbeddings.js";
 
+// ---- Study (S11-03b) ----
+export { syncReviewSchedule } from "./study/syncReviewSchedule.js";
+export { remindReviews } from "./jobs/remindReviews.js";
+

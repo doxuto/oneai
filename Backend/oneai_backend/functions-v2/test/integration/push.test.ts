@@ -68,10 +68,13 @@ describe("notification prefs", () => {
   it("round-trips through getMe and defaults to on", async () => {
     const deps = makeDeps(recorder().push);
     await db.doc("users/u1").set({ plan: "free", createdAt: Timestamp.now() });
-    expect((await getMeHandler(u1, { client }, deps)).user.notifications).toEqual({ transcriptionDone: true });
+    expect((await getMeHandler(u1, { client }, deps)).user.notifications).toEqual({ transcriptionDone: true, reviewReminders: true });
     const out = await updateNotificationPrefsHandler(u1, { client, transcriptionDone: false }, deps);
-    expect(out.notifications).toEqual({ transcriptionDone: false });
-    expect((await getMeHandler(u1, { client }, deps)).user.notifications).toEqual({ transcriptionDone: false });
+    expect(out.notifications).toEqual({ transcriptionDone: false, reviewReminders: true });
+    expect((await getMeHandler(u1, { client }, deps)).user.notifications).toEqual({ transcriptionDone: false, reviewReminders: true });
+    // S11-03b: a partial update leaves the other key alone
+    expect((await updateNotificationPrefsHandler(u1, { client, reviewReminders: false }, deps)).notifications).toEqual({ transcriptionDone: false, reviewReminders: false });
+    await expect(updateNotificationPrefsHandler(u1, { client }, deps)).rejects.toMatchObject({ code: 'invalid-argument' });
     expect((await db.doc("users/u1").get()).data()?.plan).toBe("free"); // merge, not overwrite
   });
 });

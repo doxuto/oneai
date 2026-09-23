@@ -14,13 +14,17 @@ export type RegisterDeviceInput = z.infer<typeof RegisterDeviceInput>;
 export const UnregisterDeviceInput = withClient({ token: Token }).strict();
 
 export const UpdateNotificationPrefsInput = withClient({
-  transcriptionDone: z.boolean(),
-}).strict();
+  transcriptionDone: z.boolean().optional(),
+  /** S11-03b: "N cards are due" at 19:00 local. */
+  reviewReminders: z.boolean().optional(),
+}).strict().refine((v) => v.transcriptionDone !== undefined || v.reviewReminders !== undefined, { message: "nothing to update" });
 export type UpdateNotificationPrefsInput = z.infer<typeof UpdateNotificationPrefsInput>;
 
 export interface NotificationPrefs {
   /** Push when a note finishes (or fails). Default true. */
   transcriptionDone: boolean;
+  /** Push when flashcards are due for review (S11-03b). Default true. */
+  reviewReminders: boolean;
 }
 
 export type RegisterDeviceOutput = Record<string, never>;

@@ -166,6 +166,7 @@ describe("wire shapes", () => {
         "id": "u1",
         "minuteCount": 1,
         "notifications": {
+          "reviewReminders": true,
           "transcriptionDone": true,
         },
         "photoUrl": null,

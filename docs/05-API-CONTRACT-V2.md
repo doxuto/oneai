@@ -252,7 +252,8 @@ v1 dùng ba field id khác nhau từ cùng một decoded token (`user_id`, `uid`
 |---|---|---|
 | `registerDevice` | `{client, token: FCM ≤4096, locale?: BCP-47}` | `{}` — upsert `users/{uid}/devices/{sha256(token)}`; **token đang thuộc uid khác thì chuyển sang uid này** (cùng máy, đổi tài khoản) |
 | `unregisterDevice` | `{client, token}` | `{}` — gọi khi sign out; idempotent |
-| `updateNotificationPrefs` | `{client, transcriptionDone: boolean}` | `{notifications}` |
+| `updateNotificationPrefs` | `{client, transcriptionDone?: boolean, reviewReminders?: boolean}` (ít nhất một key; chỉ key gửi lên đổi) | `{notifications: {transcriptionDone, reviewReminders}}` — mặc định đều `true` |
+| `syncReviewSchedule` | `{client, minuteId, timezone: IANA, cards: {[question ≤500]: {r: int, i: int, e ≥1.3, d: ISO\|null}} ≤200}` (S11-03b) | `{cardCount, dueCount, nextDueAt\|null, remindAt\|null}` — app là bộ lập lịch SM-2, gửi **cả map** sau mỗi phiên ôn (last-write-wins giữa máy); server lưu `minutes/{id}/study/review`, `remindAt` = 19:00 giờ máy đầu tiên sau `max(now, nextDueAt)`; map rỗng → xoá doc (ngừng theo dõi); note không tồn tại → `not-found` |
 
 Server gửi push khi job kết thúc (từ pipeline hoặc reaper), **không** khi user
 tự huỷ. Payload `data: {type: "minuteReady" \| "minuteFailed", minuteId}` để app
@@ -278,6 +279,7 @@ bao giờ** đọc/ghi `devices/` trực tiếp (rules chặn).
 | `onMinuteWritten` | Firestore trigger | recount `minuteCount` user + tag (aggregation, idempotent) |
 | `processTranscription` | `onTaskDispatched` 2GiB/540s, retry 3, ≤10 song song | worker nặng; ghi `stt: {vendor, model}` lên note + job |
 | `reapStaleJobs` | `onSchedule` mỗi 15 phút | job `running` > 30 phút hoặc `queued` > 60 phút → fail + hoàn credit + push `minuteFailed` |
+| `remindReviews` | `onSchedule` mỗi giờ (phút :05, UTC) | collection-group `study` có `remindAt ≤ now` → gộp theo user, **một** push `{type: "reviewDue", minuteId?}` ("N thẻ đến hạn trong \"T\"" khi 1 note, "N thẻ trong M ghi chú" khi nhiều; theo locale máy), rồi `remindAt = null` + `remindedAt` — không nhắc lại tới khi app sync (không nag); pref `reviewReminders=false` hoặc không có device → bỏ qua nhưng vẫn clear |
 | `backfillEmbeddings` | `onSchedule` 03:30 VN hằng ngày | embed note `ready` chưa có vector / hash lệch (note v1 migrate, lỗi provider, đổi `EMBEDDING_DIM`), ≤500/lần |
 | `sweepOrphanFiles` | `onSchedule` 03:00 VN hằng ngày | upload bỏ dở > 24h, note kẹt > 2h (backstop), prefix Storage mồ côi, job cũ > 7 ngày |
 

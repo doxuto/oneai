@@ -7,7 +7,7 @@ import { parse } from "../lib/validate.js";
 import { deviceIdOf, devicesCol, toPrefs } from "./_shared.js";
 import {
   RegisterDeviceInput, UnregisterDeviceInput, UpdateNotificationPrefsInput,
-  type RegisterDeviceOutput, type UnregisterDeviceOutput, type UpdateNotificationPrefsOutput,
+  type NotificationPrefs, type RegisterDeviceOutput, type UnregisterDeviceOutput, type UpdateNotificationPrefsOutput,
 } from "./types.js";
 
 /**
@@ -67,10 +67,15 @@ export async function updateNotificationPrefsHandler(caller: Caller | undefined,
   const input = parse(UpdateNotificationPrefsInput, raw, deps.minClientVersion);
   try {
     const ref = deps.db.doc(`users/${uid}`);
-    const notifications = { transcriptionDone: input.transcriptionDone };
-    await ref.set({ notifications, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
-    logDone("notifications.updated", startedAt, { uid, transcriptionDone: input.transcriptionDone });
-    return { notifications: toPrefs(notifications) };
+    // Partial update: only the keys sent change; `merge` keeps the rest.
+    const patch: Partial<NotificationPrefs> = {};
+    if (input.transcriptionDone !== undefined) patch.transcriptionDone = input.transcriptionDone;
+    if (input.reviewReminders !== undefined) patch.reviewReminders = input.reviewReminders;
+    await ref.set({ notifications: patch, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    const after = await ref.get();
+    const notifications = toPrefs((after.data() as { notifications?: unknown } | undefined)?.notifications);
+    logDone("notifications.updated", startedAt, { uid, ...patch });
+    return { notifications };
   } catch (err) {
     return rethrow(err, "notifications.update.failed", { uid });
   }

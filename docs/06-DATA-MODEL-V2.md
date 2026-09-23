@@ -103,6 +103,16 @@ speaker xong quiz vẫn là quiz cũ). **Không bao giờ ghi artifact khi sinh 
 `role: "user"|"assistant"`, `text`, `createdAt`, `model?`, `tokenCount?`.
 Mới hoàn toàn — v1 không lưu chat.
 
+### `users/{uid}/minutes/{minuteId}/study/review` — **mới (S11-03b)**
+
+Lịch ôn flashcard SM-2 của note, app là nguồn: `uid`, `minuteId`, `title`,
+`timezone`, `cards: {[question]: {r, i, e, d}}` (≤200), `cardCount`, `dueCount`,
+`nextDueAt`, `remindAt` (19:00 giờ máy kế tiếp; null = không có nhắc chờ),
+`remindedAt`, `updatedAt`. Owner đọc (rule `{document=**}` dưới minute), chỉ
+server ghi qua `syncReviewSchedule`. `remindReviews` quét collection-group
+`study` theo `remindAt` (field override trong indexes) và clear sau khi gửi.
+Xoá note (`recursiveDelete`) xoá luôn.
+
 ### `users/{uid}/tags/{tagId}`
 
 `name`, `nameLower` (unique key), `minuteCount`, `createdAt`.

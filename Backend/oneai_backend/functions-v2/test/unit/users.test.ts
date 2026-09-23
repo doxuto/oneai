@@ -66,7 +66,7 @@ describe("toUserOutput", () => {
       planExpiresAt: null,
       minuteCount: 0,
       createdAt: null,
-      notifications: { transcriptionDone: true },
+      notifications: { transcriptionDone: true, reviewReminders: true },
     });
   });
 
