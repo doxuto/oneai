@@ -3,13 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/config/assets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_ai/features/credits/credits_provider.dart';
+import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/theme/gaps.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
 
 /// v1 sheet minus the YouTube entry (OQ-06). Two ways in: record, upload.
-class NewMinutesBottomSheet extends StatelessWidget {
+class NewMinutesBottomSheet extends ConsumerWidget {
   const NewMinutesBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) => showModalBottomSheet<void>(
@@ -21,7 +24,7 @@ class NewMinutesBottomSheet extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context, WidgetRef ref) => Container(
         decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -40,6 +43,13 @@ class NewMinutesBottomSheet extends StatelessWidget {
               ],
             ),
             gapH16,
+            if (ref.watch(quotaProvider).valueOrNull case final q? when !q.isUnlimited) ...[
+              Text(
+                '${context.l10n.freeMinutesLeftToday(q.remainingMinutes)} · ${context.l10n.maxPerRecording((q.maxDurationSeconds / 60).round())}',
+                style: context.textTheme.bodySmall?.copyWith(color: q.remainingSeconds <= 60 ? AppColors.destructiveRed : Colors.grey[600]),
+              ),
+              gapH12,
+            ],
             _Option(
               icon: Assets.voiceIcon,
               label: context.l10n.startAudioRecording,

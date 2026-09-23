@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:one_ai/core/config/assets.dart';
 import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/router/route_args.dart';
@@ -93,6 +94,12 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
         if (context.mounted) AppSnack.show(context, premium ? l10n.recordingTooLong((capSeconds / 60).round()) : l10n.freeMinutesUsedUp);
       }
     });
+    ref.listen(recorderProvider.select((s) => s.resumedAfterInterruption), (_, resumed) {
+      if (resumed) {
+        AppSnack.show(context, l10n.recordingResumed);
+        ref.read(recorderProvider.notifier).ackResumed();
+      }
+    });
     ref.listen(recorderProvider.select((s) => s.permissionDenied), (_, denied) {
       if (denied) AppSnack.show(context, l10n.microphonePermissionNeeded);
     });
@@ -126,6 +133,17 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
             Text(l10n.oneAi, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
           ]),
           centerTitle: false,
+          actions: [
+            // A7-03 / S11-12: one tap to tell the room it is being recorded.
+            IconButton(
+              tooltip: l10n.recordingNotice,
+              icon: const Icon(Icons.campaign_outlined),
+              onPressed: () async {
+                await HapticFeedback.lightImpact();
+                await SharePlus.instance.share(ShareParams(text: l10n.recordingNoticeText, subject: l10n.recordingNotice));
+              },
+            ),
+          ],
         ),
         body: SafeArea(
           child: Column(
@@ -191,7 +209,7 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
                       switch (rec.phase) {
                         RecordingPhase.initial => l10n.tapToStartRecording,
                         RecordingPhase.recording => l10n.tapToStopRecording,
-                        RecordingPhase.paused => l10n.recordingPaused,
+                        RecordingPhase.paused => rec.interrupted ? l10n.recordingInterrupted : l10n.recordingPaused,
                       },
                       style: context.textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                     ),

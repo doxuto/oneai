@@ -662,5 +662,18 @@
   "noFreeMinutesLeft": "Not enough free minutes left today for this recording. Upgrade to Premium for unlimited minutes.",
   "upgradeToContinue": "Upgrade to continue",
   "quotaMinutesResetsAt": "Free minutes reset at {time}.",
-  "@quotaMinutesResetsAt": {"placeholders": {"time": {"type": "String"}}}
+  "@quotaMinutesResetsAt": {"placeholders": {"time": {"type": "String"}}},
+  "original": "Original",
+  "minutesShort": "{count} min",
+  "@minutesShort": {"placeholders": {"count": {"type": "int"}}},
+  "maxPerRecording": "up to {count} min per recording",
+  "@maxPerRecording": {"placeholders": {"count": {"type": "int"}}},
+  "recordingNotice": "Recording notice",
+  "recordingNoticeText": "Heads up: this conversation is being recorded and transcribed with One AI so we can share accurate notes afterwards. The audio is processed by AI services and is not used to train them. Let me know if you would rather not be recorded.",
+  "recordingResumed": "Recording resumed after the interruption.",
+  "recordingInterrupted": "Interrupted — will resume when you return",
+  "unfinishedRecordingFound": "{count, plural, =1{An unfinished recording (~1 min) was found} other{An unfinished recording (~{count} min) was found}}",
+  "@unfinishedRecordingFound": {"placeholders": {"count": {"type": "int"}}},
+  "recover": "Recover",
+  "discard": "Discard"
 }

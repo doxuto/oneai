@@ -149,3 +149,20 @@ dart run flutter_launcher_icons
 | `MaterialApp.title` | **One AI** (lấy từ `AppConfig.appShortName`) |
 
 Tên dài dưới icon bị cắt thành "One AI: AI No…", nên chỉ dùng cho store listing.
+
+## Ghi âm nền & chống ngắt (A7-02 / S11-09)
+
+- **iOS**: `UIBackgroundModes` phải có `audio` (đã liệt kê ở trên) để ghi tiếp khi khoá màn;
+  cuộc gọi đến làm AVAudioSession bị ngắt → `record` báo `RecordState.pause`,
+  `RecorderController` đánh dấu `interrupted` và tự `resume()` khi app active lại.
+- **Android 14+**: ghi khi app ở nền cần foreground service với
+  `android:foregroundServiceType="microphone"` + permission
+  `FOREGROUND_SERVICE_MICROPHONE` và `FOREGROUND_SERVICE`. `record` **không** tự tạo
+  service; bước tiếp theo (sau khi compile) là thêm `flutter_foreground_task` hoặc
+  service native nhỏ bọc quanh `AudioRecorder` — cho tới lúc đó, ghi âm chỉ chắc
+  chắn khi app ở foreground hoặc màn hình khoá trong thời gian ngắn.
+- **Khôi phục sau crash**: marker `UNFINISHED_RECORDING_V2` (SharedPreferences) được
+  ghi 15 s/lần; Home hiện banner "Khôi phục". Lưu ý: file m4a bị cắt giữa chừng có
+  thể không mở được (moov atom ghi lúc stop) — nếu server báo lỗi đọc audio thì
+  khuyên user bỏ; giải pháp triệt để là ghi theo chunk (S11-09 phần còn lại).
+

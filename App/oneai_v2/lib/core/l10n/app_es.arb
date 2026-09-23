@@ -261,5 +261,15 @@
   "freeMinutesUsedUp": "Has usado los minutos gratis de hoy. Mejora tu plan para grabar sin límite o continúa mañana.",
   "noFreeMinutesLeft": "No quedan suficientes minutos gratis hoy para esta grabación. Mejora a Premium para minutos ilimitados.",
   "upgradeToContinue": "Mejora para continuar",
-  "quotaMinutesResetsAt": "Los minutos gratis se renuevan a las {time}."
+  "quotaMinutesResetsAt": "Los minutos gratis se renuevan a las {time}.",
+  "original": "Original",
+  "minutesShort": "{count} min",
+  "maxPerRecording": "hasta {count} min por grabación",
+  "recordingNotice": "Aviso de grabación",
+  "recordingNoticeText": "Aviso: esta conversación se está grabando y transcribiendo con One AI para compartir notas precisas después. El audio lo procesan servicios de IA y no se usa para entrenarlos. Avísame si prefieres no ser grabado.",
+  "recordingResumed": "La grabación continuó tras la interrupción.",
+  "recordingInterrupted": "Interrumpida: se reanudará cuando vuelvas",
+  "unfinishedRecordingFound": "{count, plural, =1{Se encontró una grabación sin terminar (~1 min)} other{Se encontró una grabación sin terminar (~{count} min)}}",
+  "recover": "Recuperar",
+  "discard": "Descartar"
 }

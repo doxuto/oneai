@@ -221,7 +221,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S8-11 | Banner refresh; Native ad trong danh sách (mặc định tắt) | `nativeRows`/`nativeChunks` khớp nhau, có test |
 | S8-12 | Paywall RevenueCat ở 4 điểm như v1 | |
 | S8-13 | **Gói & giá theo chuẩn ngành** (21-RESEARCH §4, Toan cấu hình RevenueCat/store): thêm gói **tuần** (~$4.99), trial **7 ngày** cho gói năm, gói năm mặc định trên paywall, giá địa phương VN, bật grace period + account hold (Play: 31% huỷ do lỗi thanh toán) | offering `default` có weekly/monthly/annual |
-| S8-14 | **Hạn mức minh bạch**: phút/credit còn lại ngay trên nút Ghi + sheet tạo note, cảnh báo "còn 5 phút" khi ghi, paywall + listing nêu rõ hạn mức free (than phiền #1 của ngành) | user không bao giờ "đụng tường" bất ngờ |
+| S8-14 | **Hạn mức minh bạch** — ✍️ pill phút ở Home, dòng hạn mức trong sheet tạo note, "còn N phút" + tự dừng ở màn ghi, Settings; còn paywall copy (T14) | user không bao giờ "đụng tường" bất ngờ |
 | S8-15 | ✅ **Toan chốt 24/09**: free **10 phút/ngày** (`FREE_DAILY_SECONDS=600`, 1 bản ≤ 10 phút), **không có rewarded** để thêm phút, premium không giới hạn (`PREMIUM_DAILY_SECONDS=0`, 1 bản ≤ 4 h); quota đổi sang giây, đặt cọc + settle theo độ dài đo được; PDF = 300 giây | BE + app xong |
 
 **Cổng ra:** ad hiện đúng tần suất trên cả 2 nền tảng; không client nào cộng được credit.
@@ -276,10 +276,10 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |
-| S11-09 | **Ghi âm chống ngắt** (21-RESEARCH §6 #2): ghi theo chunk xuống đĩa, tự tiếp tục sau cuộc gọi / mất audio session, foreground service Android + notification, khôi phục sau crash ("đã lưu N phút"), cảnh báo pin/dung lượng | tắt máy giữa chừng vẫn còn bản ghi |
+| S11-09 | **Ghi âm chống ngắt** — ✍️ bước 1 (phát hiện ngắt + tự resume, marker khôi phục sau crash); còn chunk + foreground service Android (21-RESEARCH §6 #2): ghi theo chunk xuống đĩa, tự tiếp tục sau cuộc gọi / mất audio session, foreground service Android + notification, khôi phục sau crash ("đã lưu N phút"), cảnh báo pin/dung lượng | tắt máy giữa chừng vẫn còn bản ghi |
 | S11-10 | **Glossary "sửa một lần, nhớ mãi"**: `users/{uid}/glossary` (tên người, sản phẩm, thuật ngữ) → tự đưa vào `keywords` STT + prompt summarize; đổi tên speaker / sửa thuật ngữ đề nghị thêm vào glossary | BE S4-11 + app Settings › Glossary |
-| S11-11 | **Song ngữ trong note**: toggle "transcript VI + note EN" (và ngược) dùng `translate` đã có | không thêm BE |
-| S11-12 | **Consent UX**: thẻ "Đang ghi âm" chia sẻ 1 chạm (text/ảnh), badge cloud/on-device, câu "không dùng để huấn luyện" trong onboarding | |
+| S11-11 | **Song ngữ trong note** — ✍️ `TranslateToggle` trên 2 tab, dùng `translate` đã có | không thêm BE |
+| S11-12 | **Consent UX** — ✍️ nút thông báo ghi âm chia sẻ 1 chạm; còn onboarding | |
 | S11-13 | **Benchmark tiếng Việt** (Ops, sau deploy dev): WER ElevenLabs vs Gemini trên 10 file VI bắc/trung/nam lẫn thuật ngữ EN → chọn `STT_VENDOR`; công bố "độ chính xác tiếng Việt" trên listing — không đối thủ nào làm | bảng số đo trong docs |
 | S11-06b | Share Extension mở rộng: nhận file từ Zalo/Drive/Files/Voice Memos; Android intent `audio/*`, `application/pdf` | |
 

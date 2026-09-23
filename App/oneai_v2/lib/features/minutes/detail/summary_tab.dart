@@ -13,6 +13,8 @@ import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
 import 'package:one_ai/features/minutes/detail/ai_tools/ai_tools_row.dart';
 import 'package:one_ai/features/minutes/detail/feedback_widget.dart';
 import 'package:one_ai/features/minutes/detail/minute_detail_controller.dart';
+import 'package:one_ai/features/minutes/detail/translate_toggle.dart';
+import 'package:one_ai/data/repositories/ai_repository.dart';
 import 'package:one_ai/core/widgets/app_snack.dart';
 
 /// v1 Summary tab (sections as plain bullet text), plus the blocks the new
@@ -25,13 +27,18 @@ class SummaryTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = detail.summary;
+    final translateTo = ref.watch(translateToProvider(detail.id));
     return SingleChildScrollView(
       controller: scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(padding: EdgeInsets.only(bottom: 16), child: AdBannerSlot(placement: AdPlacement.summaryTab)),
-          if (summary != null) ...summary.sections.map((s) => _SectionWidget(section: s)),
+          if (summary != null && detail.status == MinuteStatus.ready) ...[TranslateToggle(minuteId: detail.id), gapH16],
+          if (translateTo != null && summary != null)
+            Padding(padding: const EdgeInsets.only(bottom: 24), child: TranslatedBody(minuteId: detail.id, part: TranslatePart.summary, language: translateTo))
+          else if (summary != null)
+            ...summary.sections.map((s) => _SectionWidget(section: s)),
           if (detail.calendarEvents.isNotEmpty) ...[_CalendarEventsBlock(events: detail.calendarEvents), gapH24],
           if (detail.status == MinuteStatus.ready && detail.transcript != null) ...[
             _ActionItemsBlock(minuteId: detail.id),

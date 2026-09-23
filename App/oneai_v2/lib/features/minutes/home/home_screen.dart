@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +25,10 @@ import 'package:one_ai/features/minutes/home/home_controller.dart';
 import 'package:one_ai/features/minutes/home/intro_basic_popup.dart';
 import 'package:one_ai/features/minutes/home/minute_item_card.dart';
 import 'package:one_ai/features/minutes/home/new_minutes_bottom_sheet.dart';
+import 'package:one_ai/features/credits/credit_gate_ui.dart';
+import 'package:one_ai/features/settings/language_settings.dart';
+import 'package:one_ai/features/transcription/new_minute_request_builder.dart';
+import 'package:one_ai/features/transcription/recorder_controller.dart';
 import 'package:one_ai/features/transcription/upload_queue.dart';
 import 'package:one_ai/features/tags/tag_chip.dart';
 import 'package:one_ai/features/tags/tag_dialogs.dart';
@@ -64,6 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               gapH16,
               Text(context.l10n.myNotes, style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
               gapH16,
+              const _UnfinishedRecordingBanner(),
               const _PendingUploadsBanner(),
               const _SearchField(),
               gapH16,
@@ -132,6 +139,7 @@ class _Header extends ConsumerWidget {
                     await ref.read(paywallProvider).present();
                   },
           ),
+          if (!premium) ...[gapW8, const _MinutesPill()],
           const Spacer(),
           _ActionButton(icon: Assets.messageIcon, label: context.l10n.giveFeedback, onTap: () async {
             await HapticFeedback.lightImpact();
@@ -140,6 +148,36 @@ class _Header extends ConsumerWidget {
           gapW16,
           _ActionButton(icon: Assets.settingsIcon, label: context.l10n.settings, onTap: () { HapticFeedback.lightImpact(); context.push(Routes.settings); }),
         ],
+      ),
+    );
+  }
+}
+
+/// A7-01 / S8-14: today's free minutes, always in view (industry complaint
+/// #1 is hitting an invisible limit). Tap opens the paywall.
+class _MinutesPill extends ConsumerWidget {
+  const _MinutesPill();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final q = ref.watch(quotaProvider).valueOrNull;
+    if (q == null || q.isUnlimited) return const SizedBox.shrink();
+    final left = q.remainingMinutes;
+    final low = q.remainingSeconds <= 60;
+    return Semantics(
+      button: true,
+      label: context.l10n.freeMinutesLeftToday(left),
+      child: InkWell(
+        onTap: () async { await HapticFeedback.lightImpact(); await ref.read(paywallProvider).present(); },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(color: low ? const Color(0xFFFFEBEB) : TagChip.idleColor, borderRadius: BorderRadius.circular(20)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(Icons.timer_outlined, size: 16, color: low ? AppColors.destructiveRed : AppColors.brandBlue),
+            gapW4,
+            Text(context.l10n.minutesShort(left), style: TextStyle(color: low ? AppColors.destructiveRed : AppColors.brandBlue, fontWeight: FontWeight.w600, fontSize: 13)),
+          ]),
+        ),
       ),
     );
   }
@@ -194,6 +232,56 @@ class _SearchFieldState extends ConsumerState<_SearchField> {
           filled: true,
           fillColor: TagChip.idleColor,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+        ),
+      ),
+    );
+  }
+}
+
+/// A7-02: a recording cut short by a crash / force-quit. The file is still on
+/// disk; tapping sends it through the normal upload flow with the user's
+/// default prompt settings. Dismiss deletes the marker (and the file).
+final unfinishedRecordingProvider = FutureProvider<UnfinishedRecording?>((_) => UnfinishedRecording.load());
+
+class _UnfinishedRecordingBanner extends ConsumerWidget {
+  const _UnfinishedRecordingBanner();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final r = ref.watch(unfinishedRecordingProvider).valueOrNull;
+    if (r == null) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Material(
+        color: const Color(0xFFFFF6E5),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
+          child: Row(children: [
+            const Icon(Icons.history, size: 20, color: Color(0xFF9A6B00)),
+            gapW8,
+            Expanded(child: Text(l10n.unfinishedRecordingFound((r.seconds / 60).ceil()), style: context.textTheme.bodyMedium?.copyWith(color: const Color(0xFF6B4A00)))),
+            TextButton(
+              onPressed: () async {
+                await HapticFeedback.lightImpact();
+                await UnfinishedRecording.clear();
+                ref.invalidate(unfinishedRecordingProvider);
+                if (!context.mounted) return;
+                final request = buildNewMinuteRequest(file: File(r.path), settings: defaultPromptSettings(ref.read(languageSettingsProvider)), durationSeconds: r.seconds.toDouble());
+                await runWithCreditGate(context, ref, requestedSeconds: r.seconds, () => context.push(Routes.audioProcessing, extra: AudioProcessingArgs(request: request)));
+              },
+              child: Text(l10n.recover, style: const TextStyle(color: AppColors.brandBlueAlt, fontWeight: FontWeight.w600)),
+            ),
+            IconButton(
+              tooltip: l10n.discard,
+              icon: const Icon(Icons.close, size: 18, color: Color(0xFF9A6B00)),
+              onPressed: () async {
+                await UnfinishedRecording.clear();
+                try { File(r.path).deleteSync(); } on Object catch (_) {}
+                ref.invalidate(unfinishedRecordingProvider);
+              },
+            ),
+          ]),
         ),
       ),
     );

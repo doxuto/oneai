@@ -261,5 +261,15 @@
   "freeMinutesUsedUp": "Bạn đã dùng hết phút miễn phí hôm nay. Nâng cấp để ghi không giới hạn, hoặc tiếp tục vào ngày mai.",
   "noFreeMinutesLeft": "Hôm nay không còn đủ phút miễn phí cho bản ghi này. Nâng cấp Premium để không giới hạn.",
   "upgradeToContinue": "Nâng cấp để tiếp tục",
-  "quotaMinutesResetsAt": "Phút miễn phí được cấp lại lúc {time}."
+  "quotaMinutesResetsAt": "Phút miễn phí được cấp lại lúc {time}.",
+  "original": "Bản gốc",
+  "minutesShort": "{count} phút",
+  "maxPerRecording": "tối đa {count} phút mỗi bản ghi",
+  "recordingNotice": "Thông báo ghi âm",
+  "recordingNoticeText": "Xin lưu ý: cuộc trao đổi này đang được ghi âm và chuyển thành văn bản bằng One AI để chia sẻ ghi chú chính xác sau buổi. Audio được xử lý bởi dịch vụ AI và không dùng để huấn luyện. Nếu bạn không muốn được ghi âm, hãy cho tôi biết.",
+  "recordingResumed": "Đã tiếp tục ghi âm sau khi bị ngắt.",
+  "recordingInterrupted": "Bị ngắt — sẽ tiếp tục khi bạn quay lại",
+  "unfinishedRecordingFound": "{count, plural, =1{Tìm thấy bản ghi dở dang (~1 phút)} other{Tìm thấy bản ghi dở dang (~{count} phút)}}",
+  "recover": "Khôi phục",
+  "discard": "Bỏ"
 }

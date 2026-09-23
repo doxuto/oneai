@@ -14,6 +14,8 @@ import 'package:one_ai/data/models/minute_models.dart';
 import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
 import 'package:one_ai/features/minutes/detail/audio_player_controller.dart';
 import 'package:one_ai/features/minutes/detail/minute_detail_controller.dart';
+import 'package:one_ai/features/minutes/detail/translate_toggle.dart';
+import 'package:one_ai/data/repositories/ai_repository.dart';
 
 /// v1 Transcript tab (speaker rows with coloured avatars, timestamps, rename
 /// on tap) plus what the new data adds: a chapter strip that seeks the
@@ -27,6 +29,7 @@ class TranscriptTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transcript = detail.transcript;
+    final translateTo = ref.watch(translateToProvider(detail.id));
     final player = ref.watch(audioPlayerProvider(detail.id));
     final now = player.expanded ? player.positionSeconds : null;
     final speakerOrder = <String>[];
@@ -42,7 +45,10 @@ class TranscriptTab extends ConsumerWidget {
           if (detail.sourceState == SourceState.expired) ...[_ExpiredNotice(), gapH16],
           if (detail.talkTime.length > 1) ...[_TalkTimeBar(talkTime: detail.talkTime, speakerOrder: speakerOrder), gapH16],
           if (detail.sourceType == SourceType.audio && transcript != null) ...[_ChaptersStrip(detail: detail, positionSeconds: now), gapH16],
-          if (transcript != null)
+          if (transcript != null) ...[TranslateToggle(minuteId: detail.id), gapH16],
+          if (transcript != null && translateTo != null)
+            TranslatedBody(minuteId: detail.id, part: TranslatePart.transcript, language: translateTo)
+          else if (transcript != null)
             for (final seg in transcript.segments)
               _SegmentRow(
                 minuteId: detail.id,
