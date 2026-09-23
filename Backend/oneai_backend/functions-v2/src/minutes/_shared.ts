@@ -36,6 +36,7 @@ export interface MinuteDoc {
   /** Vendor/model that produced the transcript. */
   stt?: { vendor?: string; model?: string } | null;
   timezone?: string | null;
+  template?: string | null;
   summaryLanguage?: string | null;
   keywords?: string[];
   description?: string | null;
@@ -246,6 +247,7 @@ export function toMinuteDetail(
     description: str(d.description),
     keywords: strList(d.keywords),
     summaryLanguage: str(d.summaryLanguage),
+    template: str(d.template) ?? "auto",
     calendarEvents: extras.calendarEvents ?? [],
     availableArtifacts: extras.availableArtifacts ?? [],
     talkTime: talkTimeOf(extras.transcript, extras.speakers),

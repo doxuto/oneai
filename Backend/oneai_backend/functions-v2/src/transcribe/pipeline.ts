@@ -9,6 +9,7 @@
 import { HttpsError } from "firebase-functions/v2/https";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { summarizeTranscript } from "../ai/summarize.js";
+import { MinuteTemplate } from "../prompts/templates.js";
 import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
 import { previewOf } from "../lib/stt/convert.js";
@@ -118,6 +119,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
     const s = await summarizeTranscript(deps.services.llmHeavy, {
       transcript: transcript.text, summaryLanguage: job.options.summaryLanguage,
       description: job.options.description, now: deps.now(), timezone: job.options.timezone,
+      template: MinuteTemplate.safeParse(job.options.template).data ?? "auto",
     });
 
     await assertNotCancelled();

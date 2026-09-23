@@ -25,6 +25,12 @@ describe("StartTranscriptionInput", () => {
     expect(() => StartTranscriptionInput.parse({ ...base, keywords: "a,b" })).toThrow();
     expect(() => StartTranscriptionInput.parse({ ...base, keywords: Array(21).fill("k") })).toThrow();
   });
+  it("template defaults to auto and only accepts the known set (S11-08)", () => {
+    expect(StartTranscriptionInput.parse(base).template).toBe("auto");
+    expect(StartTranscriptionInput.parse({ ...base, template: "standup" }).template).toBe("standup");
+    expect(() => StartTranscriptionInput.parse({ ...base, template: "retro" })).toThrow();
+  });
+
   it("rejects unknown keys", () => {
     expect(() => StartTranscriptionInput.parse({ ...base, uid: "u2" })).toThrow();
   });

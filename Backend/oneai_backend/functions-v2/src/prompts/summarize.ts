@@ -4,7 +4,7 @@
  * speaker turn — see OQ-16) and the JSON-schema doing the structural policing
  * so the prompt can spend its words on judgement, not on field order.
  *
- * Placeholders: {{summaryLanguage}} {{description}} {{now}} {{timezone}} {{transcript}}
+ * Placeholders: {{summaryLanguage}} {{description}} {{now}} {{timezone}} {{transcript}} {{templateGuidance}}
  */
 export const SUMMARIZE_SYSTEM = `You are a meticulous meeting and lecture summariser. You never invent facts that are not in the transcript. You write everything in the requested language, keeping proper nouns, acronyms and untranslatable terms in their original form.`;
 
@@ -22,8 +22,9 @@ RULES
    - A transcript under ~40 words → one section only. Greetings, thanks, noise → no bullets. ≥80 % noise → a single section titled "No meaningful content" with no bullets.
 5. iconEmoji — exactly one emoji for the tone or subject.
 6. calendarEvents — only events clearly stated with enough detail. Resolve relative dates ("tomorrow at 3") to absolute ISO-8601 using now and timezone. None → [].
+7. If a TEMPLATE block follows, its section names take precedence over rule 4's defaults whenever the transcript has matching content; sections the transcript does not support are simply omitted, never left empty.
 
-INPUTS
+{{templateGuidance}}INPUTS
 • transcript:
 '''
 {{transcript}}

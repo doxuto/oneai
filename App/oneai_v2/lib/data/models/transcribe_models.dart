@@ -15,12 +15,21 @@ class StartTranscriptionResult {
 }
 
 /// Options gathered on the record/upload screens and sent with startTranscription.
+/// S11-08: shapes the summary's sections; mirrors `MinuteTemplate` server-side.
+enum MinuteTemplate {
+  auto, standup, oneOnOne, interview, lecture, brainstorm;
+
+  String get wire => switch (this) { MinuteTemplate.oneOnOne => 'one_on_one', _ => name };
+  static MinuteTemplate fromWire(String? s) => MinuteTemplate.values.firstWhere((t) => t.wire == s, orElse: () => MinuteTemplate.auto);
+}
+
 class TranscriptionOptions {
   const TranscriptionOptions({
     required this.summaryLanguage,
     this.audioLanguage = 'auto',
     this.keywords = const [],
     this.description,
+    this.template = MinuteTemplate.auto,
     this.durationSeconds,
   });
   final String summaryLanguage;
@@ -28,6 +37,7 @@ class TranscriptionOptions {
   final String audioLanguage;
   final List<String> keywords;
   final String? description;
+  final MinuteTemplate template;
   /// Client's best guess; the server measures the real one.
   final double? durationSeconds;
 }

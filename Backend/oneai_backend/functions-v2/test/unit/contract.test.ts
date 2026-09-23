@@ -121,6 +121,7 @@ describe("wire shapes", () => {
             "turns": 1,
           },
         ],
+        "template": "auto",
         "title": "Standup",
         "transcript": {
           "durationSeconds": 1,

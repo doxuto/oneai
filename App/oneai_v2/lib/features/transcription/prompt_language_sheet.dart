@@ -4,6 +4,8 @@ import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/core/theme/gaps.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
+import 'package:one_ai/data/models/transcribe_models.dart';
+import 'package:one_ai/features/tags/tag_chip.dart';
 import 'package:one_ai/features/transcription/language_selector.dart';
 import 'package:one_ai/features/transcription/transcription_language.dart';
 
@@ -14,21 +16,24 @@ class PromptSettings {
     required this.summaryLanguage,
     this.description = '',
     this.keywords = '',
+    this.template = MinuteTemplate.auto,
   });
   final TranscriptionLanguage audioLanguage;
   final TranscriptionLanguage summaryLanguage;
   final String description;
   final String keywords;
+  final MinuteTemplate template;
 
   /// "a, b; c" → ["a", "b", "c"], ≤20 as the server allows.
   List<String> get keywordList => keywords.split(RegExp(r'[,;\n]')).map((k) => k.trim()).where((k) => k.isNotEmpty).take(20).toList();
 
-  PromptSettings copyWith({TranscriptionLanguage? audioLanguage, TranscriptionLanguage? summaryLanguage, String? description, String? keywords}) =>
+  PromptSettings copyWith({TranscriptionLanguage? audioLanguage, TranscriptionLanguage? summaryLanguage, String? description, String? keywords, MinuteTemplate? template}) =>
       PromptSettings(
         audioLanguage: audioLanguage ?? this.audioLanguage,
         summaryLanguage: summaryLanguage ?? this.summaryLanguage,
         description: description ?? this.description,
         keywords: keywords ?? this.keywords,
+        template: template ?? this.template,
       );
 }
 
@@ -50,7 +55,17 @@ class PromptLanguageSheet extends StatefulWidget {
 }
 
 class _PromptLanguageSheetState extends State<PromptLanguageSheet> {
+  late MinuteTemplate _template = widget.initial.template;
   late final TextEditingController _description = TextEditingController(text: widget.initial.description);
+
+  static String _templateLabel(AppLocalizations l10n, MinuteTemplate t) => switch (t) {
+        MinuteTemplate.auto => l10n.templateAuto,
+        MinuteTemplate.standup => l10n.templateStandup,
+        MinuteTemplate.oneOnOne => l10n.templateOneOnOne,
+        MinuteTemplate.interview => l10n.templateInterview,
+        MinuteTemplate.lecture => l10n.templateLecture,
+        MinuteTemplate.brainstorm => l10n.templateBrainstorm,
+      };
   late final TextEditingController _keywords = TextEditingController(text: widget.initial.keywords);
   late TranscriptionLanguage _audio = widget.initial.audioLanguage;
   late TranscriptionLanguage _summary = widget.initial.summaryLanguage;
@@ -102,6 +117,7 @@ class _PromptLanguageSheetState extends State<PromptLanguageSheet> {
                             summaryLanguage: _summary,
                             description: _description.text.trim(),
                             keywords: _keywords.text.trim(),
+                            template: _template,
                           ));
                         },
                         child: Text(l10n.done, style: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.primary)),
@@ -120,6 +136,21 @@ class _PromptLanguageSheetState extends State<PromptLanguageSheet> {
                       Text(l10n.whatAreYouRecording, style: titleStyle),
                       gapH8,
                       Text(l10n.recordingContextHint, style: hintStyle),
+                      gapH16,
+                      // S11-08 template chips: same idle/selected colours as the
+                      // Home tag chips so they read as the same control.
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final t in MinuteTemplate.values)
+                            TagChip(
+                              label: _templateLabel(l10n, t),
+                              selected: _template == t,
+                              onTap: () { HapticFeedback.selectionClick(); setState(() => _template = t); },
+                            ),
+                        ],
+                      ),
                       gapH16,
                       TextField(controller: _description, maxLength: 500, decoration: _filled(l10n.meetingTypeHint)),
                       gapH24,

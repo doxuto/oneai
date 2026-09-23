@@ -221,5 +221,11 @@
   "unpinNote": "Bỏ ghim",
   "noSearchResults": "Không có ghi chú nào khớp.",
   "earnCreditBlurb": "Xem một quảng cáo ngắn trong lúc chờ để nhận 1 credit miễn phí cho ghi chú tiếp theo.",
-  "loadMoreNotes": "Tải thêm ghi chú"
+  "loadMoreNotes": "Tải thêm ghi chú",
+  "templateAuto": "Tự động",
+  "templateStandup": "Standup",
+  "templateOneOnOne": "1:1",
+  "templateInterview": "Phỏng vấn",
+  "templateLecture": "Bài giảng",
+  "templateBrainstorm": "Brainstorm"
 }

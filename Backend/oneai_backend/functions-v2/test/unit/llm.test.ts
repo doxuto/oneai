@@ -3,6 +3,7 @@ import { z } from "zod";
 import { openAiClient } from "../../src/lib/llm/openai.js";
 import { fill } from "../../src/prompts/summarize.js";
 import { SummarizeOutput, summarizeTranscript, trimTranscript } from "../../src/ai/summarize.js";
+import { MinuteTemplate, TEMPLATE_GUIDANCE } from "../../src/prompts/templates.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 
 const good = {
@@ -99,5 +100,24 @@ describe("summarizeTranscript", () => {
     expect(seenPrompt).toContain("Asia/Ho_Chi_Minh");
     expect(seenPrompt).toContain("summary language: vi");
     expect(seenPrompt).not.toContain("{{");
+    expect(seenPrompt).not.toContain("\nTEMPLATE\n"); // auto = no template block
+  });
+
+  it("a template adds its guidance block; auto/unknown adds none", async () => {
+    const prompts: string[] = [];
+    const llm: LlmClient = {
+      vendor: "openai",
+      streamText: async () => { throw new Error("unused"); },
+      async generateJson(req) { prompts.push(req.prompt); return { data: SummarizeOutput.parse(good) as never, model: "m", tokens: { input: 1, output: 1 } }; },
+    };
+    const base = { transcript: "t", summaryLanguage: "en", description: null, now: new Date("2026-09-23T03:00:00Z"), timezone: "UTC" };
+    await summarizeTranscript(llm, { ...base, template: "standup" });
+    await summarizeTranscript(llm, { ...base, template: "lecture" });
+    await summarizeTranscript(llm, { ...base, template: "auto" });
+    expect(prompts[0]).toContain("\nTEMPLATE\n");
+    expect(prompts[0]).toContain('"Blockers"');
+    expect(prompts[1]).toContain('"Learning objectives"');
+    expect(prompts[2]).not.toContain("\nTEMPLATE\n");
+    for (const t of MinuteTemplate.options) expect(TEMPLATE_GUIDANCE[t]).toBeDefined();
   });
 });

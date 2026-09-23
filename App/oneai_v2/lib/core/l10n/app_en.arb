@@ -615,5 +615,11 @@
   "unpinNote": "Unpin",
   "noSearchResults": "No notes match your search.",
   "earnCreditBlurb": "Watch a short ad while you wait and get 1 free credit for your next note.",
-  "loadMoreNotes": "Load more notes"
+  "loadMoreNotes": "Load more notes",
+  "templateAuto": "Auto",
+  "templateStandup": "Standup",
+  "templateOneOnOne": "1:1",
+  "templateInterview": "Interview",
+  "templateLecture": "Lecture",
+  "templateBrainstorm": "Brainstorm"
 }

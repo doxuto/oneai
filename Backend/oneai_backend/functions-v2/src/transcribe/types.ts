@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MinuteTemplate } from "../prompts/templates.js";
 import { DocId, IanaTimezone, withClient } from "../types/common.js";
 import type { MinuteStatus } from "../minutes/types.js";
 
@@ -12,6 +13,8 @@ export const StartTranscriptionInput = withClient({
   summaryLanguage: z.string().min(2).max(35),
   keywords: z.array(z.string().min(1).max(60)).max(20).default([]),
   description: z.string().max(500).optional(),
+  /** Shapes the summary's sections (S11-08). */
+  template: MinuteTemplate.default("auto"),
   timezone: IanaTimezone,
   /** Client's best guess, untrusted; the worker measures the real one. */
   durationSeconds: z.number().min(0).max(24 * 3600).optional(),
@@ -50,6 +53,7 @@ export interface JobDoc {
     summaryLanguage: string;
     keywords: string[];
     description: string | null;
+    template?: string;
     timezone: string;
   };
   createdAt: FirebaseFirestore.Timestamp;

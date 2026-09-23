@@ -19,6 +19,7 @@ NewMinuteRequest buildNewMinuteRequest({required File file, required PromptSetti
       audioLanguage: settings.audioLanguage.code,
       keywords: settings.keywordList,
       description: settings.description.isEmpty ? null : settings.description,
+      template: settings.template,
       durationSeconds: durationSeconds,
     ),
   );

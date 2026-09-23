@@ -101,7 +101,7 @@ export async function startTranscriptionHandler(
         quotaRefunded: false,
         options: {
           audioLanguage: input.audioLanguage, summaryLanguage: input.summaryLanguage, keywords: input.keywords,
-          description: input.description ?? null, timezone: input.timezone,
+          description: input.description ?? null, template: input.template, timezone: input.timezone,
         },
         createdAt: FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
         error: null,
@@ -114,6 +114,7 @@ export async function startTranscriptionHandler(
         summaryLanguage: input.summaryLanguage,
         keywords: input.keywords,
         description: input.description ?? null,
+        template: input.template,
         timezone: input.timezone,
         updatedAt: FieldValue.serverTimestamp(),
       });

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { LlmClient } from "../lib/llm/types.js";
 import { SUMMARIZE_PROMPT, SUMMARIZE_SYSTEM, fill } from "../prompts/summarize.js";
+import { templateGuidance, type MinuteTemplate } from "../prompts/templates.js";
 import type { Summary } from "../minutes/types.js";
 
 export const ContentKind = z.enum([
@@ -36,6 +37,8 @@ export interface SummarizeInput {
   description: string | null;
   now: Date;
   timezone: string;
+  /** S11-08; undefined/"auto" = generic guidance. */
+  template?: MinuteTemplate | null;
 }
 
 /** Transcripts longer than this are trimmed from the middle to protect the token budget (S4-07). */
@@ -55,6 +58,7 @@ export async function summarizeTranscript(
   const prompt = fill(SUMMARIZE_PROMPT, {
     transcript: trimTranscript(input.transcript),
     description: input.description ?? "",
+    templateGuidance: templateGuidance(input.template),
     now: input.now.toISOString(),
     timezone: input.timezone,
     summaryLanguage: input.summaryLanguage,

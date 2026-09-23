@@ -42,6 +42,7 @@ class TranscriptionRepository {
       'summaryLanguage': options.summaryLanguage,
       'keywords': options.keywords,
       if (options.description != null) 'description': options.description,
+      'template': options.template.wire,
       'timezone': tz,
       if (options.durationSeconds != null) 'durationSeconds': options.durationSeconds,
     }));

@@ -2,6 +2,7 @@
 // readers so an int-vs-double or a new enum value never crashes the app.
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:one_ai/data/firebase/json_read.dart';
+import 'package:one_ai/data/models/transcribe_models.dart';
 
 enum SourceType {
   audio,
@@ -321,6 +322,7 @@ class MinuteDetail {
     this.sourceState = SourceState.none,
     this.sourceExpiresAt,
     this.talkTime = const [],
+    this.template = MinuteTemplate.auto,
   });
 
   factory MinuteDetail.fromJson(Map<String, dynamic> j) {
@@ -337,6 +339,7 @@ class MinuteDetail {
       description: readString(j, 'description'),
       keywords: readStringList(j, 'keywords'),
       summaryLanguage: readString(j, 'summaryLanguage'),
+      template: MinuteTemplate.fromWire(readString(j, 'template')),
       calendarEvents: readObjectList(j, 'calendarEvents').map(CalendarEvent.fromJson).toList(),
       availableArtifacts: readStringList(j, 'availableArtifacts').map(ArtifactKind.fromName).nonNulls.toSet(),
       sourceState: j.containsKey('sourceState') ? SourceState.from(j, 'sourceState') : (readString(j, 'sourcePath') == null ? SourceState.none : SourceState.available),
@@ -356,6 +359,8 @@ class MinuteDetail {
   final String? description;
   final List<String> keywords;
   final String? summaryLanguage;
+  /// S11-08 template the summary was written with.
+  final MinuteTemplate template;
 
   /// Extracted at summarise time. Empty when nothing was scheduled.
   final List<CalendarEvent> calendarEvents;

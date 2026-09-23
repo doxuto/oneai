@@ -149,6 +149,8 @@ export interface MinuteDetail extends MinuteSummary {
   description: string | null;
   keywords: string[];
   summaryLanguage: string | null;
+  /** S11-08 template the summary was written with; "auto" when none. */
+  template: string;
   /** Extracted at summarise time; regenerate with `generateCalendarEvents`. */
   calendarEvents: CalendarEvent[];
   /** Which `artifacts/{kind}` docs exist, so the app can show tabs without a generate call. */

@@ -131,6 +131,7 @@ interface MinuteDetail extends MinuteSummary {
   description: string | null;
   keywords: string[];
   summaryLanguage: string | null;
+  template: string;                  // "auto" | "standup" | "one_on_one" | "interview" | "lecture" | "brainstorm"
   calendarEvents: CalendarEvent[];   // rút lúc summarize; sinh lại bằng generateCalendarEvents
   availableArtifacts: ("shortQuestions"|"quiz"|"flashcards"|"mindmap"|"speakers"|"calendarEvents"|"actionItems"|"keyTerms"|"chapters")[];
                                      // artifact đã tồn tại — app hiện tab mà không cần gọi generate*
@@ -165,7 +166,7 @@ interface Transcript {
 
 | Callable | Input | Output |
 |---|---|---|
-| `startTranscription` | `{client, minuteId, requestId: uuid, audioLanguage ="auto", summaryLanguage, keywords: string[] ≤20 =[], description? ≤500, timezone: IANA, durationSeconds?}` | `{minuteId, status, duplicate: boolean}` — cùng `requestId` gọi lại → `duplicate:true`, không trừ quota lần 2 |
+| `startTranscription` | `{client, minuteId, requestId: uuid, audioLanguage ="auto", summaryLanguage, keywords: string[] ≤20 =[], description? ≤500, template: "auto"\|"standup"\|"one_on_one"\|"interview"\|"lecture"\|"brainstorm" ="auto", timezone: IANA, durationSeconds?}` — `template` chỉ đổi hướng dẫn section cho prompt summarize (S11-08), không đổi schema | `{minuteId, status, duplicate: boolean}` — cùng `requestId` gọi lại → `duplicate:true`, không trừ quota lần 2 |
 | `cancelTranscription` | `{client, minuteId}` | `{}` |
 | `processTranscription` | **task worker**, không phải callable | — |
 

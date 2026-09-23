@@ -272,7 +272,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-05 | **Share link chỉ đọc** (`createShareLink`, `shares/{token}`, trang Hosting), thu hồi được | người vắng họp mở được không cần app |
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng | |
-| S11-08 | Meeting templates (standup / 1:1 / interview) → prompt summary theo kiểu | |
+| S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |
 
 ## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
 
