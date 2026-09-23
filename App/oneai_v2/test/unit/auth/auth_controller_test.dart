@@ -68,7 +68,7 @@ class FakeUsers implements UserRepository {
   @override
   Future<Me> me() => throw UnimplementedError();
   @override
-  Stream<Quota?> watchQuota(String uid, {required String periodId, required int fallbackLimit, required DateTime resetAt}) =>
+  Stream<Quota?> watchQuota(String uid, {required String periodId, required Quota fallback}) =>
       throw UnimplementedError();
 }
 

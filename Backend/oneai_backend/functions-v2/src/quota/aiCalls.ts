@@ -30,7 +30,7 @@ export async function consumeAiCall(
       tx.update(ref, { aiCalls: used + 1 });
     } else {
       tx.set(ref, {
-        periodId, used: 0, baseLimit: limits.dailyLimit, rewardBonus: 0, aiCalls: 1,
+        periodId, usedSeconds: 0, limitSeconds: limits.dailySeconds, aiCalls: 1,
         expiresAt: new Date(nextPeriodStart(now).getTime() + 2 * 24 * 60 * 60 * 1000),
       });
     }

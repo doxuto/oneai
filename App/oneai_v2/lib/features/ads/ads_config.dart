@@ -58,9 +58,10 @@ class InterstitialRules {
 }
 
 class RewardedRules {
-  const RewardedRules({this.enabled = true, this.maxPerDay = 5});
+  /// Off by default since 24/09: free minutes are fixed, no ad top-ups.
+  const RewardedRules({this.enabled = false, this.maxPerDay = 0});
   factory RewardedRules.fromJson(Map<String, dynamic> j) =>
-      RewardedRules(enabled: readBool(j, 'enabled', orElse: true), maxPerDay: readInt(j, 'maxPerDay') ?? 5);
+      RewardedRules(enabled: readBool(j, 'enabled'), maxPerDay: readInt(j, 'maxPerDay') ?? 0);
   final bool enabled;
   final int maxPerDay;
 }

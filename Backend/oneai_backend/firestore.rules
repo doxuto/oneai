@@ -41,7 +41,7 @@ service cloud.firestore {
     }
 
     // Server-only collections.
-    match /adRewards/{transactionId}   { allow read, write: if false; }
+    match /adRewards/{transactionId}   { allow read, write: if false; } // legacy (rewarded ads removed 24/09); keeps old docs closed
     match /transcriptionJobs/{jobId}   { allow read, write: if false; }
     match /shares/{token}              { allow read, write: if false; } // public page reads via Admin SDK only
 

@@ -45,9 +45,8 @@ export async function provisionUser(deps: Deps, user: NewUser): Promise<boolean>
     });
     tx.set(userRef.collection("quota").doc(periodId), {
       periodId,
-      used: 0,
-      baseLimit: deps.limits.free.dailyLimit,
-      rewardBonus: 0,
+      usedSeconds: 0,
+      limitSeconds: deps.limits.free.dailySeconds,
       expiresAt: new Date(now.getTime() + QUOTA_TTL_MS),
     });
     return true;

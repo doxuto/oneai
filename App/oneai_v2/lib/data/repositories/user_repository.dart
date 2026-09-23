@@ -18,15 +18,20 @@ class UserRepository {
   /// mis-wired button cannot delete anything by accident.
   Future<void> deleteAccount() => _fns.call('deleteAccount', {'confirm': true});
 
-  /// Live view of today's quota — updates the moment an SSV reward lands or a
-  /// transcription is charged, so the credits pill never needs a manual refresh.
-  Stream<Quota?> watchQuota(String uid, {required String periodId, required int fallbackLimit, required DateTime resetAt}) =>
+  /// Live view of today's quota — updates the moment a transcription is
+  /// charged or refunded, so the minutes pill never needs a manual refresh.
+  /// `fallback` comes from getMe (plan ceiling + per-recording cap).
+  Stream<Quota?> watchQuota(String uid, {required String periodId, required Quota fallback}) =>
       _db.doc('users/$uid/quota/$periodId').snapshots().map((s) {
         final d = s.data();
-        if (d == null) return Quota(used: 0, limit: fallbackLimit, rewardBonus: 0, resetAt: resetAt);
-        final base = readInt(d, 'baseLimit') ?? fallbackLimit;
-        final bonus = readInt(d, 'rewardBonus') ?? 0;
-        return Quota(used: readInt(d, 'used') ?? 0, limit: base + bonus, rewardBonus: bonus, resetAt: resetAt);
+        if (d == null) return Quota(usedSeconds: 0, limitSeconds: fallback.limitSeconds, maxDurationSeconds: fallback.maxDurationSeconds, resetAt: fallback.resetAt);
+        return Quota(
+          usedSeconds: readInt(d, 'usedSeconds') ?? 0,
+          // The plan's ceiling wins over a doc written under another plan.
+          limitSeconds: fallback.isUnlimited ? 0 : (readInt(d, 'limitSeconds') ?? fallback.limitSeconds),
+          maxDurationSeconds: fallback.maxDurationSeconds,
+          resetAt: fallback.resetAt,
+        );
       });
 
   /// Period id the server uses: the Vietnam calendar day, "yyyy-MM-dd".

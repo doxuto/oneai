@@ -47,6 +47,8 @@ export interface JobDoc {
   state: "queued" | "running" | "done" | "failed" | "cancelled";
   attempt: number;
   periodId: string;
+  /** Seconds reserved at start, settled to the measured length by the worker. */
+  chargedSeconds: number;
   quotaRefunded: boolean;
   options: {
     audioLanguage: string;

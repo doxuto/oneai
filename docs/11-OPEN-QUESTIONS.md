@@ -12,9 +12,9 @@ trong commit. Khi chốt xong: đổi trạng thái, ghi ngày, ghi quyết đ�
 | # | Câu hỏi | Chặn | Trạng thái |
 |---|---|---|---|
 | OQ-01 | Migrate dữ liệu v1? | S3 | **CHƯA CHỐT** |
-| OQ-02 | Hạn mức gói free là bao nhiêu? | S7 | **Đề xuất 24/09** (21-RESEARCH §4): giữ 1 credit/ngày + 30 ph/bản + 30 AI call/ngày — rộng hơn Notta (3 ph/bản) và Knowt (1 tóm tắt/th); quan trọng là **hiển thị** (S8-14) — Toan xác nhận |
-| OQ-03 | Credit thưởng có sống qua đêm? | S7 | **Đề xuất 24/09**: không — cả ngành "minutes don't roll over"; rewarded ở VN chỉ ≈ $0.002/lượt nên credit thưởng phải nhỏ và hết trong ngày — Toan xác nhận |
-| OQ-04 | Premium có thực sự không giới hạn? | S7 | **Đề xuất 24/09**: giữ trần 50 bản/ngày × 4 h (thực tế không giới hạn, chặn lạm dụng); ghi "Unlimited" trên paywall như Otter/Fireflies — Toan xác nhận |
+| OQ-02 | Hạn mức gói free là bao nhiêu? | S7 | ✅ **Toan chốt 24/09: 10 phút audio/ngày** (`FREE_DAILY_SECONDS=600`), một bản ghi tối đa 10 phút, PDF tính 5 phút; AI call 30/ngày giữ nguyên. Hiển thị số phút còn lại (S8-14) |
+| OQ-03 | Credit thưởng có sống qua đêm? | S7 | ✅ **Toan chốt 24/09: không có credit thưởng** — bỏ rewarded ad cộng phút; `adRewardSsv` xoá |
+| OQ-04 | Premium có thực sự không giới hạn? | S7 | ✅ **Chốt 24/09: không giới hạn phút/ngày** (`PREMIUM_DAILY_SECONDS=0`), chỉ còn trần 4 h/bản và 3 job đồng thời chống lạm dụng |
 | OQ-05 | Sinh AI một lượt hay lười? | S5 | **CHƯA CHỐT** |
 | OQ-06 | Giữ YouTube ingest? | — | ✅ **ĐÃ CHỐT 23/09: BỎ HẲN** |
 | OQ-07 | Có cần full-text search? | S3 | **CHƯA CHỐT** |

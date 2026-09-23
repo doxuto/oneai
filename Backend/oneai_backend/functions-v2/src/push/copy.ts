@@ -10,15 +10,15 @@ interface Copy { title: string; body: (title: string) => string }
 const COPY: Record<string, Record<PushKind, Copy>> = {
   en: {
     minuteReady: { title: "Your note is ready", body: (t) => `"${t}" has been transcribed and summarised.` },
-    minuteFailed: { title: "Transcription failed", body: (t) => `"${t}" could not be processed. Your credit has been returned.` },
+    minuteFailed: { title: "Transcription failed", body: (t) => `"${t}" could not be processed. Your minutes have been returned.` },
   },
   vi: {
     minuteReady: { title: "Ghi chú đã sẵn sàng", body: (t) => `"${t}" đã được chuyển thành văn bản và tóm tắt.` },
-    minuteFailed: { title: "Xử lý không thành công", body: (t) => `"${t}" không xử lý được. Lượt của bạn đã được hoàn lại.` },
+    minuteFailed: { title: "Xử lý không thành công", body: (t) => `"${t}" không xử lý được. Số phút của bạn đã được hoàn lại.` },
   },
   es: {
     minuteReady: { title: "Tu nota está lista", body: (t) => `"${t}" se ha transcrito y resumido.` },
-    minuteFailed: { title: "La transcripción falló", body: (t) => `"${t}" no se pudo procesar. Te devolvimos el crédito.` },
+    minuteFailed: { title: "La transcripción falló", body: (t) => `"${t}" no se pudo procesar. Te devolvimos los minutos.` },
   },
 };
 

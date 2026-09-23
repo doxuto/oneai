@@ -1,98 +1,53 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:one_ai/data/models/user_models.dart';
-import 'package:one_ai/features/ads/ad_gate.dart';
 import 'package:one_ai/features/credits/credit_gate.dart';
 
-Quota q({int used = 0, int limit = 1, int bonus = 0}) =>
-    Quota(used: used, limit: limit, rewardBonus: bonus, resetAt: DateTime(2026, 9, 24));
+Quota q({int used = 0, int limit = 600, int maxDuration = 600}) =>
+    Quota(usedSeconds: used, limitSeconds: limit, maxDurationSeconds: maxDuration, resetAt: DateTime(2026, 9, 25));
 
 void main() {
-  group('premiumStatusOf', () {
-    test('premium wins regardless of quota', () {
-      expect(premiumStatusOf(isPremium: true, quota: null), PremiumStatus.premium);
-      expect(premiumStatusOf(isPremium: true, quota: q(used: 5, limit: 1)), PremiumStatus.premium);
+  group('Quota (seconds per day, decided 24/09)', () {
+    test('remaining, minutes, and the per-recording cap', () {
+      final a = q(used: 130);
+      expect(a.remainingSeconds, 470);
+      expect(a.remainingMinutes, 7);
+      expect(a.limitMinutes, 10);
+      expect(a.maxRecordingSeconds, 470, reason: 'what is left today, under the 600 cap');
+      expect(q(used: 0, maxDuration: 300).maxRecordingSeconds, 300);
     });
-    test('free user with credits / without / unknown quota', () {
-      expect(premiumStatusOf(isPremium: false, quota: q(used: 0, limit: 1)), PremiumStatus.nonPremiumHasCredits);
-      expect(premiumStatusOf(isPremium: false, quota: q(used: 1, limit: 1)), PremiumStatus.nonPremiumNoCredits);
+    test('canStart needs at least the one minute the server reserves', () {
+      expect(q(used: 540).canStart, isTrue);
+      expect(q(used: 541).canStart, isFalse);
+      expect(q(used: 500).canStartSeconds(100), isTrue);
+      expect(q(used: 500).canStartSeconds(101), isFalse);
+      expect(q(used: 590).canStartSeconds(5), isFalse, reason: 'a 5-second clip still reserves 60');
+    });
+    test('limit 0 is unlimited', () {
+      final p = q(used: 99999, limit: 0, maxDuration: 14400);
+      expect(p.isUnlimited, isTrue);
+      expect(p.canStart, isTrue);
+      expect(p.maxRecordingSeconds, 14400);
+    });
+  });
+
+  group('premiumStatusOf', () {
+    test('premium wins; free depends on minutes left', () {
+      expect(premiumStatusOf(isPremium: true, quota: q(used: 600)), PremiumStatus.premium);
+      expect(premiumStatusOf(isPremium: false, quota: q(used: 0)), PremiumStatus.nonPremiumHasCredits);
+      expect(premiumStatusOf(isPremium: false, quota: q(used: 600)), PremiumStatus.nonPremiumNoCredits);
       expect(premiumStatusOf(isPremium: false, quota: null), PremiumStatus.nonPremiumNoCredits);
     });
-    test('reward bonus is already folded into limit by the repository', () {
-      expect(q(used: 1, limit: 2, bonus: 1).hasCredits, isTrue);
-    });
   });
 
-  group('creditGateDecide', () {
-    test('proceeds for premium and for free-with-credits, ignoring the ad', () {
-      for (final s in [PremiumStatus.premium, PremiumStatus.nonPremiumHasCredits]) {
-        expect(
-          creditGateDecide(status: s, rewardedDecision: const AdRefused(AdRefusal.masterSwitchOff), rewardedAdLoaded: false),
-          CreditGateOutcome.proceed,
-        );
-      }
+  group('creditGateDecide (no rewarded ads)', () {
+    test('premium always proceeds; out of minutes always offers upgrade', () {
+      expect(creditGateDecide(status: PremiumStatus.premium), CreditGateOutcome.proceed);
+      expect(creditGateDecide(status: PremiumStatus.nonPremiumNoCredits), CreditGateOutcome.offerUpgrade);
     });
-    test('no credits + ad allowed + loaded → show the ad', () {
-      expect(
-        creditGateDecide(status: PremiumStatus.nonPremiumNoCredits, rewardedDecision: const AdAllowed(), rewardedAdLoaded: true),
-        CreditGateOutcome.showRewardedAd,
-      );
-    });
-    test('no credits + ad not loaded → upgrade, never wait for a load', () {
-      expect(
-        creditGateDecide(status: PremiumStatus.nonPremiumNoCredits, rewardedDecision: const AdAllowed(), rewardedAdLoaded: false),
-        CreditGateOutcome.offerUpgrade,
-      );
-    });
-    test('no credits + gate refused (cap, off) → upgrade', () {
-      expect(
-        creditGateDecide(status: PremiumStatus.nonPremiumNoCredits, rewardedDecision: const AdRefused(AdRefusal.dailyCap), rewardedAdLoaded: true),
-        CreditGateOutcome.offerUpgrade,
-      );
-    });
-  });
-
-  group('waitForRewardCredit', () {
-    test('resolves true when rewardBonus rises', () async {
-      final ctl = StreamController<Quota?>();
-      final f = waitForRewardCredit(ctl.stream, rewardBonusBefore: 0, timeout: const Duration(seconds: 5));
-      ctl.add(q(used: 1, limit: 1, bonus: 0)); // unchanged
-      ctl.add(q(used: 1, limit: 2, bonus: 1)); // SSV landed
-      expect(await f, isTrue);
-      expect(ctl.hasListener, isFalse, reason: 'subscription released');
-      await ctl.close();
-    });
-
-    test('resolves true when credits appear for any reason (e.g. day rollover)', () async {
-      final ctl = StreamController<Quota?>();
-      final f = waitForRewardCredit(ctl.stream, rewardBonusBefore: 2, timeout: const Duration(seconds: 5));
-      ctl.add(q(used: 0, limit: 1, bonus: 0));
-      expect(await f, isTrue);
-      await ctl.close();
-    });
-
-    test('ignores nulls and times out false', () async {
-      final ctl = StreamController<Quota?>();
-      final f = waitForRewardCredit(ctl.stream, rewardBonusBefore: 0, timeout: const Duration(milliseconds: 30));
-      ctl.add(null);
-      ctl.add(q(used: 1, limit: 1));
-      expect(await f, isFalse);
-      expect(ctl.hasListener, isFalse);
-      await ctl.close();
-    });
-
-    test('stream error or close → false', () async {
-      final a = StreamController<Quota?>();
-      final fa = waitForRewardCredit(a.stream, rewardBonusBefore: 0);
-      a.addError(Exception('perm'));
-      expect(await fa, isFalse);
-      await a.close();
-
-      final b = StreamController<Quota?>();
-      final fb = waitForRewardCredit(b.stream, rewardBonusBefore: 0);
-      await b.close();
-      expect(await fb, isFalse);
+    test('a free user with minutes proceeds only if the recording fits', () {
+      expect(creditGateDecide(status: PremiumStatus.nonPremiumHasCredits), CreditGateOutcome.proceed);
+      expect(creditGateDecide(status: PremiumStatus.nonPremiumHasCredits, requestedSeconds: 200, quota: q(used: 500)), CreditGateOutcome.offerUpgrade);
+      expect(creditGateDecide(status: PremiumStatus.nonPremiumHasCredits, requestedSeconds: 90, quota: q(used: 500)), CreditGateOutcome.proceed);
     });
   });
 }

@@ -33,7 +33,6 @@ metric oneai_pipeline_failed      "$FN AND jsonPayload.message=\"pipeline.error\
 metric oneai_job_reaped           "$FN AND jsonPayload.message=\"job.reaped\""                                          "Worker never finished; reaper failed the job"
 metric oneai_stt_upstream_5xx     "$FN AND (jsonPayload.message=\"elevenlabs.upstream_5xx\" OR jsonPayload.message=\"gemini-stt.upstream_5xx\")" "STT vendor 5xx"
 metric oneai_stt_fallback         "$FN AND jsonPayload.message=\"stt.fallback\""                                        "Primary STT vendor failed; fallback used"
-metric oneai_ssv_bad_signature    "$FN AND jsonPayload.message=\"ssv.bad_signature\""                                   "AdMob SSV signature rejected (possible forgery)"
 metric oneai_revenuecat_unauth    "$FN AND jsonPayload.message=\"revenuecat.unauthorized\""                             "RevenueCat webhook with wrong secret"
 metric oneai_index_missing        "$FN AND jsonPayload.message=\"minute.list.index_missing\""                            "Firestore index missing (listMinutes)"
 metric oneai_push_failed          "$FN AND jsonPayload.message=\"push.minute.failed\""                                   "FCM send threw"

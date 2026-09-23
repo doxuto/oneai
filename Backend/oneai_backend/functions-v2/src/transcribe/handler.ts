@@ -78,6 +78,12 @@ export async function startTranscriptionHandler(
         reason: "durationLimit", limitSeconds: limits.maxDurationSeconds,
       });
     }
+    // Reserve the declared length (never less than a minute — the client's
+    // number is a guess); the worker settles to the measured length. A PDF is
+    // a flat charge.
+    const chargedSeconds = preDoc.sourceType === "pdf"
+      ? limits.pdfChargeSeconds
+      : Math.max(60, Math.round(input.durationSeconds ?? 60));
 
     // 3. Charge + mark + create the job, atomically.
     const periodId = periodIdFor(now);
@@ -95,9 +101,10 @@ export async function startTranscriptionHandler(
           reason: "tooManyActiveJobs", limit: limits.maxActiveJobs,
         });
       }
-      await consumeQuota(tx, deps.db, uid, plan, limits, now);
+      await consumeQuota(tx, deps.db, uid, plan, limits, now, chargedSeconds);
       const job: JobDoc = {
         uid, minuteId: input.minuteId, requestId: input.requestId, state: "queued", attempt: 0, periodId,
+        chargedSeconds,
         quotaRefunded: false,
         options: {
           audioLanguage: input.audioLanguage, summaryLanguage: input.summaryLanguage, keywords: input.keywords,
@@ -127,7 +134,7 @@ export async function startTranscriptionHandler(
     } catch (err) {
       log.error("transcribe.enqueue_failed", { uid, minuteId: input.minuteId, error: String(err) });
       await deps.db.runTransaction(async (tx) => {
-        await refundQuota(tx, deps.db, uid, periodId);
+        await refundQuota(tx, deps.db, uid, periodId, chargedSeconds);
         tx.update(jobRef, { state: "failed", quotaRefunded: true, error: { code: "enqueue_failed", message: "Could not queue the job" }, finishedAt: FieldValue.serverTimestamp() });
         tx.update(mRef, { status: "failed", failure: { code: "enqueue_failed", message: "Could not start processing. Please try again." }, statusUpdatedAt: FieldValue.serverTimestamp() });
       });
@@ -167,7 +174,7 @@ export async function cancelTranscriptionHandler(
       const job = jobs.docs[0];
       if (job) {
         const j = job.data() as JobDoc;
-        if (!j.quotaRefunded) await refundQuota(tx, deps.db, uid, j.periodId);
+        if (!j.quotaRefunded) await refundQuota(tx, deps.db, uid, j.periodId, j.chargedSeconds ?? 0);
         tx.update(job.ref, { state: "cancelled", quotaRefunded: true, finishedAt: FieldValue.serverTimestamp() });
       }
       tx.update(mRef, { status: "cancelled", statusUpdatedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });

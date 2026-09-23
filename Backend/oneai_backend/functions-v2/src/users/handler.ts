@@ -10,9 +10,8 @@ import { GetMeInput, type GetMeOutput } from "./types.js";
 
 /** Shape of `users/{uid}/quota/{periodId}`. */
 interface QuotaDoc {
-  used?: number;
-  baseLimit?: number;
-  rewardBonus?: number;
+  usedSeconds?: number;
+  limitSeconds?: number;
 }
 
 export async function getMeHandler(
@@ -39,16 +38,15 @@ export async function getMeHandler(
 
     const user = toUserOutput(uid, userSnap.data(), now);
     const q = (quotaSnap.data() ?? {}) as QuotaDoc;
-    const baseLimit =
-      typeof q.baseLimit === "number" ? q.baseLimit : deps.limits[user.plan].dailyLimit;
-    const rewardBonus = typeof q.rewardBonus === "number" ? q.rewardBonus : 0;
+    const limits = deps.limits[user.plan];
 
     return {
       user,
       quota: {
-        used: typeof q.used === "number" ? q.used : 0,
-        limit: baseLimit + rewardBonus,
-        rewardBonus,
+        usedSeconds: typeof q.usedSeconds === "number" ? q.usedSeconds : 0,
+        // The plan's ceiling wins over a stale doc written under another plan.
+        limitSeconds: user.plan === "premium" ? limits.dailySeconds : (typeof q.limitSeconds === "number" ? q.limitSeconds : limits.dailySeconds),
+        maxDurationSeconds: limits.maxDurationSeconds,
         resetAt: nextPeriodStart(now).toISOString(),
       },
     };

@@ -171,7 +171,7 @@ bundle qua `setDefaults`.
                     "minimumCompletionsBetween": 2, "minimumLifetimeCompletions": 3,
                     "minimumSessionSeconds": 30, "maxPerDay": 8,
                     "placements": ["summaryEnter", "summaryExit", "afterShare", "settingsExit"] },
-  "rewarded":     { "enabled": true, "maxPerDay": 5 },
+  "rewarded":     { "enabled": false, "maxPerDay": 0 },
   "banner":       { "enabled": true, "placements": ["summaryTab"] },
   "native":       { "enabled": false, "firstRow": 6, "everyRows": 10,
                     "maxPerScreen": 3, "placements": ["minutesList"] }
@@ -209,7 +209,14 @@ trong Manifest, test unit id riêng, khai báo Play Data Safety.
 
 ---
 
-## 5. Rewarded SSV — client không bao giờ tự cộng credit
+## 5. Rewarded SSV — **ĐÃ BỎ 24/09** (giữ lại để tham khảo)
+
+> Chốt 24/09: gói free = 10 phút/ngày cố định, **không** xem ad để thêm phút.
+> `adRewardSsv`, `ads/reward.ts`, `ads/verify.ts` đã xoá; `rewarded.enabled` mặc
+> định `false` trong `ads_config`; app không còn thẻ "Earn a free credit". Phần dưới
+> là thiết kế cũ, chỉ dùng lại nếu đổi quyết định.
+
+### (cũ) Client không bao giờ tự cộng credit
 
 > *"The client never credits a reward. An app that accepts 'I just watched an
 > ad, give me more' accepts it from anyone."*

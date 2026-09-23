@@ -20,7 +20,7 @@ class _Prefs extends NotificationPrefsController {
 List<Override> settingsOverrides({bool premium = false, bool privacyOptions = false}) => [
       authUserProvider.overrideWith((_) => Stream.value(null)),
       isPremiumProvider.overrideWith((_) => Stream.value(premium)),
-      quotaProvider.overrideWith((_) => Stream.value(Quota(used: 0, limit: 1, rewardBonus: 2, resetAt: DateTime(2026, 9, 25)))),
+      quotaProvider.overrideWith((_) => Stream.value(Quota(usedSeconds: 120, limitSeconds: 600, maxDurationSeconds: 600, resetAt: DateTime(2026, 9, 25)))),
       notificationPrefsProvider.overrideWith(() => _Prefs()),
       deviceLanguageCodeProvider.overrideWithValue('en'),
       privacyOptionsRequiredProvider.overrideWith((_) async => privacyOptions),

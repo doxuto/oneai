@@ -167,7 +167,7 @@ interface Transcript {
 
 | Callable | Input | Output |
 |---|---|---|
-| `startTranscription` | `{client, minuteId, requestId: uuid, audioLanguage ="auto", summaryLanguage, keywords: string[] ≤20 =[], description? ≤500, template: "auto"\|"standup"\|"one_on_one"\|"interview"\|"lecture"\|"brainstorm" ="auto", timezone: IANA, durationSeconds?}` — `template` chỉ đổi hướng dẫn section cho prompt summarize (S11-08), không đổi schema | `{minuteId, status, duplicate: boolean}` — cùng `requestId` gọi lại → `duplicate:true`, không trừ quota lần 2 |
+| `startTranscription` | `{client, minuteId, requestId: uuid, audioLanguage ="auto", summaryLanguage, keywords: string[] ≤20 =[], description? ≤500, template: "auto"\|"standup"\|"one_on_one"\|"interview"\|"lecture"\|"brainstorm" ="auto", timezone: IANA, durationSeconds?}` — `template` chỉ đổi hướng dẫn section cho prompt summarize (S11-08), không đổi schema. **Quota**: đặt cọc `max(60, durationSeconds)` giây (PDF: `PDF_CHARGE_SECONDS` = 300) trong transaction; worker đo độ dài thật rồi **settle** (trả thừa / thu thêm); free vượt phần còn lại → `resource-exhausted reason:"quota"` với `{limitSeconds, usedSeconds, remainingSeconds, requestedSeconds, resetAt}` ngay lúc start, hoặc note `failed` reason `quota` trước khi tốn STT nếu file thật dài hơn khai báo | `{minuteId, status, duplicate: boolean}` — cùng `requestId` gọi lại → `duplicate:true`, không trừ quota lần 2 |
 | `cancelTranscription` | `{client, minuteId}` | `{}` |
 | `processTranscription` | **task worker**, không phải callable | — |
 
@@ -231,7 +231,7 @@ Sửa luôn lỗi v1 nơi `PUT /tags/:id` trả `tagId` còn `GET`/`POST` trả 
 
 | Callable | Input | Output |
 |---|---|---|
-| `getMe` | `{client}` | `{user: {id, email, displayName, photoUrl, plan, planExpiresAt, minuteCount, createdAt, notifications: {transcriptionDone}}, quota: {used, limit, resetAt, rewardBonus}}` |
+| `getMe` | `{client}` | `{user: {id, email, displayName, photoUrl, plan, planExpiresAt, minuteCount, createdAt, notifications: {transcriptionDone}}, quota: {usedSeconds, limitSeconds, maxDurationSeconds, resetAt}}` — **hạn mức tính bằng giây audio/ngày** (chốt 24/09: free 600 = 10 phút, premium `limitSeconds: 0` = không giới hạn); không còn `rewardBonus` |
 | `deleteAccount` | `{client, confirm: true}` | `{}` |
 
 v1 dùng ba field id khác nhau từ cùng một decoded token (`user_id`, `uid`,
@@ -257,7 +257,7 @@ bao giờ** đọc/ghi `devices/` trực tiếp (rules chặn).
 | Function | Auth | Ghi chú |
 |---|---|---|
 | `revenueCatWebhook` | `Authorization: Bearer <secret>`, so sánh **constant-time** | v1 so bằng `!==` với `undefined` khi secret chưa set → ai gửi đúng `Bearer undefined` là nâng gói bất kỳ ai. Phải verify `app_user_id` là UID thật, và dùng `set(merge:true)` thay `update()`. |
-| `adRewardSsv` | chữ ký ECDSA P-256 của Google | Public có chủ ý. Xem `08-ADS-FLOW.md`. |
+| ~~`adRewardSsv`~~ | — | **Bỏ 24/09**: không còn rewarded ad cộng phút miễn phí. Code đã xoá. |
 
 ### 2.7 triggers + jobs
 

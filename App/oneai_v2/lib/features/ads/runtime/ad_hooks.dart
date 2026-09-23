@@ -14,8 +14,9 @@ abstract interface class RewardedHook {
   /// Whether a rewarded ad is loaded and the gate allows it right now.
   bool get isReady;
 
-  /// Shows it. Resolves true when the SDK reported the reward was earned
-  /// (the CREDIT still arrives later via SSV — see waitForRewardCredit).
+  /// Shows it. Resolves true when the SDK reported the reward was earned.
+  /// Rewarded ads are OFF by config since 24/09 (no free-minute top-ups);
+  /// the hook stays so Remote Config can re-enable the format later.
   Future<bool> show();
 }
 

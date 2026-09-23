@@ -156,7 +156,7 @@ Param không bí mật (`functions-v2/.env`, commit có chủ ý):
 | `LLM_VENDOR` / `OPENAI_MODEL` / `OPENAI_MODEL_HEAVY` / `GEMINI_MODEL` | `openai` / `gpt-4o-mini` / `gpt-4o` / `gemini-2.0-flash` | LLM |
 | `FREE_MAX_ACTIVE_JOBS` / `PREMIUM_MAX_ACTIVE_JOBS` | 1 / 3 | job transcribe đồng thời tối đa mỗi user |
 | `FREE_SOURCE_RETENTION_DAYS` / `PREMIUM_SOURCE_RETENTION_DAYS` | 7 / 90 | số ngày giữ audio/PDF gốc sau khi note `ready`; `-1` giữ mãi |
-| `FREE_DAILY_LIMIT` … `PREMIUM_AI_CALLS_DAILY` | xem `.env` | quota |
+| `FREE_DAILY_SECONDS` = 600, `FREE_MAX_DURATION_SECONDS` = 600, `PREMIUM_DAILY_SECONDS` = 0 (không giới hạn), `PDF_CHARGE_SECONDS` = 300, `*_AI_CALLS_DAILY` | `.env` | quota theo giây/ngày (chốt 24/09); không còn `*_DAILY_LIMIT` |
 
 Push (FCM) không cần secret: Admin SDK dùng ADC. Cần **APNs key** upload trong
 Firebase console (Project settings → Cloud Messaging → Apple app) — làm tay.

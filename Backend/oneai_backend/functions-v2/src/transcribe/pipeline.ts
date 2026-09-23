@@ -18,7 +18,7 @@ import { minuteRef, transcriptPath, type MinuteDoc } from "../minutes/_shared.js
 import type { Transcript } from "../minutes/types.js";
 import { sourceExpiryFor } from "../jobs/retention.js";
 import { notifyMinuteResult } from "../push/notify.js";
-import { refundQuota } from "../quota/quota.js";
+import { refundQuota, settleQuota } from "../quota/quota.js";
 import { effectivePlan, type UserDoc } from "../users/_shared.js";
 import type { JobDoc, TaskPayload } from "./types.js";
 
@@ -84,6 +84,29 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
         throw new HttpsError("failed-precondition", "Recording is longer than your plan allows", {
           reason: "durationLimit", limitSeconds: limits.maxDurationSeconds, actualSeconds: Math.round(durationSeconds),
         });
+      }
+      // Settle the reservation to the real length BEFORE paying for STT. A
+      // free user whose file is longer than what is left today fails here
+      // (resource-exhausted → failJob refunds the reservation).
+      if (durationSeconds !== null) {
+        const actual = Math.max(60, Math.round(durationSeconds));
+        const reserved = job.chargedSeconds ?? 0;
+        if (actual !== reserved) {
+          try {
+            await deps.db.runTransaction(async (tx) => {
+              await settleQuota(tx, deps.db, uid, plan, limits, deps.now(), job.periodId, reserved, actual);
+              tx.update(jobRef, { chargedSeconds: actual });
+            });
+            job.chargedSeconds = actual;
+          } catch (err) {
+            // Quota is a permanent failure for this job, not a "try later":
+            // resource-exhausted would be retried by the task queue.
+            if (err instanceof HttpsError && err.code === "resource-exhausted") {
+              throw new HttpsError("failed-precondition", "Not enough free minutes left today", { ...(err.details as object), reason: "quota" });
+            }
+            throw err;
+          }
+        }
       }
       const result = await deps.services.stt.transcribe({
         audio: bytes, contentType, fileName: minute.sourcePath.split("/").pop() ?? "audio",
@@ -179,7 +202,7 @@ export async function failJob(deps: Deps, ids: { uid: string; minuteId: string; 
   const title = await deps.db.runTransaction(async (tx) => {
     const [jSnap, mSnap] = await Promise.all([tx.get(jobRef), tx.get(mRef)]);
     const j = jSnap.data() as JobDoc | undefined;
-    if (j && !j.quotaRefunded) await refundQuota(tx, deps.db, ids.uid, j.periodId);
+    if (j && !j.quotaRefunded) await refundQuota(tx, deps.db, ids.uid, j.periodId, j.chargedSeconds ?? 0);
     tx.update(jobRef, { state: "failed", quotaRefunded: true, finishedAt: FieldValue.serverTimestamp(), error: failure });
     if (mSnap.exists) {
       tx.update(mRef, { status: "failed", failure, statusUpdatedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
@@ -195,6 +218,7 @@ function userMessage(err: unknown): string {
     const reason = (err.details as { reason?: string } | undefined)?.reason;
     switch (reason) {
       case "durationLimit": return "This recording is longer than your plan allows.";
+      case "quota": return "Not enough free minutes left today for this recording.";
       case "noSpeech": return "No speech was detected in this recording.";
       case "pdfNoText": return "This PDF has no extractable text.";
       case "pdfUnreadable": return "This PDF could not be read.";

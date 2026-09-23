@@ -255,5 +255,11 @@
   "forward10": "Tới 10 giây",
   "play": "Phát",
   "pause": "Tạm dừng",
-  "copy": "Sao chép"
+  "copy": "Sao chép",
+  "freeMinutesToday": "Phút miễn phí hôm nay",
+  "freeMinutesLeftToday": "{count, plural, =0{Hôm nay hết phút miễn phí} =1{Còn 1 phút miễn phí hôm nay} other{Còn {count} phút miễn phí hôm nay}}",
+  "freeMinutesUsedUp": "Bạn đã dùng hết phút miễn phí hôm nay. Nâng cấp để ghi không giới hạn, hoặc tiếp tục vào ngày mai.",
+  "noFreeMinutesLeft": "Hôm nay không còn đủ phút miễn phí cho bản ghi này. Nâng cấp Premium để không giới hạn.",
+  "upgradeToContinue": "Nâng cấp để tiếp tục",
+  "quotaMinutesResetsAt": "Phút miễn phí được cấp lại lúc {time}."
 }

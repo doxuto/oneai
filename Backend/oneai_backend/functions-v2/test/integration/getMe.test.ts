@@ -26,15 +26,15 @@ describe("getMeHandler", () => {
       minuteCount: 3,
       createdAt: Timestamp.fromDate(new Date("2026-09-01T00:00:00Z")),
     });
-    await db.doc("users/u1/quota/2026-09-23").set({ used: 1, baseLimit: 1, rewardBonus: 2 });
+    await db.doc("users/u1/quota/2026-09-23").set({ usedSeconds: 130, limitSeconds: 600 });
 
     const out = await getMeHandler(caller, { client }, deps);
     expect(out.user).toMatchObject({ id: "u1", email: "a@b.c", plan: "free", minuteCount: 3 });
     expect(out.user.createdAt).toBe("2026-09-01T00:00:00.000Z");
     expect(out.quota).toEqual({
-      used: 1,
-      limit: 3, // baseLimit 1 + rewardBonus 2 — reward RAISES the ceiling
-      rewardBonus: 2,
+      usedSeconds: 130,
+      limitSeconds: 600,
+      maxDurationSeconds: 600,
       resetAt: "2026-09-23T17:00:00.000Z", // 00:00 24/09 Asia/Ho_Chi_Minh
     });
   });
@@ -43,7 +43,7 @@ describe("getMeHandler", () => {
     await db.doc("users/u1").set({ plan: "premium", planExpiresAt: null });
     const out = await getMeHandler(caller, { client }, deps);
     expect(out.user.plan).toBe("premium");
-    expect(out.quota).toMatchObject({ used: 0, limit: 50, rewardBonus: 0 });
+    expect(out.quota).toMatchObject({ usedSeconds: 0, limitSeconds: 0, maxDurationSeconds: 14400 });
   });
 
   it("downgrades an expired premium to free at read time", async () => {

@@ -654,5 +654,13 @@
   "forward10": "Forward 10 seconds",
   "play": "Play",
   "pause": "Pause",
-  "copy": "Copy"
+  "copy": "Copy",
+  "freeMinutesToday": "Free minutes today",
+  "freeMinutesLeftToday": "{count, plural, =0{No free minutes left today} =1{1 free minute left today} other{{count} free minutes left today}}",
+  "@freeMinutesLeftToday": {"placeholders": {"count": {"type": "int"}}},
+  "freeMinutesUsedUp": "You've used today's free minutes. Upgrade for unlimited recording, or continue tomorrow.",
+  "noFreeMinutesLeft": "Not enough free minutes left today for this recording. Upgrade to Premium for unlimited minutes.",
+  "upgradeToContinue": "Upgrade to continue",
+  "quotaMinutesResetsAt": "Free minutes reset at {time}.",
+  "@quotaMinutesResetsAt": {"placeholders": {"time": {"type": "String"}}}
 }

@@ -211,8 +211,8 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S8-01 | Quota `users/{uid}/quota/{period}` + `resetDailyQuota` — chờ OQ-02, OQ-03 | reset đúng 00:00 giờ VN |
 | S8-02 | `revenueCatWebhook`: so secret constant-time, verify uid, `set(merge)`, `planExpiresAt` | `Bearer undefined` → 403 |
 | S8-03 | Kiểm hạn premium lúc dùng — ✅ `effectivePlan(planExpiresAt)` ở mọi đường đọc | webhook miss không cho premium vĩnh viễn |
-| S8-04 | `adRewardSsv` + verify ECDSA P-256 + cache key 24h | 5 test bắt buộc (`08` §5) xanh |
-| S8-05 | Bật SSV trên rewarded unit trong AdMob console | ad thật cộng đúng credit |
+| ~~S8-04~~ | `adRewardSsv` — **bỏ 24/09** (không rewarded để thêm phút); code đã xoá | — |
+| ~~S8-05~~ | SSV trên AdMob — **bỏ 24/09** | — |
 | S8-06 | Dart `AdGate` **thuần** + `AdLedger` | ≥30 unit test, phủ đủ 12 `AdRefusal` |
 | S8-07 | Một key `ads_config` JSON, default `enabled:false` | không fetch được config → không hiện ad |
 | S8-08 | UMP trước GMA init; ATT chỉ sau UMP ở iOS; nút Privacy options | test EEA giả lập hiện form |
@@ -222,7 +222,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S8-12 | Paywall RevenueCat ở 4 điểm như v1 | |
 | S8-13 | **Gói & giá theo chuẩn ngành** (21-RESEARCH §4, Toan cấu hình RevenueCat/store): thêm gói **tuần** (~$4.99), trial **7 ngày** cho gói năm, gói năm mặc định trên paywall, giá địa phương VN, bật grace period + account hold (Play: 31% huỷ do lỗi thanh toán) | offering `default` có weekly/monthly/annual |
 | S8-14 | **Hạn mức minh bạch**: phút/credit còn lại ngay trên nút Ghi + sheet tạo note, cảnh báo "còn 5 phút" khi ghi, paywall + listing nêu rõ hạn mức free (than phiền #1 của ngành) | user không bao giờ "đụng tường" bất ngờ |
-| S8-15 | Chốt OQ-02/03/04 theo research: free 1 credit/ngày + 30 ph/bản (giữ), credit thưởng **không** sống qua đêm (ngành: minutes don't roll over), premium 50 bản/ngày × 4 h | .env không đổi |
+| S8-15 | ✅ **Toan chốt 24/09**: free **10 phút/ngày** (`FREE_DAILY_SECONDS=600`, 1 bản ≤ 10 phút), **không có rewarded** để thêm phút, premium không giới hạn (`PREMIUM_DAILY_SECONDS=0`, 1 bản ≤ 4 h); quota đổi sang giây, đặt cọc + settle theo độ dài đo được; PDF = 300 giây | BE + app xong |
 
 **Cổng ra:** ad hiện đúng tần suất trên cả 2 nền tảng; không client nào cộng được credit.
 

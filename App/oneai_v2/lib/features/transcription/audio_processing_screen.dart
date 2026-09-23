@@ -15,12 +15,8 @@ import 'package:one_ai/core/widgets/app_snack.dart';
 import 'package:one_ai/core/widgets/failure_text.dart';
 import 'package:one_ai/core/widgets/styled_dialog.dart';
 import 'package:one_ai/data/models/minute_models.dart';
-import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
-import 'package:one_ai/features/billing/entitlement.dart';
 import 'package:one_ai/features/transcription/upload_queue.dart';
 import 'package:one_ai/features/billing/paywall.dart';
-import 'package:one_ai/features/credits/credit_gate_ui.dart';
-import 'package:one_ai/features/credits/credits_provider.dart';
 import 'package:one_ai/features/notifications/push_registrar.dart';
 import 'package:one_ai/features/transcription/new_minute_flow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,7 +82,7 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
       context: context,
       builder: (ctx) => StyledDialog(
         title: ctx.l10n.premiumRequired,
-        content: Text(ctx.l10n.noFreeCreditsLeft, textAlign: TextAlign.center, style: ctx.textTheme.bodyMedium),
+        content: Text(ctx.l10n.noFreeMinutesLeft, textAlign: TextAlign.center, style: ctx.textTheme.bodyMedium),
         cancelLabel: ctx.l10n.cancel,
         confirmLabel: ctx.l10n.goPremium,
         onCancel: () => Navigator.of(ctx).pop(),
@@ -136,17 +132,13 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(newMinuteFlowProvider(_req));
-    final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;
     final l10n = context.l10n;
 
     ref.listen(newMinuteFlowProvider(_req), (prev, next) {
       if (next is NewMinuteReady && prev is! NewMinuteReady) {
         _celebrateIfFirst();
-        // OQ-19 (v1 behaviour): premium users, or anyone with no rewarded ad
-        // on screen, go straight to the note; otherwise the "Show Results"
-        // button stays so the ad card is not yanked away mid-view.
-        final adOnScreen = !premium && ref.read(rewardedHookProvider).isReady;
-        if (!adOnScreen) Future<void>.delayed(const Duration(milliseconds: 200), () { if (mounted) _showResults(next.id); });
+        // OQ-19: go straight to the note (no reward card any more — 24/09).
+        Future<void>.delayed(const Duration(milliseconds: 200), () { if (mounted) _showResults(next.id); });
       }
       if (next is NewMinuteFailed && next.isOutOfCredits) _premiumRequired();
     });
@@ -177,7 +169,6 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
                   _StepsCard(state: state),
                   gapH16,
                   if (state is NewMinuteFailed) ...[_FailureCard(state: state, request: _req), gapH16],
-                  if (!premium && !state.isTerminal) ...[const _RewardCard(), gapH16],
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(l10n.processingExplanation, textAlign: TextAlign.center, style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant)),
@@ -320,51 +311,3 @@ class _FailureCard extends ConsumerWidget {
   }
 }
 
-/// v1's "Earn a Free Credit While You Wait!" card. Shows only while a
-/// rewarded ad is actually loaded — never a spinner waiting for one.
-class _RewardCard extends ConsumerWidget {
-  const _RewardCard();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final rewarded = ref.watch(rewardedHookProvider);
-    if (!rewarded.isReady) return const SizedBox.shrink();
-    final l10n = context.l10n;
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: context.colorScheme.outline.withAlpha(25))),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            SvgPicture.asset(Assets.giftFillIcon, width: 48, height: 48),
-            gapH12,
-            Text(l10n.earnFreeCreditWhileWaiting, textAlign: TextAlign.center, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            gapH12,
-            Text(l10n.earnCreditBlurb, textAlign: TextAlign.center, style: context.textTheme.bodyMedium),
-            gapH12,
-            SizedBox(
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () async {
-                  await HapticFeedback.lightImpact();
-                  final before = ref.read(quotaProvider).valueOrNull?.rewardBonus ?? 0;
-                  final earned = await rewarded.show();
-                  if (!context.mounted) return;
-                  if (!earned) {
-                    AppSnack.show(context, l10n.adNotCompleted);
-                    return;
-                  }
-                  AppSnack.show(context, l10n.rewardOnItsWay);
-                  final ok = await waitForRewardCreditWithRef(ref, before);
-                  if (context.mounted && ok) AppSnack.show(context, l10n.rewardReceived(1));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFEA200), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(82))),
-                child: Text('🔥 ${l10n.watchAdEarnCredit}', style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

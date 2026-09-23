@@ -18,8 +18,8 @@
     "placements": ["summaryEnter", "summaryExit", "afterShare", "settingsExit"]
   },
   "rewarded": {
-    "enabled": true,
-    "maxPerDay": 5
+    "enabled": false,
+    "maxPerDay": 0
   },
   "banner": {
     "enabled": true,

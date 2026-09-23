@@ -8,21 +8,33 @@ enum Plan {
       readEnum(j, k, const {'free': Plan.free, 'premium': Plan.premium}, Plan.free);
 }
 
+/// Today's audio allowance, in SECONDS (decided 24/09: free = 10 min/day,
+/// no reward top-ups). `limitSeconds == 0` means unlimited (premium).
 class Quota {
-  const Quota({required this.used, required this.limit, required this.rewardBonus, required this.resetAt});
+  const Quota({required this.usedSeconds, required this.limitSeconds, required this.maxDurationSeconds, required this.resetAt});
   factory Quota.fromJson(Map<String, dynamic> j) => Quota(
-        used: readInt(j, 'used') ?? 0,
-        limit: readInt(j, 'limit') ?? 0,
-        rewardBonus: readInt(j, 'rewardBonus') ?? 0,
+        usedSeconds: readInt(j, 'usedSeconds') ?? 0,
+        limitSeconds: readInt(j, 'limitSeconds') ?? 0,
+        maxDurationSeconds: readInt(j, 'maxDurationSeconds') ?? 600,
         resetAt: readDateTime(j, 'resetAt') ?? DateTime.now(),
       );
-  final int used;
-  final int limit;
-  final int rewardBonus;
+  final int usedSeconds;
+  final int limitSeconds;
+  /// Longest single recording the plan accepts.
+  final int maxDurationSeconds;
   final DateTime resetAt;
 
-  int get remaining => (limit - used).clamp(0, 1 << 30);
-  bool get hasCredits => remaining > 0;
+  bool get isUnlimited => limitSeconds <= 0;
+  int get remainingSeconds => isUnlimited ? 1 << 30 : (limitSeconds - usedSeconds).clamp(0, 1 << 30);
+  int get remainingMinutes => (remainingSeconds / 60).floor();
+  int get limitMinutes => (limitSeconds / 60).round();
+
+  /// A recording must fit in what is left today AND under the per-recording cap.
+  int get maxRecordingSeconds => isUnlimited ? maxDurationSeconds : remainingSeconds.clamp(0, maxDurationSeconds);
+
+  /// The server reserves at least one minute per job.
+  bool get canStart => isUnlimited || remainingSeconds >= 60;
+  bool canStartSeconds(int seconds) => isUnlimited || remainingSeconds >= seconds.clamp(60, 1 << 30);
 }
 
 class OneAiUser {

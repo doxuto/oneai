@@ -55,8 +55,7 @@ fi
 
 echo
 echo "→ xong. Việc còn lại (một lần, trên console):"
-echo "   • TTL policy: field expiresAt trên collection group quota và collection adRewards"
-echo "   • AdMob: SSV URL của rewarded unit = URL function adRewardSsv"
+echo "   • TTL policy: field expiresAt trên collection group quota"
 echo "   • RevenueCat: webhook URL = URL function revenueCatWebhook, Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>"
 echo "   • Remote Config: xem remote-config/README.md (merge, KHÔNG deploy thẳng)"
-firebase functions:list -P "$ALIAS" 2>/dev/null | grep -E "adRewardSsv|revenueCatWebhook" || true
+firebase functions:list -P "$ALIAS" 2>/dev/null | grep -E "revenueCatWebhook" || true

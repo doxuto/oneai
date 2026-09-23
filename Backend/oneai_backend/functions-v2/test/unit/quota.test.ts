@@ -1,17 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { canConsume } from "../../src/quota/quota.js";
+import { canConsume, remainingSeconds } from "../../src/quota/quota.js";
 
-describe("canConsume", () => {
-  it("free: blocked at the ceiling", () => {
-    expect(canConsume({ used: 0, limit: 1 }, "free")).toBe(true);
-    expect(canConsume({ used: 1, limit: 1 }, "free")).toBe(false);
+describe("canConsume (seconds)", () => {
+  it("free: blocked when the request would cross the ceiling, allowed when it exactly fills it", () => {
+    expect(canConsume({ usedSeconds: 0, limitSeconds: 600 }, "free", 600)).toBe(true);
+    expect(canConsume({ usedSeconds: 0, limitSeconds: 600 }, "free", 601)).toBe(false);
+    expect(canConsume({ usedSeconds: 540, limitSeconds: 600 }, "free", 60)).toBe(true);
+    expect(canConsume({ usedSeconds: 541, limitSeconds: 600 }, "free", 60)).toBe(false);
   });
-  it("free: a reward raises the ceiling rather than lowering usage — 3/5 + 2 ⇒ 3/7", () => {
-    expect(canConsume({ used: 3, limit: 5 }, "free")).toBe(true);
-    expect(canConsume({ used: 5, limit: 5 }, "free")).toBe(false);
-    expect(canConsume({ used: 5, limit: 7 }, "free")).toBe(true);
+  it("premium, or a 0 limit, is never blocked", () => {
+    expect(canConsume({ usedSeconds: 99999, limitSeconds: 600 }, "premium", 1)).toBe(true);
+    expect(canConsume({ usedSeconds: 99999, limitSeconds: 0 }, "free", 1)).toBe(true);
   });
-  it("premium: never blocked, whatever the numbers", () => {
-    expect(canConsume({ used: 999, limit: 1 }, "premium")).toBe(true);
+  it("remainingSeconds floors at 0 and is infinite for a 0 limit", () => {
+    expect(remainingSeconds({ usedSeconds: 500, limitSeconds: 600 })).toBe(100);
+    expect(remainingSeconds({ usedSeconds: 700, limitSeconds: 600 })).toBe(0);
+    expect(remainingSeconds({ usedSeconds: 700, limitSeconds: 0 })).toBe(Number.POSITIVE_INFINITY);
   });
 });

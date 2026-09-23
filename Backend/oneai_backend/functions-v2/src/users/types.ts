@@ -7,9 +7,12 @@ export type GetMeInput = z.infer<typeof GetMeInput>;
 export type Plan = "free" | "premium";
 
 export interface QuotaOutput {
-  used: number;
-  limit: number;
-  rewardBonus: number;
+  /** Seconds of audio charged today. */
+  usedSeconds: number;
+  /** 0 = unlimited (premium). */
+  limitSeconds: number;
+  /** Longest single recording the plan accepts. */
+  maxDurationSeconds: number;
   resetAt: string;
 }
 

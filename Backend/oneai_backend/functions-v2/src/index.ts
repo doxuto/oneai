@@ -61,4 +61,3 @@ export { mapSpeakers } from "./ai/mapSpeakers.js";
 export { renameSpeaker } from "./ai/renameSpeaker.js";
 
 export { revenueCatWebhook } from "./billing/revenueCatWebhook.js";
-export { adRewardSsv } from "./ads/adRewardSsv.js";

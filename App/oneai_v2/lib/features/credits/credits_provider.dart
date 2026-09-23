@@ -20,15 +20,11 @@ Stream<Quota?> _quotaStream(Ref ref) {
   return ref.watch(userRepositoryProvider).watchQuota(
         uid,
         periodId: UserRepository.periodIdFor(now),
-        fallbackLimit: me?.quota.limit ?? 1,
-        resetAt: me?.quota.resetAt ?? now.add(const Duration(days: 1)),
+        fallback: me?.quota ?? Quota(usedSeconds: 0, limitSeconds: 600, maxDurationSeconds: 600, resetAt: now.add(const Duration(days: 1))),
       );
 }
 
 final quotaProvider = StreamProvider<Quota?>(_quotaStream);
-
-/// A fresh subscription for one-off waits (`waitForRewardCredit`).
-final quotaStreamProvider = Provider<Stream<Quota?>>(_quotaStream);
 
 final premiumStatusProvider = Provider<PremiumStatus>((ref) {
   final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;

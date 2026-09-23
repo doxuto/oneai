@@ -13,13 +13,14 @@ String failureText(BuildContext context, Object? error) {
     QuotaFailure(:final resetAt, :final reason) => switch (reason) {
         'aiDailyLimit' => l.aiDailyLimitReached(resetAt == null ? '--:--' : _time(context, resetAt)),
         'tooManyActiveJobs' => l.waitForCurrentRecording,
-        _ => resetAt == null ? l.noFreeCreditsLeft : '${l.noFreeCreditsLeft} ${l.quotaResetsAt(_time(context, resetAt))}',
+        _ => resetAt == null ? l.noFreeMinutesLeft : '${l.noFreeMinutesLeft} ${l.quotaMinutesResetsAt(_time(context, resetAt))}',
       },
     PreconditionFailure(:final minVersion) when minVersion != null => l.updateRequired,
     PreconditionFailure(:final reason, :final limitSeconds) => switch (reason) {
         'notReady' => l.noteNotReady,
         'noSpeech' => l.noSpeechDetected,
-        'durationLimit' => l.recordingTooLong(((limitSeconds ?? 1800) / 60).round()),
+        'durationLimit' => l.recordingTooLong(((limitSeconds ?? 600) / 60).round()),
+        'quota' => l.noFreeMinutesLeft,
         'tooManyActiveJobs' => l.waitForCurrentRecording,
         _ => l.somethingWentWrong,
       },

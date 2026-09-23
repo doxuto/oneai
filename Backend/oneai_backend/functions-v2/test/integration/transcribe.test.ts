@@ -69,7 +69,7 @@ describe("startTranscription", () => {
     expect(enqueued).toEqual([{ uid: "u1", minuteId: "m1", jobId: REQ }]);
     expect((await db.doc("users/u1/minutes/m1").get()).data()).toMatchObject({ status: "queued", summaryLanguage: "vi" });
     expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "queued", periodId: "2026-09-23", quotaRefunded: false });
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(1);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(60);
   });
 
   it("the same requestId twice is a no-op with duplicate:true and no second charge", async () => {
@@ -80,7 +80,7 @@ describe("startTranscription", () => {
     const again = await startTranscriptionHandler(u1, startInput, deps);
     expect(again.duplicate).toBe(true);
     expect(enqueued).toHaveLength(1);
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(1);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(60);
   });
 
   it("a second note today on the free plan is resource-exhausted and nothing is written", async () => {
@@ -106,14 +106,14 @@ describe("startTranscription", () => {
 
   it("pre-checks the declared duration against the free cap", async () => {
     await seed();
-    await expect(startTranscriptionHandler(u1, { ...startInput, durationSeconds: 1801 }, makeDeps())).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "durationLimit", limitSeconds: 1800 } });
+    await expect(startTranscriptionHandler(u1, { ...startInput, durationSeconds: 601 }, makeDeps())).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "durationLimit", limitSeconds: 600 } });
   });
 
   it("if the queue is down, the charge is undone and the note is failed, not stuck in queued", async () => {
     await seed();
     await expect(startTranscriptionHandler(u1, startInput, makeDeps({ failEnqueue: true }))).rejects.toMatchObject({ code: "unavailable" });
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("failed");
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(0);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(0);
     expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "failed", quotaRefunded: true });
   });
 });
@@ -160,7 +160,7 @@ describe("runPipeline", () => {
   it("measured duration over the free cap: failed with durationLimit, quota refunded, vendor never called", async () => {
     await seed();
     let sttCalls = 0;
-    const deps = makeDeps({ duration: 1801, stt: async () => { sttCalls++; return asResult(scribe); } });
+    const deps = makeDeps({ duration: 601, stt: async () => { sttCalls++; return asResult(scribe); } });
     const out = await runPipeline(await started(deps), deps, { attempt: 0, maxAttempts: 3 });
     expect(out).toBe("failed");
     expect(sttCalls).toBe(0);
@@ -168,13 +168,52 @@ describe("runPipeline", () => {
     expect(m.status).toBe("failed");
     expect(m.failure.code).toBe("failed-precondition");
     expect(m.failure.message).toMatch(/longer than your plan/);
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(0);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(0);
   });
 
-  it("premium is not capped at 30 minutes", async () => {
+  it("premium is not capped at 10 minutes", async () => {
     await seed({ plan: "premium" });
     const deps = makeDeps({ duration: 5400 });
     expect(await runPipeline(await started(deps), deps, { attempt: 0, maxAttempts: 3 })).toBe("done");
+  });
+
+  it("quota is reserved from the declared length and settled to the measured one (refund of the excess)", async () => {
+    await seed();
+    const deps = makeDeps({ duration: 130 });
+    await startTranscriptionHandler(u1, { ...startInput, durationSeconds: 300 }, deps);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(300);
+    expect(await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 })).toBe("done");
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(130);
+    expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()?.chargedSeconds).toBe(130);
+  });
+
+  it("a free file longer than what is left today fails with reason quota before STT and refunds the reservation", async () => {
+    await seed();
+    await db.doc("users/u1/quota/2026-09-23").set({ periodId: "2026-09-23", usedSeconds: 500, limitSeconds: 600 });
+    let sttCalls = 0;
+    const deps = makeDeps({ duration: 400, stt: async () => { sttCalls++; return asResult(scribe); } });
+    await startTranscriptionHandler(u1, { ...startInput, durationSeconds: 60 }, deps); // 560 ≤ 600: reserved
+    expect(await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 })).toBe("failed");
+    expect(sttCalls).toBe(0);
+    const m = (await db.doc("users/u1/minutes/m1").get()).data()!;
+    expect(m.failure.message).toMatch(/free minutes/);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(500);
+  });
+
+  it("start refuses outright when the declared length does not fit today's remaining minutes", async () => {
+    await seed();
+    await db.doc("users/u1/quota/2026-09-23").set({ periodId: "2026-09-23", usedSeconds: 500, limitSeconds: 600 });
+    await expect(startTranscriptionHandler(u1, { ...startInput, durationSeconds: 200 }, makeDeps())).rejects.toMatchObject({
+      code: "resource-exhausted", details: { reason: "quota", remainingSeconds: 100, requestedSeconds: 200 },
+    });
+    expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("uploading");
+  });
+
+  it("a PDF is a flat charge (pdfChargeSeconds) and is not settled", async () => {
+    await seed({ sourceType: "pdf", content: "%PDF-1.4 text" });
+    const deps = makeDeps();
+    await startTranscriptionHandler(u1, startInput, deps);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(300);
   });
 
   it("a retryable STT error rethrows for Cloud Tasks and keeps the credit while attempts remain", async () => {
@@ -183,7 +222,7 @@ describe("runPipeline", () => {
     const payload = await started(deps);
     await expect(runPipeline(payload, deps, { attempt: 0, maxAttempts: 3 })).rejects.toMatchObject({ code: "unavailable" });
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("transcribing");
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(1);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(60);
     expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "running", error: { code: "unavailable" } });
   });
 
@@ -193,7 +232,7 @@ describe("runPipeline", () => {
     const payload = await started(deps);
     expect(await runPipeline(payload, deps, { attempt: 2, maxAttempts: 3 })).toBe("failed");
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("failed");
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(0);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(0);
   });
 
   it("an LLM schema failure is never cached: note fails, no summary written", async () => {
@@ -220,7 +259,7 @@ describe("runPipeline", () => {
     const payload = await started(deps);
     await cancelTranscriptionHandler(u1, { client, minuteId: "m1" }, deps);
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("cancelled");
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.used).toBe(0);
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.usedSeconds).toBe(0);
     expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()).toMatchObject({ state: "cancelled", quotaRefunded: true });
     expect(await runPipeline(payload, deps, { attempt: 0, maxAttempts: 3 })).toBe("skipped");
   });
@@ -301,7 +340,7 @@ describe("job management", () => {
       .rejects.toMatchObject({ code: "resource-exhausted", details: { reason: "tooManyActiveJobs", limit: 2 } });
     expect((await db.doc("users/u1/minutes/m3").get()).data()?.status).toBe("uploading");
     const period = (await db.collection("users/u1/quota").get()).docs[0]?.data();
-    expect(period?.used).toBe(2);
+    expect(period?.usedSeconds).toBe(120);
 
     // Finishing one frees a slot.
     await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, deps, { attempt: 0, maxAttempts: 3 });
@@ -323,13 +362,13 @@ describe("job management", () => {
     expect((await jobRef.get()).data()).toMatchObject({ state: "failed", quotaRefunded: true, error: { code: "stale" } });
     expect((await db.doc("users/u1/minutes/m1").get()).data()).toMatchObject({ status: "failed", failure: { code: "stale" } });
     const quota = (await db.collection("users/u1/quota").get()).docs[0]?.data();
-    expect(quota?.used).toBe(0);
+    expect(quota?.usedSeconds).toBe(0);
     expect(pushed).toHaveLength(1);
     expect(pushed[0]?.data.type).toBe("minuteFailed");
 
     // Second pass: nothing left, and no double refund.
     expect(await reapStaleJobs(deps)).toMatchObject({ running: 0, queued: 0 });
-    expect((await db.collection("users/u1/quota").get()).docs[0]?.data().used).toBe(0);
+    expect((await db.collection("users/u1/quota").get()).docs[0]?.data().usedSeconds).toBe(0);
   });
 
   it("reaper: a queued job nobody ever picked up is failed as lost; fresh jobs are left alone", async () => {

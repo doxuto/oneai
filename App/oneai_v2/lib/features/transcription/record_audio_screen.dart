@@ -15,6 +15,9 @@ import 'package:one_ai/features/credits/credit_gate_ui.dart';
 import 'package:one_ai/features/settings/language_settings.dart';
 import 'package:one_ai/features/transcription/new_minute_request_builder.dart';
 import 'package:one_ai/features/transcription/prompt_language_sheet.dart';
+import 'package:one_ai/features/billing/entitlement.dart';
+import 'package:one_ai/features/credits/credits_provider.dart';
+import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/features/transcription/recorder_controller.dart';
 
 /// Port of v1 RecordAudioScreen: same rings, button, timer, prompt button,
@@ -63,8 +66,8 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
       );
 
   Future<void> _transcribe() async {
-    await runWithCreditGate(context, ref, () async {
-      final seconds = ref.read(recorderProvider).seconds;
+    final seconds = ref.read(recorderProvider).seconds;
+    await runWithCreditGate(context, ref, requestedSeconds: seconds, () async {
       final file = await ref.read(recorderProvider.notifier).finish();
       if (file == null || !mounted) return;
       final request = buildNewMinuteRequest(file: file, settings: _currentSettings(), durationSeconds: seconds.toDouble());
@@ -80,6 +83,16 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
     final isRecording = rec.phase == RecordingPhase.recording;
     final isInitial = rec.phase == RecordingPhase.initial;
 
+    // Free plan: stop at what is left today (server would refuse more).
+    final quota = ref.watch(quotaProvider).valueOrNull;
+    final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;
+    final capSeconds = premium ? (quota?.maxDurationSeconds ?? 14400) : (quota?.maxRecordingSeconds ?? 600);
+    ref.listen(recorderProvider.select((s) => s.seconds), (_, secs) async {
+      if (secs >= capSeconds && ref.read(recorderProvider).phase == RecordingPhase.recording) {
+        await ref.read(recorderProvider.notifier).pause();
+        if (context.mounted) AppSnack.show(context, premium ? l10n.recordingTooLong((capSeconds / 60).round()) : l10n.freeMinutesUsedUp);
+      }
+    });
     ref.listen(recorderProvider.select((s) => s.permissionDenied), (_, denied) {
       if (denied) AppSnack.show(context, l10n.microphonePermissionNeeded);
     });
@@ -192,6 +205,16 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
                         ),
                       ),
                     ),
+                    // A7-01 / S8-14: what is left today, always visible on the
+                    // free plan, so nobody hits the ceiling by surprise.
+                    if (!premium && quota != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          l10n.freeMinutesLeftToday(((capSeconds - (isInitial ? 0 : rec.seconds)).clamp(0, 1 << 30) / 60).ceil()),
+                          style: context.textTheme.bodySmall?.copyWith(color: (capSeconds - rec.seconds) <= 60 ? AppColors.destructiveRed : Colors.grey[600]),
+                        ),
+                      ),
                     const SizedBox(height: 60),
                     SizedBox(
                       height: 48,

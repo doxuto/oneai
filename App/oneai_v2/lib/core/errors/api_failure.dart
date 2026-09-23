@@ -87,9 +87,9 @@ final class QuotaFailure extends ApiFailure {
   const QuotaFailure(super.message, this.resetAt, {this.reason});
   final DateTime? resetAt;
 
-  /// null = transcription credits; `aiDailyLimit` = AI calls; `tooManyActiveJobs`.
+  /// `quota` (or null from older servers) = daily minutes; `aiDailyLimit` = AI calls; `tooManyActiveJobs`.
   final String? reason;
-  bool get isCredits => reason == null;
+  bool get isCredits => reason == null || reason == 'quota';
 }
 
 final class PreconditionFailure extends ApiFailure {

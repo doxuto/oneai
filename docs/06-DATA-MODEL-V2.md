@@ -41,16 +41,14 @@ Bỏ `role` (không dùng ở đâu), bỏ `credit` / `dailyCreditUsed` / `total
 | Field | Type | Ghi chú |
 |---|---|---|
 | `periodId` | `string` | `"2026-09-22"` |
-| `used` | `number` | số lần transcribe đã dùng trong ngày |
-| `baseLimit` | `number` | hạn mức gói (free: xem OQ-02) |
-| `rewardBonus` | `number` | do AdMob SSV cộng vào, **chỉ nâng trần** |
+| `usedSeconds` | `number` | giây audio đã tính trong ngày (đặt cọc lúc start, settle theo độ dài đo được; PDF = 300 giây) |
+| `limitSeconds` | `number` | trần gói: free 600 (10 phút/ngày, chốt 24/09), premium 0 = không giới hạn |
+| `aiCalls` | `number` | số lần gọi model trong ngày (trần riêng `*_AI_CALLS_DAILY`) |
 | `expiresAt` | `Timestamp` | TTL → hết ngày tự biến mất, không cần job dọn |
 
-Ngữ nghĩa (theo `rewarded-ssv.md`): *"Grant raises the ceiling, it doesn't lower
-usage"* — đang 3/5, thưởng 2 → thành **3/7**, không phải 1/5.
-
-Hiệu lực: `allowed = used < baseLimit + rewardBonus`. Premium bỏ qua kiểm tra
-nhưng **vẫn ghi `used`** để có số liệu.
+Hiệu lực: `allowed = usedSeconds + requested <= limitSeconds` (premium / limit 0 bỏ
+qua kiểm tra nhưng **vẫn ghi** để có số liệu). **Không còn `rewardBonus`** — rewarded
+ad không cộng phút miễn phí nữa (24/09); `adRewards/` là collection cũ, rules vẫn đóng.
 
 Đây là chỗ sửa mâu thuẫn của v1: `checkUserCanUseCredit` chặn ở
 `dailyCreditUsed >= 3` trong khi `resetDailyFreeCredit` set cứng `credit: 1`,

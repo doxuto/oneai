@@ -118,7 +118,7 @@ class SettingsScreen extends ConsumerWidget {
                   const _RowDivider(),
                   _IconRow(icon: Assets.subscriptionIcon, text: l10n.manageSubscription, onTap: () => premium ? ref.read(paywallProvider).customerCenter() : ref.read(paywallProvider).present()),
                   const _RowDivider(),
-                  _CreditsRow(icon: Assets.freeIcon, title: l10n.freeCredits, value: premium ? l10n.unlimited : '${quota?.remaining ?? 0}/${quota?.limit ?? 0}'),
+                  _CreditsRow(icon: Assets.freeIcon, title: l10n.freeMinutesToday, value: premium ? l10n.unlimited : '${quota?.remainingMinutes ?? 0}/${quota?.limitMinutes ?? 10}'),
                   const _RowDivider(),
                   _IconRow(icon: Assets.signoutIcon, text: l10n.signOut, onTap: () => ref.read(authControllerProvider.notifier).signOut()),
                 ]),

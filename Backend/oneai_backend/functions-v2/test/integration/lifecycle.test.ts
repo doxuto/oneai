@@ -23,7 +23,7 @@ describe("provisionUser (onUserCreated)", () => {
     expect(await provisionUser(deps, { uid: "u1", email: "a@b.c", displayName: "Ana", photoURL: null })).toBe(true);
     const me = await getMeHandler({ uid: "u1", signInProvider: "google.com" }, { client }, deps);
     expect(me.user).toMatchObject({ id: "u1", email: "a@b.c", displayName: "Ana", plan: "free", minuteCount: 0 });
-    expect(me.quota).toMatchObject({ used: 0, limit: deps.limits.free.dailyLimit, rewardBonus: 0 });
+    expect(me.quota).toMatchObject({ usedSeconds: 0, limitSeconds: deps.limits.free.dailySeconds, maxDurationSeconds: deps.limits.free.maxDurationSeconds });
     const q = (await db.doc("users/u1/quota/2026-09-23").get()).data();
     expect(q?.expiresAt.toDate().toISOString()).toBe("2026-09-26T03:00:00.000Z"); // TTL 3 days
   });
@@ -31,11 +31,11 @@ describe("provisionUser (onUserCreated)", () => {
   it("a redelivered trigger never resets an existing user's profile or quota", async () => {
     await provisionUser(deps, { uid: "u1", email: "a@b.c" });
     await db.doc("users/u1").update({ plan: "premium", minuteCount: 4, displayName: "Renamed" });
-    await db.doc("users/u1/quota/2026-09-23").update({ used: 1, rewardBonus: 2 });
+    await db.doc("users/u1/quota/2026-09-23").update({ usedSeconds: 120 });
 
     expect(await provisionUser(deps, { uid: "u1", email: "a@b.c" })).toBe(false);
     expect((await db.doc("users/u1").get()).data()).toMatchObject({ plan: "premium", minuteCount: 4, displayName: "Renamed" });
-    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()).toMatchObject({ used: 1, rewardBonus: 2 });
+    expect((await db.doc("users/u1/quota/2026-09-23").get()).data()).toMatchObject({ usedSeconds: 120 });
   });
 
   it("missing auth fields are stored as null, not undefined", async () => {

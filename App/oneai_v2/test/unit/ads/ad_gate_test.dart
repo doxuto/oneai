@@ -112,7 +112,9 @@ void main() {
   });
 
   group('rewarded — the short chain', () {
-    test('ignores cooldown, spacing and session; only the cap', () {
+    test('off by default since 24/09; when enabled by RC it ignores cooldown, spacing and session — only the cap', () {
+      expect(reasonOf(AdGate.rewarded(on, ctx(warmedUp()))), AdRefusal.formatDisabled);
+      const on = AdsConfig(enabled: true, rewarded: RewardedRules(enabled: true, maxPerDay: 5));
       final l = warmedUp()
         ..lastFullScreenDismissedAt = at(-1)
         ..lastShownAt[AdFormat.rewarded] = at(-1)

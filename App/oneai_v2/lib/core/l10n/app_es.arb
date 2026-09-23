@@ -255,5 +255,11 @@
   "forward10": "Avanzar 10 segundos",
   "play": "Reproducir",
   "pause": "Pausar",
-  "copy": "Copiar"
+  "copy": "Copiar",
+  "freeMinutesToday": "Minutos gratis hoy",
+  "freeMinutesLeftToday": "{count, plural, =0{No quedan minutos gratis hoy} =1{Queda 1 minuto gratis hoy} other{Quedan {count} minutos gratis hoy}}",
+  "freeMinutesUsedUp": "Has usado los minutos gratis de hoy. Mejora tu plan para grabar sin límite o continúa mañana.",
+  "noFreeMinutesLeft": "No quedan suficientes minutos gratis hoy para esta grabación. Mejora a Premium para minutos ilimitados.",
+  "upgradeToContinue": "Mejora para continuar",
+  "quotaMinutesResetsAt": "Los minutos gratis se renuevan a las {time}."
 }

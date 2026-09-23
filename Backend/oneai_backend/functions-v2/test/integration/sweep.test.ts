@@ -31,7 +31,7 @@ describe("sweep", () => {
   it("fails notes stuck in processing for more than 2 h and refunds their credit", async () => {
     await db.doc("users/u1/minutes/stuck").set({ status: "transcribing", statusUpdatedAt: ago(3), createdAt: ago(3) });
     await db.doc("transcriptionJobs/j1").set({ uid: "u1", minuteId: "stuck", state: "running", periodId: "2026-09-23", quotaRefunded: false });
-    await db.doc("users/u1/quota/2026-09-23").set({ used: 1, baseLimit: 1, rewardBonus: 0 });
+    await db.doc("users/u1/quota/2026-09-23").set({ usedSeconds: 60, limitSeconds: 600 });
     await db.doc("users/u1/minutes/ok").set({ status: "transcribing", statusUpdatedAt: ago(1), createdAt: ago(1) });
     const r = await sweep(deps);
     expect(r.stuckJobs).toBe(1);
