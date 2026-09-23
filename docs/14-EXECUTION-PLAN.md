@@ -92,6 +92,15 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S4-09 | **Tính năng theo use case** (`17-FEATURE-RESEARCH.md`): `generateActionItems` (owner/due/quote + decisions, timezone như calendar), `generateKeyTerms`, `generateChapters` (transcript kèm `[start-end]`, clamp về duration, PDF → `noTimeline`), `talkTime` thuần trong `getMinute` | `ai/handler.ts`, `ai/generate{ActionItems,KeyTerms,Chapters}.ts`, `prompts/ai.ts`, `minutes/_shared.ts` | 3 integration + 4 unit; Dart model/repo/controller viết sẵn |
 | [x] | S4-08 | Prompts gộp + test | `src/prompts/*.txt`, `test/unit/prompts.test.ts` | 7 prompt, mỗi cái ≥1 test placeholder |
 
+## App A1–A6 (`18-APP-ROADMAP.md`) — viết trước, chưa compile
+
+| | ID | Task | File | Nghiệm thu |
+|---|---|---|---|---|
+| [~] | A1-01 | Widget chung: `AppButton` (loading giữ chiều rộng), `LoadingDots`, `EmptyState`/`ErrorState`/`LoadingState`, `showConfirmDialog`, `AppSnack` + `failureText` (mọi lỗi → 1 chuỗi l10n); `ApiFailure` thêm `QuotaFailure.reason`, `PreconditionFailure.limitSeconds` | `core/widgets/*`, `core/theme/{gaps,theme_context}.dart` | chưa compile |
+| [~] | A1-02 | `LoginScreen` port từ `login_page.dart`: cùng bố cục/màu/chữ, Apple chỉ iOS, loading theo nút, lỗi qua snack, cancel im lặng | `features/auth/login_screen.dart` | |
+| [~] | A1-03 | `route_args.dart` typed extra; router dùng `LoginScreen` thật | `core/router/*` | các màn khác nối ở A2–A5 |
+| [~] | A1-04 | `SplashGate` chờ auth resolve lần đầu | `features/auth/splash_gate.dart`, `app.dart` | |
+
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 
 Viết trước trong lúc chờ, **chưa compile** — lần `.build-request` đầu tiên sẽ dọn lỗi cú pháp nếu có:

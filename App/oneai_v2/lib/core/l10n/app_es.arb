@@ -189,5 +189,6 @@
   "renameSpeaker": "Renombrar hablante",
   "speakerName": "Nombre del hablante",
   "detectSpeakers": "Detectar nombres de hablantes",
-  "notFound": "No encontrado"
+  "notFound": "No encontrado",
+  "waitForCurrentRecording": "Espera a que termine la grabación actual."
 }

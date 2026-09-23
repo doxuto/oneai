@@ -583,5 +583,6 @@
   "renameSpeaker": "Rename speaker",
   "speakerName": "Speaker name",
   "detectSpeakers": "Detect speaker names",
-  "notFound": "Not found"
+  "notFound": "Not found",
+  "waitForCurrentRecording": "Please wait for your current recording to finish."
 }

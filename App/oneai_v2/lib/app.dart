@@ -4,6 +4,7 @@ import 'package:one_ai/bootstrap.dart';
 import 'package:one_ai/core/router/app_router.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/theme/app_theme.dart';
+import 'package:one_ai/features/auth/splash_gate.dart';
 import 'package:one_ai/features/notifications/push_registrar.dart';
 
 class OneAiApp extends ConsumerWidget {
@@ -30,6 +31,7 @@ class OneAiApp extends ConsumerWidget {
       title: config.appShortName,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      builder: (_, child) => SplashGate(child: child ?? const SizedBox.shrink()),
       theme: AppTheme.light,
       // Dark mode stays off until OQ-08 is decided. v1 defined a dark palette
       // but hardcoded `theme: lightTheme`, so it never ran; turning it on now

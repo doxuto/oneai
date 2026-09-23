@@ -189,5 +189,6 @@
   "renameSpeaker": "Đổi tên người nói",
   "speakerName": "Tên người nói",
   "detectSpeakers": "Nhận diện tên người nói",
-  "notFound": "Không tìm thấy"
+  "notFound": "Không tìm thấy",
+  "waitForCurrentRecording": "Vui lòng đợi bản ghi hiện tại xử lý xong."
 }

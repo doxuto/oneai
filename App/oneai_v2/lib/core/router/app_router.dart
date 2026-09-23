@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/di/providers.dart';
 import 'package:one_ai/core/router/routes.dart';
+import 'package:one_ai/features/auth/login_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -26,7 +27,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: <RouteBase>[
       GoRoute(
         path: Routes.login,
-        builder: (_, __) => const _Placeholder('Login'),
+        pageBuilder: (_, state) => MaterialPage(key: state.pageKey, child: const LoginScreen()),
       ),
       GoRoute(
         path: Routes.root,

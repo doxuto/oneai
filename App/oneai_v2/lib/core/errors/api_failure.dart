@@ -25,11 +25,12 @@ sealed class ApiFailure implements Exception {
       'not-found' => NotFoundFailure(message),
       'already-exists' => ConflictFailure(message),
       'aborted' => ConflictFailure(message),
-      'resource-exhausted' => QuotaFailure(message, _dateOf(details?['resetAt'])),
+      'resource-exhausted' => QuotaFailure(message, _dateOf(details?['resetAt']), reason: details?['reason'] as String?),
       'failed-precondition' => PreconditionFailure(
           message,
           details?['reason'] as String?,
           details?['minVersion'] as String?,
+          limitSeconds: (details?['limitSeconds'] as num?)?.toInt(),
         ),
       'unavailable' || 'deadline-exceeded' => TransientFailure(message),
       'internal' || 'data-loss' || 'unknown' => ServerFailure(message),
@@ -83,14 +84,21 @@ final class ValidationFailure extends ApiFailure {
 /// The paywall trigger. v1 keyed the "Premium Required" dialog off HTTP 402 —
 /// the v2 equivalent is THIS type. Missing it makes the paywall silently vanish.
 final class QuotaFailure extends ApiFailure {
-  const QuotaFailure(super.message, this.resetAt);
+  const QuotaFailure(super.message, this.resetAt, {this.reason});
   final DateTime? resetAt;
+
+  /// null = transcription credits; `aiDailyLimit` = AI calls; `tooManyActiveJobs`.
+  final String? reason;
+  bool get isCredits => reason == null;
 }
 
 final class PreconditionFailure extends ApiFailure {
-  const PreconditionFailure(super.message, this.reason, this.minVersion);
+  const PreconditionFailure(super.message, this.reason, this.minVersion, {this.limitSeconds});
   final String? reason;
   final String? minVersion;
+
+  /// Set for `durationLimit`.
+  final int? limitSeconds;
   bool get needsAppUpdate => minVersion != null;
   bool get isSafetyBlocked => reason == 'safety';
   bool get isDurationLimit => reason == 'durationLimit';

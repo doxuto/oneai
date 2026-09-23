@@ -129,7 +129,7 @@ final class NewMinuteFailed extends NewMinuteState {
   bool get isTerminal => true;
 
   ApiFailure? get apiFailure => error is ApiFailure ? error as ApiFailure : null;
-  bool get isOutOfCredits => error is QuotaFailure;
+  bool get isOutOfCredits => error is QuotaFailure && (error as QuotaFailure).isCredits;
   DateTime? get creditsResetAt => error is QuotaFailure ? (error as QuotaFailure).resetAt : null;
   bool get needsAppUpdate => error is PreconditionFailure && (error as PreconditionFailure).needsAppUpdate;
 }
