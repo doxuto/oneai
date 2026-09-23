@@ -273,7 +273,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
 | S11-05 | **Share link chỉ đọc** — ✅ BE: PDF (`format=pdf`, Noto Sans nhúng) + HTML + JSON; **deep link / universal link / app link** `/s?t=` và `/n/<id>` qua Firebase Hosting (`.well-known` sẵn, Toan điền TEAMID + SHA-256), scheme `oneai://`; `importSharedNote` "Lưu vào ghi chú của tôi"; ✍️ app `SharedNoteScreen`, router giữ deep link qua đăng nhập | người vắng họp mở được không cần app |
-| S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
+| S11-06 | **Nhận file từ app khác** (Share Extension iOS + ACTION_SEND Android) — ✅ Dart: `receive_sharing_intent`, file chờ qua đăng nhập, mở UploadFileScreen với file sẵn; **[Toan]** target ShareExtension + App Group sau `flutter create` (PLATFORM-SETUP) | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |
 | S11-09 | **Ghi âm chống ngắt** — ✍️ bước 1 (phát hiện ngắt + tự resume, marker khôi phục sau crash); còn chunk + foreground service Android (21-RESEARCH §6 #2): ghi theo chunk xuống đĩa, tự tiếp tục sau cuộc gọi / mất audio session, foreground service Android + notification, khôi phục sau crash ("đã lưu N phút"), cảnh báo pin/dung lượng | tắt máy giữa chừng vẫn còn bản ghi |
@@ -281,7 +281,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-11 | **Song ngữ trong note** — ✍️ `TranslateToggle` trên 2 tab, dùng `translate` đã có | không thêm BE |
 | S11-12 | **Consent UX** — ✍️ nút thông báo ghi âm chia sẻ 1 chạm; còn onboarding | |
 | S11-13 | **Benchmark tiếng Việt** (Ops, sau deploy dev): WER ElevenLabs vs Gemini trên 10 file VI bắc/trung/nam lẫn thuật ngữ EN → chọn `STT_VENDOR`; công bố "độ chính xác tiếng Việt" trên listing — không đối thủ nào làm | bảng số đo trong docs |
-| S11-06b | Share Extension mở rộng: nhận file từ Zalo/Drive/Files/Voice Memos; Android intent `audio/*`, `application/pdf` | |
+| S11-06b | Share Extension: nhận nhiều file một lần (`SEND_MULTIPLE`), xếp hàng lần lượt | app hiện lấy file đầu |
 
 ## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
 

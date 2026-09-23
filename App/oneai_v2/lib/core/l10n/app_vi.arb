@@ -286,5 +286,7 @@
   "saveToMyNotes": "Lưu vào ghi chú của tôi",
   "savedToYourNotes": "Đã lưu vào ghi chú của bạn.",
   "alreadyInYourNotes": "Ghi chú này đã có trong ghi chú của bạn.",
-  "sharedReadOnlyFooter": "Chia sẻ chỉ đọc từ One AI. Chủ ghi chú có thể thu hồi liên kết bất cứ lúc nào."
+  "sharedReadOnlyFooter": "Chia sẻ chỉ đọc từ One AI. Chủ ghi chú có thể thu hồi liên kết bất cứ lúc nào.",
+  "startProcessing": "Bắt đầu",
+  "sharedFromAnotherApp": "Chia sẻ từ ứng dụng khác"
 }

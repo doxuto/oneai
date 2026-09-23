@@ -693,5 +693,7 @@
   "saveToMyNotes": "Save to my notes",
   "savedToYourNotes": "Saved to your notes.",
   "alreadyInYourNotes": "This note is already in your notes.",
-  "sharedReadOnlyFooter": "Shared read-only from One AI. The owner can revoke this link at any time."
+  "sharedReadOnlyFooter": "Shared read-only from One AI. The owner can revoke this link at any time.",
+  "startProcessing": "Start",
+  "sharedFromAnotherApp": "Shared from another app"
 }

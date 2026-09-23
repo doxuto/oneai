@@ -11,6 +11,7 @@ import 'package:one_ai/features/minutes/share/shared_note_screen.dart';
 import 'package:one_ai/features/settings/glossary_screen.dart';
 import 'package:one_ai/features/settings/settings_screen.dart';
 import 'package:one_ai/features/transcription/audio_processing_screen.dart';
+import 'package:one_ai/features/transcription/incoming_share.dart';
 import 'package:one_ai/features/transcription/record_audio_screen.dart';
 import 'package:one_ai/features/transcription/upload_file_screen.dart';
 
@@ -93,7 +94,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.uploadFile,
-        pageBuilder: (_, state) => _slide(state, const UploadFileScreen()),
+        pageBuilder: (_, state) => _slide(state, UploadFileScreen(sharedFile: state.extra is IncomingShare ? state.extra! as IncomingShare : null)),
       ),
       GoRoute(
         path: Routes.audioProcessing,

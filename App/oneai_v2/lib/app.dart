@@ -8,6 +8,7 @@ import 'package:one_ai/core/theme/app_theme.dart';
 import 'package:one_ai/features/ads/runtime/ads_runtime.dart';
 import 'package:one_ai/features/auth/splash_gate.dart';
 import 'package:one_ai/features/notifications/push_registrar.dart';
+import 'package:one_ai/features/transcription/incoming_share.dart';
 import 'package:one_ai/features/transcription/upload_queue.dart';
 
 class OneAiApp extends ConsumerWidget {
@@ -35,6 +36,17 @@ class OneAiApp extends ConsumerWidget {
       final tap = next.valueOrNull;
       if (tap == null) return;
       router.push(Routes.transcriptionSummary, extra: {'minuteId': tap.minuteId});
+    });
+
+    // A file shared from another app (iOS Share Extension / Android
+    // ACTION_SEND) lands on the upload screen with the file preselected. The
+    // share is parked first so it survives the sign-in redirect: UploadFileScreen
+    // takes it from the provider when it finally opens.
+    ref.listen(incomingShareProvider, (_, next) {
+      final share = next.valueOrNull;
+      if (share == null) return;
+      ref.read(pendingIncomingShareProvider.notifier).set(share);
+      router.push(Routes.uploadFile);
     });
 
     return MaterialApp.router(

@@ -213,3 +213,60 @@ Sau khi Hosting chạy, đặt `SHARE_BASE_URL=https://<project>.web.app/s` tron
 `functions-v2/.env` để link chia sẻ dùng domain này (link cũ dạng cloudfunctions.net
 vẫn mở được — cùng function).
 
+## Nhận file từ app khác — Share Extension iOS + ACTION_SEND Android (S11-06)
+
+Plugin `receive_sharing_intent` (pubspec). App nhận audio/video/PDF từ share
+sheet (Voice Memos, Files, Zalo, Drive…) → mở `UploadFileScreen` với file đã
+chọn sẵn; chỉ mất quota khi bấm Bắt đầu như upload thường. Chưa đăng nhập thì
+file chờ qua màn Login (`pendingIncomingShareProvider`).
+
+### iOS — Share Extension target (Xcode, sau `flutter create`)
+1. File › New › Target › **Share Extension**, tên `ShareExtension`, bundle id
+   `top.doxutostudio.one.ai.ShareExtension`, không dùng SwiftUI/storyboard.
+2. Cả Runner và ShareExtension: Signing & Capabilities › **App Groups** →
+   `group.top.doxutostudio.one.ai`.
+3. `ShareExtension/ShareViewController.swift`:
+   ```swift
+   import receive_sharing_intent
+   class ShareViewController: RSIShareViewController {
+     override func shouldAutoRedirect() -> Bool { true }
+   }
+   ```
+4. `ShareExtension/Info.plist`:
+   ```xml
+   <key>AppGroupId</key><string>group.top.doxutostudio.one.ai</string>
+   <key>NSExtension</key>
+   <dict>
+     <key>NSExtensionAttributes</key>
+     <dict>
+       <key>NSExtensionActivationRule</key>
+       <dict>
+         <key>NSExtensionActivationSupportsFileWithMaxCount</key><integer>1</integer>
+         <key>NSExtensionActivationSupportsMovieWithMaxCount</key><integer>1</integer>
+       </dict>
+     </dict>
+     <key>NSExtensionPointIdentifier</key><string>com.apple.share-services</string>
+     <key>NSExtensionPrincipalClass</key><string>$(PRODUCT_MODULE_NAME).ShareViewController</string>
+   </dict>
+   ```
+5. `Runner/Info.plist`: thêm `AppGroupId` như trên và một URL scheme nữa
+   `ShareMedia-top.doxutostudio.one.ai` (plugin dùng scheme này để nhảy về app).
+6. `ios/Podfile`: khối `target 'ShareExtension' do inherit! :search_paths end`
+   trong `target 'Runner'`; `pod install`.
+Deployment target của extension ≥ iOS 13; extension không có Firebase.
+
+### Android — `AndroidManifest.xml`, trong `<activity android:name=".MainActivity">`
+```xml
+<intent-filter>
+  <action android:name="android.intent.action.SEND" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <data android:mimeType="audio/*" />
+  <data android:mimeType="video/*" />
+  <data android:mimeType="application/pdf" />
+</intent-filter>
+```
+(Nếu muốn nhận nhiều file: thêm `SEND_MULTIPLE` — app hiện chỉ lấy file đầu.)
+`android:launchMode="singleTask"` đã cần cho deep link, dùng chung.
+
+Kiểm tra: Voice Memos › … › Share › One AI (iOS); Files › chia sẻ .m4a (Android).
+

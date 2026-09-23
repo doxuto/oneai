@@ -53,6 +53,7 @@ dependencies:
   flutter_timezone: ^4.1.0
   path_provider: ^2.1.5
   share_plus: ^11.0.0
+  receive_sharing_intent: ^1.8.1 # S11-06: files shared from other apps (needs iOS Share Extension target, PLATFORM-SETUP.md)
   url_launcher: ^6.3.1
   package_info_plus: ^8.3.0
   connectivity_plus: ^6.1.4

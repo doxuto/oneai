@@ -286,5 +286,7 @@
   "saveToMyNotes": "Guardar en mis notas",
   "savedToYourNotes": "Guardada en tus notas.",
   "alreadyInYourNotes": "Esta nota ya está en tus notas.",
-  "sharedReadOnlyFooter": "Compartida en modo lectura desde One AI. El propietario puede revocar este enlace en cualquier momento."
+  "sharedReadOnlyFooter": "Compartida en modo lectura desde One AI. El propietario puede revocar este enlace en cualquier momento.",
+  "startProcessing": "Empezar",
+  "sharedFromAnotherApp": "Compartido desde otra app"
 }
