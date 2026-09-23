@@ -177,6 +177,24 @@ class _ActionItemsBlockState extends ConsumerState<_ActionItemsBlock> {
                     subtitle: (it.owner != null || it.due != null)
                         ? Text([if (it.owner != null) it.owner!, if (it.due != null) it.due!].join(' · '), style: context.textTheme.bodySmall?.copyWith(color: Colors.grey[600]))
                         : null,
+                    // S6-12: a dated item can go to the device calendar / Reminders
+                    // (an all-day event on the due date, the note title as context).
+                    secondary: it.dueAt == null || it.done
+                        ? null
+                        : IconButton(
+                            tooltip: l10n.addToCalendar,
+                            icon: const Icon(Icons.event_available_outlined, size: 20, color: AppColors.brandBlueAlt),
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              final d = it.dueAt!;
+                              Add2Calendar.addEvent2Cal(Event(
+                                title: it.text,
+                                description: [if (it.owner != null) it.owner!, if (it.quote.isNotEmpty) '"${it.quote}"'].join(' — '),
+                                startDate: DateTime(d.year, d.month, d.day, 9),
+                                endDate: DateTime(d.year, d.month, d.day, 10),
+                              ));
+                            },
+                          ),
                   ),
                 if (value.data.decisions.isNotEmpty) ...[
                   gapH12,
