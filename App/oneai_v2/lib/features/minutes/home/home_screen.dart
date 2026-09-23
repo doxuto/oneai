@@ -27,6 +27,7 @@ import 'package:one_ai/features/minutes/home/minute_item_card.dart';
 import 'package:one_ai/features/minutes/home/new_minutes_bottom_sheet.dart';
 import 'package:one_ai/features/credits/credit_gate_ui.dart';
 import 'package:one_ai/features/settings/language_settings.dart';
+import 'package:one_ai/features/transcription/incoming_share.dart';
 import 'package:one_ai/features/transcription/new_minute_request_builder.dart';
 import 'package:one_ai/features/transcription/recorder_controller.dart';
 import 'package:one_ai/features/transcription/upload_queue.dart';
@@ -72,6 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               gapH16,
               const _UnfinishedRecordingBanner(),
               const _PendingUploadsBanner(),
+              const _PendingSharesBanner(),
               Row(children: [
                 const Expanded(child: _SearchField()),
                 gapW8,
@@ -487,6 +489,36 @@ class _NewNoteButton extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// S11-06b: files shared from another app that are still waiting their turn.
+class _PendingSharesBanner extends ConsumerWidget {
+  const _PendingSharesBanner();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final n = ref.watch(pendingIncomingSharesProvider).length;
+    if (n == 0) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Material(
+        color: context.colorScheme.primary.withAlpha(20),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () => context.push(Routes.uploadFile),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(children: [
+              Icon(Icons.file_upload_outlined, color: context.colorScheme.primary),
+              gapW12,
+              Expanded(child: Text(context.l10n.sharedFilesWaiting(n), style: context.textTheme.bodyMedium)),
+              TextButton(onPressed: () => context.push(Routes.uploadFile), child: Text(context.l10n.continueLabel)),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// S11-01 entry point: the sparkle next to search opens "Ask your notes".

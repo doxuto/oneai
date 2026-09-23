@@ -265,7 +265,8 @@ Deployment target của extension ≥ iOS 13; extension không có Firebase.
   <data android:mimeType="application/pdf" />
 </intent-filter>
 ```
-(Nếu muốn nhận nhiều file: thêm `SEND_MULTIPLE` — app hiện chỉ lấy file đầu.)
+Nhận nhiều file một lần (app xử lý lần lượt): thêm intent-filter thứ hai giống hệt
+với `<action android:name="android.intent.action.SEND_MULTIPLE" />`.
 `android:launchMode="singleTask"` đã cần cho deep link, dùng chung.
 
 Kiểm tra: Voice Memos › … › Share › One AI (iOS); Files › chia sẻ .m4a (Android).

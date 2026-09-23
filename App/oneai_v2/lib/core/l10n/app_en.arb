@@ -703,5 +703,13 @@
   "askAllExample2": "Open action items for me",
   "askAllExample3": "Summarize this month's meetings",
   "newConversation": "New conversation",
-  "recordingInProgress": "Recording in progress"
+  "recordingInProgress": "Recording in progress",
+  "consentTitle": "Before you record",
+  "consentBody": "In many places you must tell the people in the room that they are being recorded. Say it out loud or share the recording notice — it takes one tap and is available on this screen every time.",
+  "gotIt": "Got it",
+  "moreSharedFilesWaiting": "{count, plural, =1{1 more shared file is waiting — it opens here after this one.} other{{count} more shared files are waiting — they open here one at a time.}}",
+  "sharedFilesWaiting": "{count, plural, =1{1 file shared from another app is waiting} other{{count} files shared from another app are waiting}}",
+  "continueLabel": "Continue",
+  "@moreSharedFilesWaiting": {"placeholders": {"count": {"type": "int"}}},
+  "@sharedFilesWaiting": {"placeholders": {"count": {"type": "int"}}}
 }

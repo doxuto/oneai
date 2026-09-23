@@ -296,5 +296,11 @@
   "askAllExample2": "Việc tôi cần làm còn dở",
   "askAllExample3": "Tóm tắt các cuộc họp tháng này",
   "newConversation": "Cuộc trò chuyện mới",
-  "recordingInProgress": "Đang ghi âm"
+  "recordingInProgress": "Đang ghi âm",
+  "consentTitle": "Trước khi ghi âm",
+  "consentBody": "Ở nhiều nơi, bạn cần cho những người có mặt biết cuộc trò chuyện đang được ghi âm. Hãy nói trực tiếp hoặc chia sẻ thông báo ghi âm — chỉ một chạm và luôn có sẵn trên màn hình này.",
+  "gotIt": "Đã hiểu",
+  "moreSharedFilesWaiting": "{count, plural, other{Còn {count} file được chia sẻ đang chờ — sẽ mở lần lượt ở đây.}}",
+  "sharedFilesWaiting": "{count, plural, other{{count} file chia sẻ từ ứng dụng khác đang chờ}}",
+  "continueLabel": "Tiếp tục"
 }

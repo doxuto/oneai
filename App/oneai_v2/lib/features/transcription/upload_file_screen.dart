@@ -37,7 +37,7 @@ class _UploadFileScreenState extends ConsumerState<UploadFileScreen> {
   void initState() {
     super.initState();
     // A share that waited through sign-in (app.dart parks it) is consumed once.
-    _shared = widget.sharedFile ?? ref.read(pendingIncomingShareProvider.notifier).take();
+    _shared = widget.sharedFile ?? ref.read(pendingIncomingSharesProvider.notifier).takeFirst();
   }
 
   Future<void> _pick() async {
@@ -75,6 +75,10 @@ class _UploadFileScreenState extends ConsumerState<UploadFileScreen> {
             if (_shared case final shared?) ...[
               gapH16,
               _SharedFileCard(share: shared, onClear: () => setState(() => _shared = null)),
+              if (ref.watch(pendingIncomingSharesProvider).length case final more when more > 0) ...[
+                gapH8,
+                Text(l10n.moreSharedFilesWaiting(more), style: context.textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
+              ],
             ],
             gapH32,
             _section(

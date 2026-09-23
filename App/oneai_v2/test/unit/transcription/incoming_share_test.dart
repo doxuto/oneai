@@ -23,4 +23,13 @@ void main() {
     expect(pickIncomingShare([(path: '/tmp/a.txt', mimeType: null)]), isNull);
     expect(pickIncomingShare(const []), isNull);
   });
+
+  test('S11-06b: pickIncomingShares keeps every usable file in order', () {
+    final all = pickIncomingShares([
+      (path: '/tmp/a.m4a', mimeType: null),
+      (path: '/tmp/b.docx', mimeType: null),
+      (path: '/tmp/c.pdf', mimeType: 'application/pdf'),
+    ]);
+    expect(all.map((s) => s.fileName), ['a.m4a', 'c.pdf']);
+  });
 }

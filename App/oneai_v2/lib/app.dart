@@ -43,9 +43,9 @@ class OneAiApp extends ConsumerWidget {
     // share is parked first so it survives the sign-in redirect: UploadFileScreen
     // takes it from the provider when it finally opens.
     ref.listen(incomingShareProvider, (_, next) {
-      final share = next.valueOrNull;
-      if (share == null) return;
-      ref.read(pendingIncomingShareProvider.notifier).set(share);
+      final shares = next.valueOrNull;
+      if (shares == null || shares.isEmpty) return;
+      ref.read(pendingIncomingSharesProvider.notifier).addAll(shares);
       router.push(Routes.uploadFile);
     });
 

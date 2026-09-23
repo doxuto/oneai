@@ -296,5 +296,11 @@
   "askAllExample2": "Mis tareas pendientes",
   "askAllExample3": "Resume las reuniones de este mes",
   "newConversation": "Nueva conversación",
-  "recordingInProgress": "Grabación en curso"
+  "recordingInProgress": "Grabación en curso",
+  "consentTitle": "Antes de grabar",
+  "consentBody": "En muchos lugares debes avisar a las personas presentes de que se les está grabando. Dilo en voz alta o comparte el aviso de grabación: es un toque y siempre está en esta pantalla.",
+  "gotIt": "Entendido",
+  "moreSharedFilesWaiting": "{count, plural, =1{1 archivo compartido más en espera — se abrirá aquí después de este.} other{{count} archivos compartidos más en espera — se abrirán aquí de uno en uno.}}",
+  "sharedFilesWaiting": "{count, plural, =1{1 archivo compartido desde otra app en espera} other{{count} archivos compartidos desde otra app en espera}}",
+  "continueLabel": "Continuar"
 }

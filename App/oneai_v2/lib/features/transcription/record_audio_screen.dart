@@ -14,6 +14,7 @@ import 'package:one_ai/core/widgets/app_snack.dart';
 import 'package:one_ai/core/widgets/styled_dialog.dart';
 import 'package:one_ai/features/credits/credit_gate_ui.dart';
 import 'package:one_ai/features/settings/language_settings.dart';
+import 'package:one_ai/features/transcription/consent_notice.dart';
 import 'package:one_ai/features/transcription/new_minute_request_builder.dart';
 import 'package:one_ai/features/transcription/prompt_language_sheet.dart';
 import 'package:one_ai/features/billing/entitlement.dart';
@@ -73,6 +74,32 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
     ref.read(recorderProvider.notifier)
       ..notificationTitle = l10n.appName
       ..notificationText = l10n.recordingInProgress;
+  }
+
+  /// First recording on this device: a one-time consent reminder (S11-12).
+  /// "Got it" starts the recording; "Share notice" opens the share sheet first.
+  Future<bool> _consentOk() async {
+    if (await ConsentNotice.isAcknowledged()) return true;
+    if (!mounted) return false;
+    final l10n = context.l10n;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StyledDialog(
+        title: l10n.consentTitle,
+        titleIcon: Icon(Icons.record_voice_over_outlined, size: 18, color: ctx.colorScheme.primary),
+        content: Text(l10n.consentBody, style: ctx.textTheme.bodyMedium),
+        confirmLabel: l10n.gotIt,
+        onConfirm: () => Navigator.of(ctx).pop(true),
+        cancelLabel: l10n.recordingNotice,
+        onCancel: () async {
+          Navigator.of(ctx).pop(true);
+          await SharePlus.instance.share(ShareParams(text: l10n.recordingNoticeText, subject: l10n.recordingNotice));
+        },
+      ),
+    );
+    if (ok != true) return false;
+    await ConsentNotice.acknowledge();
+    return true;
   }
 
   Future<void> _transcribe() async {
@@ -189,6 +216,7 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
                             GestureDetector(
                               onTap: () async {
                                 await HapticFeedback.lightImpact();
+                                if (isInitial && !await _consentOk()) return;
                                 await ref.read(recorderProvider.notifier).toggle();
                               },
                               child: Container(
