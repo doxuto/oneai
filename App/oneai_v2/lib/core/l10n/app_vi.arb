@@ -190,5 +190,10 @@
   "speakerName": "Tên người nói",
   "detectSpeakers": "Nhận diện tên người nói",
   "notFound": "Không tìm thấy",
-  "waitForCurrentRecording": "Vui lòng đợi bản ghi hiện tại xử lý xong."
+  "waitForCurrentRecording": "Vui lòng đợi bản ghi hiện tại xử lý xong.",
+  "microphonePermissionNeeded": "Cần quyền micro để ghi âm. Bật trong Cài đặt.",
+  "transcribing": "Đang chuyển thành văn bản",
+  "identifyingSpeakers": "Nhận diện người nói",
+  "takingNotes": "Đang ghi chú",
+  "finishingTouches": "Hoàn thiện"
 }

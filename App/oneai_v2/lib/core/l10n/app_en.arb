@@ -584,5 +584,10 @@
   "speakerName": "Speaker name",
   "detectSpeakers": "Detect speaker names",
   "notFound": "Not found",
-  "waitForCurrentRecording": "Please wait for your current recording to finish."
+  "waitForCurrentRecording": "Please wait for your current recording to finish.",
+  "microphonePermissionNeeded": "Microphone access is needed to record. Enable it in Settings.",
+  "transcribing": "Transcribing",
+  "identifyingSpeakers": "Identifying Speakers",
+  "takingNotes": "Taking Notes",
+  "finishingTouches": "Finishing Touches"
 }

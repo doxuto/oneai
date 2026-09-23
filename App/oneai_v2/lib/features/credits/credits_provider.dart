@@ -13,7 +13,7 @@ final meProvider = FutureProvider<Me>((ref) {
 
 /// Live quota for today — the credits pill and the credit gate read this.
 /// Falls back to `getMe`'s numbers until the Firestore doc exists.
-final quotaProvider = StreamProvider<Quota?>((ref) {
+Stream<Quota?> _quotaStream(Ref ref) {
   final uid = ref.watch(currentUidProvider);
   final me = ref.watch(meProvider).valueOrNull;
   final now = DateTime.now().toUtc();
@@ -23,7 +23,12 @@ final quotaProvider = StreamProvider<Quota?>((ref) {
         fallbackLimit: me?.quota.limit ?? 1,
         resetAt: me?.quota.resetAt ?? now.add(const Duration(days: 1)),
       );
-});
+}
+
+final quotaProvider = StreamProvider<Quota?>(_quotaStream);
+
+/// A fresh subscription for one-off waits (`waitForRewardCredit`).
+final quotaStreamProvider = Provider<Stream<Quota?>>(_quotaStream);
 
 final premiumStatusProvider = Provider<PremiumStatus>((ref) {
   final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;

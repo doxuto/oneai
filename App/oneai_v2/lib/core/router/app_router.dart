@@ -4,7 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:one_ai/core/di/providers.dart';
 import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/features/auth/login_screen.dart';
+import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/features/minutes/home/home_screen.dart';
+import 'package:one_ai/features/transcription/audio_processing_screen.dart';
+import 'package:one_ai/features/transcription/record_audio_screen.dart';
+import 'package:one_ai/features/transcription/upload_file_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -50,19 +54,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.recordAudio,
-        builder: (_, __) => const _Placeholder('Record'),
+        pageBuilder: (_, state) => _slide(state, const RecordAudioScreen()),
       ),
       GoRoute(
         path: Routes.uploadFile,
-        builder: (_, __) => const _Placeholder('Upload'),
+        pageBuilder: (_, state) => _slide(state, const UploadFileScreen()),
       ),
       GoRoute(
         path: Routes.audioProcessing,
-        builder: (_, __) => const _Placeholder('Processing'),
+        pageBuilder: (_, state) {
+          final args = state.extra;
+          if (args is! AudioProcessingArgs) return _slide(state, _ErrorPage(path: state.uri.path));
+          return _slide(state, AudioProcessingScreen(args: args));
+        },
       ),
     ],
   );
 });
+
+/// v1's slideRightToLeft transition (docs/07 §2).
+CustomTransitionPage<void> _slide(GoRouterState state, Widget child) => CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionsBuilder: (_, animation, __, child) => SlideTransition(
+        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+        child: child,
+      ),
+    );
 
 /// Replaced feature by feature during S3–S6.
 class _Placeholder extends StatelessWidget {

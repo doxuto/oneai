@@ -106,6 +106,12 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [~] | A2-04 | `NewMinutesBottomSheet` 2 lối | `features/minutes/home/new_minutes_bottom_sheet.dart` | |
 | [~] | A2-05 | `PremiumButton`, `meProvider`/`quotaProvider`/`premiumStatusProvider`, `Paywall` (RevenueCatUI + refresh entitlement), `interstitialHook`/`rewardedHook` no-op cho tới A6 | `features/credits/*`, `features/billing/paywall.dart`, `features/ads/runtime/ad_hooks.dart` | |
 | [~] | A2-06 | Feedback dialog (Sentry captureFeedback) | `features/minutes/detail/feedback_dialog.dart` | |
+| [~] | A3-01 | `PromptLanguageSheet` port (typed `PromptSettings`), `LanguageSelector` + `LanguageTriggerButton` v1 | `features/transcription/{prompt_language_sheet,language_selector}.dart` | |
+| [~] | A3-02 | `RecordAudioScreen` port + `RecorderController` (record: AAC m4a 128k/44.1k, pause/resume, amplitude vào vòng sóng, xin quyền, huỷ khi rời màn) | `features/transcription/{record_audio_screen,recorder_controller}.dart` | |
+| [~] | A3-03 | `UploadFileScreen` port (file_picker, thêm PDF), `buildNewMinuteRequest` + `contentTypeFor` | `features/transcription/{upload_file_screen,new_minute_request_builder}.dart` | |
+| [~] | A3-04 | `AudioProcessingScreen` trên `NewMinuteFlow`: 5 bước v1 theo trạng thái thật, % upload thật, đóng = huỷ theo pha (dialog), lỗi + Retry, hết credit → paywall, Congratulation lần đầu → xin quyền push + in-app review, reward card chỉ khi ad đã load | `features/transcription/audio_processing_screen.dart` | |
+| [~] | A3-05 | `runWithCreditGate` (thay `premiumActionWrapper`) + `creditGateLabel`; `quotaStreamProvider` cho chờ SSV | `features/credits/credit_gate_ui.dart` | |
+| [~] | A3-06 | Router: record/upload/processing là màn thật, transition slide v1, `AudioProcessingArgs` bắt buộc | `core/router/app_router.dart` | |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)
 

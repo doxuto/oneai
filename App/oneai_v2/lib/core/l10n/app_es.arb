@@ -190,5 +190,10 @@
   "speakerName": "Nombre del hablante",
   "detectSpeakers": "Detectar nombres de hablantes",
   "notFound": "No encontrado",
-  "waitForCurrentRecording": "Espera a que termine la grabación actual."
+  "waitForCurrentRecording": "Espera a que termine la grabación actual.",
+  "microphonePermissionNeeded": "Se necesita acceso al micrófono para grabar. Actívalo en Ajustes.",
+  "transcribing": "Transcribiendo",
+  "identifyingSpeakers": "Identificando hablantes",
+  "takingNotes": "Tomando notas",
+  "finishingTouches": "Últimos retoques"
 }
