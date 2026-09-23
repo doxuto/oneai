@@ -16,7 +16,8 @@
     "test:integration": "firebase emulators:exec --only firestore,auth,storage --project demo-oneai \"vitest run -c vitest.integration.config.ts\"",
     "serve": "npm run build && firebase emulators:start --only functions,firestore,auth,storage --project demo-oneai",
     "logs": "firebase functions:log --only v2",
-    "load-test": "npm run build && firebase emulators:exec --only firestore,storage --project demo-oneai \"node tools/load-test.mjs\""
+    "load-test": "npm run build && firebase emulators:exec --only firestore,storage --project demo-oneai \"node tools/load-test.mjs\"",
+    "stt-benchmark": "npm run build && node tools/stt-benchmark.mjs"
   },
   "dependencies": {
     "ffmpeg-static": "^5.2.0",

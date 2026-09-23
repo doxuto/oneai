@@ -83,6 +83,16 @@ Param không bí mật nằm trong `.env` (commit có chủ đích).
 
 Test: **215 unit** (chạy mọi nơi) + **150 integration/rules** (chạy qua `npm run test:integration` với emulator).
 
+## Benchmark STT tiếng Việt (S11-13)
+
+```bash
+ELEVENLABS_API_KEY=… GEMINI_API_KEY=… npm run stt-benchmark -- ./bench
+```
+`./bench/` chứa `<tên>.m4a` + `<tên>.txt` (transcript người gõ). In WER/CER
+(diacritics giữ nguyên — sai dấu là sai từ), latency, RTF từng file và tổng
+theo vendor, ghi JSON. Env: `VENDORS`, `LANG_CODE` (`vie`/`auto`), `KEYTERMS`.
+Kết quả quyết định `STT_VENDOR`.
+
 ## Load test (S10-02)
 
 ```bash

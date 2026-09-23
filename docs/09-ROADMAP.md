@@ -281,7 +281,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-10 | **Glossary "sửa một lần, nhớ mãi"** — ✅ BE `listGlossary/upsertGlossaryTerm/deleteGlossaryTerm`, `keyterms` = keywords + glossary vào STT (Gemini prompt) + summarize; ✍️ app Settings › Glossary (thêm/xoá, live), đổi tên speaker → snack "Ghi nhớ X?" | phát hiện thêm: `keywords` v1 chưa từng được dùng ở STT/summarize — nay đã nối |
 | S11-11 | **Song ngữ trong note** — ✍️ `TranslateToggle` trên 2 tab, dùng `translate` đã có | không thêm BE |
 | S11-12 | **Consent UX** — ✍️ nút thông báo ghi âm chia sẻ 1 chạm + hộp thoại nhắc một lần trước bản ghi đầu tiên ("Đã hiểu" / "Thông báo ghi âm" → share sheet), cờ per device | |
-| S11-13 | **Benchmark tiếng Việt** (Ops, sau deploy dev): WER ElevenLabs vs Gemini trên 10 file VI bắc/trung/nam lẫn thuật ngữ EN → chọn `STT_VENDOR`; công bố "độ chính xác tiếng Việt" trên listing — không đối thủ nào làm | bảng số đo trong docs |
+| S11-13 | **Benchmark tiếng Việt** (Ops, sau deploy dev) — ✅ tool `npm run stt-benchmark -- ./bench` (WER/CER/latency/RTF, JSON) — **[Toan]** thu 10 file VI bắc/trung/nam lẫn thuật ngữ EN + transcript chuẩn, chạy → chọn `STT_VENDOR`; công bố "độ chính xác tiếng Việt" trên listing — không đối thủ nào làm | bảng số đo trong docs |
 | S11-06b | Share nhiều file — ✍️ `pickIncomingShares` giữ cả danh sách, `pendingIncomingSharesProvider` phát lần lượt: UploadFileScreen xử lý file đầu (+ dòng "còn N file"), Home banner "N file đang chờ › Tiếp tục"; Android thêm `SEND_MULTIPLE` vào intent-filter | |
 
 ## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
