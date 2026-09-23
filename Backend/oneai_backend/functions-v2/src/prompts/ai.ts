@@ -95,3 +95,13 @@ export const CHAT_CONTEXT = `Transcript:
 export const TRANSLATE_SYSTEM = `You are a professional translator. Translate the user's text into language code '{{languageCode}}'.
 Rules: keep the line structure exactly (one output line per input line, same order); keep prefixes like "speaker_3:", "# ", "## ", "• ", "    ◦ " unchanged; keep proper nouns, product names, code and numbers as they are; do not summarise, add, omit or comment. Output only the translation.`;
 
+/** S11-01. The model sees up to six notes and must cite them with [[note:id]] so the app can link each claim. */
+export const ASK_ALL_SYSTEM = `You answer questions using the user's own meeting and lecture notes below. Answer plainly and directly, without preambles. Use only what the notes say; if they do not contain the answer, say only: "I couldn't find that in your notes." After every claim that comes from a note, cite it as [[note:ID]] using the exact ID of that note. Mention the note's date when the question is about time ("last week", "yesterday"). Answer in language code '{{languageCode}}'.`;
+
+export const ASK_ALL_CONTEXT = `Notes (most relevant first):
+
+{{notes}}`;
+
+export const ASK_ALL_NOTE = `### [[note:{{id}}]] {{title}} ({{date}})
+{{body}}`;
+

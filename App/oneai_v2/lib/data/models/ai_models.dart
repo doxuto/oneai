@@ -210,3 +210,40 @@ class Chapters {
     return chapters.isNotEmpty && seconds >= chapters.last.startSeconds ? chapters.last : null;
   }
 }
+
+// ---- S11-01/02: ask across notes, semantic search ----
+
+/// A note the ask-all answer cited. The answer text carries `[[note:id]]`
+/// markers in the same order; the app strips them and shows these as chips.
+class AskAllSource {
+  const AskAllSource({required this.minuteId, required this.title, this.iconEmoji, this.createdAt});
+  factory AskAllSource.fromJson(Map<String, dynamic> j) => AskAllSource(
+        minuteId: readRequiredString(j, 'minuteId'),
+        title: readString(j, 'title') ?? '',
+        iconEmoji: readString(j, 'iconEmoji'),
+        createdAt: readDateTime(j, 'createdAt'),
+      );
+  final String minuteId;
+  final String title;
+  final String? iconEmoji;
+  final DateTime? createdAt;
+}
+
+class AskAllAnswer {
+  const AskAllAnswer({required this.answer, required this.sources});
+  factory AskAllAnswer.fromJson(Map<String, dynamic> j) =>
+      AskAllAnswer(answer: readString(j, 'answer') ?? '', sources: readObjectList(j, 'sources').map(AskAllSource.fromJson).toList());
+  final String answer;
+  final List<AskAllSource> sources;
+}
+
+/// One semantic-search hit; `score` is 1 = identical … 0 = unrelated.
+class SearchHit {
+  const SearchHit({required this.minuteId, required this.title, required this.score});
+  factory SearchHit.fromJson(Map<String, dynamic> j) =>
+      SearchHit(minuteId: readRequiredString(j, 'minuteId'), title: readString(j, 'title') ?? '', score: readDouble(j, 'score') ?? 0);
+  final String minuteId;
+  final String title;
+  final double score;
+}
+

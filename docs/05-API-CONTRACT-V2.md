@@ -201,6 +201,8 @@ là stub hardcode "Demo Meeting" (audit §1).
 | `importSharedNote` | `{client, token}` | `{minuteId, duplicate}` — "Lưu vào ghi chú của tôi": copy summary (+ transcript nếu chủ chia sẻ) thành note `ready` không audio trong tài khoản người gọi; **không trừ quota**; cùng token lần 2 → `duplicate:true`; chủ note → trả `minuteId` của chính họ; link thu hồi → `not-found` |
 | Hosting `/s`, `/legal`, `/n/**` | `firebase.json` hosting | rewrite `/s` → `sharePage`, `/legal` → `legal`, `/n/**` → `open.html` (trang "Open in One AI" + store badge); `.well-known/apple-app-site-association` + `assetlinks.json` cho universal/app link (Toan điền TEAMID + SHA-256) |
 | `legal` (HTTP GET `?doc=privacy\|terms\|delete-account&lang=en\|vi`) | public | Trang Chính sách / Điều khoản / Xoá tài khoản **EN + VI** phục vụ từ `assets/legal/*.html` (S10-07); app link theo ngôn ngữ máy; trỏ domain riêng hoặc copy HTML lên web sau |
+| `askAll` | `{client, question, languageCode ='en', history: {role, text}[] ≤8 =[]}` | **streaming** như `chat`: chunk `{delta}` rồi `{answer, sources: {minuteId, title, iconEmoji, createdAt}[]}` (S11-01). Server embed câu hỏi → `findNearest` ≤6 note `ready` của user (COSINE ≤0.85) → prompt gồm title/ngày/summary từng note, model trích dẫn `[[note:ID]]`; `sources` chỉ gồm note thật sự được trích, theo thứ tự trích. Không lưu lịch sử server; 1 AI call |
+| `searchNotes` | `{client, query ≤500, limit 1–30 =20}` | `{items: {minuteId, title, iconEmoji, createdAt, score 0–1}[]}` — tìm theo nghĩa (S11-02), chỉ note `ready` có vector, khoảng cách COSINE ≤0.75; **không** tính AI call |
 | `translate` | `{client, minuteId, part: "summary"\|"transcript", languageCode, force =false}` | **streaming** như `chat`: chunk `{delta}` rồi kết quả `{part, languageCode, text, cached}` — cache ở `minutes/{id}/translations/{part}_{lang}` theo hash transcript; transcript dịch theo từng khối ≤6.000 ký tự nối lại; 1 AI call/lần dù nhiều khối; chưa có summary → `failed-precondition reason:"noSummary"` |
 | `setActionItemDone` | `{client, minuteId, itemId, done}` | như trên (`cached: true`) — không gọi model, không trừ quota; cờ nằm trong artifact nên đồng bộ mọi máy; `force` sinh lại sẽ **xoá tick**. Chưa sinh → `failed-precondition reason:"noActionItems"`; `itemId` lạ → `not-found` |
 | `generateKeyTerms` | `{client, minuteId, languageCode ="en", force =false}` | `{data: {terms: {term, definition, quote}[]}, cached}` — glossary theo ngữ cảnh |
@@ -276,6 +278,7 @@ bao giờ** đọc/ghi `devices/` trực tiếp (rules chặn).
 | `onMinuteWritten` | Firestore trigger | recount `minuteCount` user + tag (aggregation, idempotent) |
 | `processTranscription` | `onTaskDispatched` 2GiB/540s, retry 3, ≤10 song song | worker nặng; ghi `stt: {vendor, model}` lên note + job |
 | `reapStaleJobs` | `onSchedule` mỗi 15 phút | job `running` > 30 phút hoặc `queued` > 60 phút → fail + hoàn credit + push `minuteFailed` |
+| `backfillEmbeddings` | `onSchedule` 03:30 VN hằng ngày | embed note `ready` chưa có vector / hash lệch (note v1 migrate, lỗi provider, đổi `EMBEDDING_DIM`), ≤500/lần |
 | `sweepOrphanFiles` | `onSchedule` 03:00 VN hằng ngày | upload bỏ dở > 24h, note kẹt > 2h (backstop), prefix Storage mồ côi, job cũ > 7 ngày |
 
 **Trần đồng thời theo user:** `startTranscription` từ chối `resource-exhausted`

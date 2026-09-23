@@ -72,7 +72,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               gapH16,
               const _UnfinishedRecordingBanner(),
               const _PendingUploadsBanner(),
-              const _SearchField(),
+              Row(children: [
+                const Expanded(child: _SearchField()),
+                gapW8,
+                _AskAllButton(onTap: () => context.push(Routes.askAll)),
+              ]),
               gapH16,
               const _TagRow(),
               gapH24,
@@ -483,3 +487,28 @@ class _NewNoteButton extends StatelessWidget {
         ),
       );
 }
+
+/// S11-01 entry point: the sparkle next to search opens "Ask your notes".
+class _AskAllButton extends StatelessWidget {
+  const _AskAllButton({required this.onTap});
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Semantics(
+        button: true,
+        label: context.l10n.askYourNotes,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: context.colorScheme.primary, borderRadius: BorderRadius.circular(20)),
+            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+          ),
+        ),
+      );
+}
+

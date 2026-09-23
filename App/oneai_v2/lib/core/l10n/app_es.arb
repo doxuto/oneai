@@ -288,5 +288,12 @@
   "alreadyInYourNotes": "Esta nota ya está en tus notas.",
   "sharedReadOnlyFooter": "Compartida en modo lectura desde One AI. El propietario puede revocar este enlace en cualquier momento.",
   "startProcessing": "Empezar",
-  "sharedFromAnotherApp": "Compartido desde otra app"
+  "sharedFromAnotherApp": "Compartido desde otra app",
+  "askYourNotes": "Pregunta a tus notas",
+  "askAllWelcome": "Pregunta lo que quieras sobre todas tus notas — “¿qué decidimos sobre precios la semana pasada?”. Las respuestas citan las notas de origen.",
+  "askAllHint": "Pregunta en todas las notas…",
+  "askAllExample1": "¿Qué decidimos la semana pasada?",
+  "askAllExample2": "Mis tareas pendientes",
+  "askAllExample3": "Resume las reuniones de este mes",
+  "newConversation": "Nueva conversación"
 }

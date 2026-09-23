@@ -67,3 +67,9 @@ export { mapSpeakers } from "./ai/mapSpeakers.js";
 export { renameSpeaker } from "./ai/renameSpeaker.js";
 
 export { revenueCatWebhook } from "./billing/revenueCatWebhook.js";
+
+// S11-01/02 — ask across notes, semantic search
+export { askAll } from "./search/askAll.js";
+export { searchNotes } from "./search/searchNotes.js";
+export { backfillEmbeddings } from "./jobs/backfillEmbeddings.js";
+

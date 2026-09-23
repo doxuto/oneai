@@ -7,6 +7,7 @@ import 'package:one_ai/features/auth/login_screen.dart';
 import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/features/minutes/detail/summary_screen.dart';
 import 'package:one_ai/features/minutes/home/home_screen.dart';
+import 'package:one_ai/features/minutes/ask/ask_all_screen.dart';
 import 'package:one_ai/features/minutes/share/shared_note_screen.dart';
 import 'package:one_ai/features/settings/glossary_screen.dart';
 import 'package:one_ai/features/settings/settings_screen.dart';
@@ -91,6 +92,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.recordAudio,
         pageBuilder: (_, state) => _slide(state, const RecordAudioScreen()),
+      ),
+      GoRoute(
+        path: Routes.askAll,
+        pageBuilder: (_, state) => _slide(state, const AskAllScreen()),
       ),
       GoRoute(
         path: Routes.uploadFile,

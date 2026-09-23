@@ -1,4 +1,5 @@
 import 'package:one_ai/data/firebase/functions_client.dart';
+import 'package:one_ai/data/firebase/json_read.dart';
 import 'package:one_ai/data/models/ai_models.dart';
 
 /// One event of a streaming chat: either a partial delta or the final answer.
@@ -14,6 +15,20 @@ final class ChatDelta extends ChatEvent {
 final class ChatDone extends ChatEvent {
   const ChatDone(this.answer);
   final ChatAnswer answer;
+}
+
+sealed class AskAllEvent {
+  const AskAllEvent();
+}
+
+final class AskAllDelta extends AskAllEvent {
+  const AskAllDelta(this.text);
+  final String text;
+}
+
+final class AskAllDone extends AskAllEvent {
+  const AskAllDone(this.answer);
+  final AskAllAnswer answer;
 }
 
 enum TranslatePart { summary, transcript }
@@ -48,6 +63,27 @@ class AiRepository {
         }
       }
     }
+  }
+
+  /// S11-01: one question over every note. `history` is this session's prior
+  /// turns (the server stores nothing); the final event carries the cited notes.
+  Stream<AskAllEvent> askAll({required String question, String languageCode = 'en', List<Map<String, String>> history = const []}) async* {
+    await for (final ev in _fns.stream('askAll', {'question': question, 'languageCode': languageCode, 'history': history})) {
+      if (ev is Map) {
+        final m = Map<String, dynamic>.from(ev);
+        if (m['delta'] is String) {
+          yield AskAllDelta(m['delta'] as String);
+        } else if (m.containsKey('answer')) {
+          yield AskAllDone(AskAllAnswer.fromJson(m));
+        }
+      }
+    }
+  }
+
+  /// S11-02: notes whose meaning matches `query`, best first. Not an AI call.
+  Future<List<SearchHit>> searchNotes(String query, {int limit = 20}) async {
+    final j = await _fns.call('searchNotes', {'query': query, 'limit': limit});
+    return readObjectList(j, 'items').map(SearchHit.fromJson).toList();
   }
 
   /// S11-04: streams the translation of the summary or transcript; the final

@@ -93,15 +93,46 @@ String _fold(String s) {
   return b.toString();
 }
 
+/// S11-02: ids the server found by meaning for the current query, best first.
+/// Debounced; empty for short queries, offline, or any failure — the text
+/// search above still works on its own.
+final semanticHitsProvider = FutureProvider.autoDispose<List<String>>((ref) async {
+  final q = ref.watch(searchQueryProvider).trim();
+  if (q.length < 3) return const [];
+  var cancelled = false;
+  ref.onDispose(() => cancelled = true);
+  await Future<void>.delayed(const Duration(milliseconds: 400));
+  if (cancelled) return const [];
+  try {
+    final hits = await ref.read(aiRepositoryProvider).searchNotes(q);
+    return [for (final h in hits) h.minuteId];
+  } on Object {
+    return const [];
+  }
+});
+
 /// Pure so it can be tested and reused by the tag sheet. Pinned notes come
 /// first (most recently pinned on top); the rest keep the stream's order.
-List<MinuteSummary> filterMinutes(List<MinuteSummary> all, Set<String> selected, {Set<String> hidden = const {}, String query = ''}) {
+/// `semanticIds` (S11-02) appends notes the server matched by meaning that the
+/// text match missed, in the server's order, still subject to the tag filter.
+List<MinuteSummary> filterMinutes(List<MinuteSummary> all, Set<String> selected, {Set<String> hidden = const {}, String query = '', List<String> semanticIds = const []}) {
   final kept = (selected.isEmpty && hidden.isEmpty && query.isEmpty)
       ? all
       : [
           for (final m in all)
             if (!hidden.contains(m.id) && selected.every(m.tagIds.contains) && matchesQuery(m, query)) m,
         ];
+  if (query.isNotEmpty && semanticIds.isNotEmpty) {
+    final have = {for (final m in kept) m.id};
+    final byId = {for (final m in all) m.id: m};
+    for (final id in semanticIds) {
+      final m = byId[id];
+      if (m != null && !have.contains(id) && !hidden.contains(id) && selected.every(m.tagIds.contains)) {
+        kept.add(m);
+        have.add(id);
+      }
+    }
+  }
   if (!kept.any((m) => m.pinned)) return kept;
   final pinned = kept.where((m) => m.pinned).toList()
     ..sort((a, b) => (b.pinnedAt ?? b.createdAt).compareTo(a.pinnedAt ?? a.createdAt));
@@ -115,7 +146,8 @@ final visibleMinutesProvider = Provider<AsyncValue<List<MinuteSummary>>>((ref) {
   final selected = ref.watch(selectedTagIdsProvider);
   final hidden = ref.watch(minuteActionsProvider).deleting;
   final query = ref.watch(searchQueryProvider);
-  return ref.watch(minutesListProvider).whenData((all) => filterMinutes(all, selected, hidden: hidden, query: query));
+  final semantic = ref.watch(semanticHitsProvider).valueOrNull ?? const <String>[];
+  return ref.watch(minutesListProvider).whenData((all) => filterMinutes(all, selected, hidden: hidden, query: query, semanticIds: semantic));
 });
 
 // ---- Mutations ----

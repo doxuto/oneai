@@ -695,5 +695,12 @@
   "alreadyInYourNotes": "This note is already in your notes.",
   "sharedReadOnlyFooter": "Shared read-only from One AI. The owner can revoke this link at any time.",
   "startProcessing": "Start",
-  "sharedFromAnotherApp": "Shared from another app"
+  "sharedFromAnotherApp": "Shared from another app",
+  "askYourNotes": "Ask your notes",
+  "askAllWelcome": "Ask anything across all your notes — “what did we decide about pricing last week?”. Answers cite the notes they come from.",
+  "askAllHint": "Ask across all notes…",
+  "askAllExample1": "What did we decide last week?",
+  "askAllExample2": "Open action items for me",
+  "askAllExample3": "Summarize this month's meetings",
+  "newConversation": "New conversation"
 }

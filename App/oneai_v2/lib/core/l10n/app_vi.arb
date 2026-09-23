@@ -288,5 +288,12 @@
   "alreadyInYourNotes": "Ghi chú này đã có trong ghi chú của bạn.",
   "sharedReadOnlyFooter": "Chia sẻ chỉ đọc từ One AI. Chủ ghi chú có thể thu hồi liên kết bất cứ lúc nào.",
   "startProcessing": "Bắt đầu",
-  "sharedFromAnotherApp": "Chia sẻ từ ứng dụng khác"
+  "sharedFromAnotherApp": "Chia sẻ từ ứng dụng khác",
+  "askYourNotes": "Hỏi ghi chú của bạn",
+  "askAllWelcome": "Hỏi bất cứ điều gì trên toàn bộ ghi chú — “tuần trước chốt gì về giá?”. Câu trả lời dẫn nguồn từ các ghi chú liên quan.",
+  "askAllHint": "Hỏi trên tất cả ghi chú…",
+  "askAllExample1": "Tuần trước đã chốt gì?",
+  "askAllExample2": "Việc tôi cần làm còn dở",
+  "askAllExample3": "Tóm tắt các cuộc họp tháng này",
+  "newConversation": "Cuộc trò chuyện mới"
 }

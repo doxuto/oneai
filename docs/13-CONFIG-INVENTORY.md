@@ -153,6 +153,7 @@ Param không bí mật (`functions-v2/.env`, commit có chủ ý):
 | `STT_FALLBACK_VENDOR` | `none` | vendor thử lại một lần khi primary sập |
 | `SHARE_BASE_URL` | `""` | base URL trang share link (S11-05); rỗng = URL cloudfunctions.net của `sharePage`; đặt khi có domain riêng |
 | `GEMINI_STT_MODEL` | `gemini-2.5-flash` | model khi STT là Gemini |
+| `OPENAI_EMBEDDING_MODEL` / `GEMINI_EMBEDDING_MODEL` / `EMBEDDING_DIM` | `text-embedding-3-small` / `gemini-embedding-001` / 768 | embedding cho S11-01/02; vendor theo `LLM_VENDOR`; `EMBEDDING_DIM` **phải bằng** `vectorConfig.dimension` trong `firestore.indexes.json` (đổi → mọi note tự re-embed qua backfill) |
 | `LLM_VENDOR` / `OPENAI_MODEL` / `OPENAI_MODEL_HEAVY` / `GEMINI_MODEL` | `openai` / `gpt-4o-mini` / `gpt-4o` / `gemini-2.0-flash` | LLM |
 | `FREE_MAX_ACTIVE_JOBS` / `PREMIUM_MAX_ACTIVE_JOBS` | 1 / 3 | job transcribe đồng thời tối đa mỗi user |
 | `FREE_SOURCE_RETENTION_DAYS` / `PREMIUM_SOURCE_RETENTION_DAYS` | 7 / 90 | số ngày giữ audio/PDF gốc sau khi note `ready`; `-1` giữ mãi |

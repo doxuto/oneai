@@ -125,6 +125,13 @@ void main() {
     test('hidden ids are removed even with no selection', () {
       expect(filterMinutes(all, const {}, hidden: {'b'}).map((x) => x.id), ['a', 'c']);
     });
+    test('S11-02: semantic hits are appended after text matches, once, tag-filtered, only while searching', () {
+      final list = [m('a', title: 'Pricing call', tags: ['t1']), m('b', title: 'Lunch'), m('c', title: 'Standup', tags: ['t1']), m('d', title: 'Retro')];
+      expect(filterMinutes(list, const {}, query: 'pricing', semanticIds: ['c', 'a', 'zzz', 'c']).map((x) => x.id), ['a', 'c']);
+      expect(filterMinutes(list, {'t1'}, query: 'pricing', semanticIds: ['b', 'c']).map((x) => x.id), ['a', 'c']);
+      expect(filterMinutes(list, const {}, query: 'pricing', hidden: {'c'}, semanticIds: ['c']).map((x) => x.id), ['a']);
+      expect(filterMinutes(list, const {}, semanticIds: ['d']).map((x) => x.id), ['a', 'b', 'c', 'd']); // no query → ignored
+    });
     test('pinned notes come first, most recently pinned on top; others keep stream order', () {
       final list = [m('x'), m('p1', pinned: true, pinnedAt: DateTime(2026, 1, 1)), m('y'), m('p2', pinned: true, pinnedAt: DateTime(2026, 2, 1))];
       expect(filterMinutes(list, const {}).map((x) => x.id), ['p2', 'p1', 'x', 'y']);

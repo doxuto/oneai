@@ -268,8 +268,9 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 
 | ID | Task | Xong khi |
 |---|---|---|
-| S11-01 | **Hỏi đáp xuyên nhiều note** — **ưu tiên #1 của S11** (21-RESEARCH: đây là thứ tách leaders 2026 khỏi phần còn lại): embedding mỗi note lúc ready, Firestore vector search `findNearest`, callable `askAll` streaming, trích dẫn nhảy tới mốc audio | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
-| S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
+| S11-01 | **Hỏi đáp xuyên nhiều note** — **ưu tiên #1 của S11** — ✅ BE: embedding mỗi note khi `ready` (trigger `onMinuteWritten`, hash tránh gọi lại; backfill 03:30), Firestore vector index + `findNearest`, callable `askAll` streaming với trích dẫn `[[note:id]]` → `sources`; ✍️ app: nút ✨ cạnh ô tìm kiếm → màn "Hỏi ghi chú của bạn" (chat, chip nguồn mở note). Chưa: nhảy tới mốc audio trong note (cần chunk-level, S11-01b) | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
+| S11-02 | Tìm theo nghĩa — ✅ BE `searchNotes` (không tính AI call); ✍️ app: ô tìm kiếm Home ghép kết quả server (debounce 400 ms, ≥3 ký tự) sau kết quả text; offline/lỗi → chỉ text | |
+| S11-01b | Trích dẫn tới mốc audio: embed theo đoạn transcript (chunk ~500 từ) + `startSeconds`, `askAll` trả `sources[].startSeconds` | sau khi S11-01 có người dùng |
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
 | S11-05 | **Share link chỉ đọc** — ✅ BE: PDF (`format=pdf`, Noto Sans nhúng) + HTML + JSON; **deep link / universal link / app link** `/s?t=` và `/n/<id>` qua Firebase Hosting (`.well-known` sẵn, Toan điền TEAMID + SHA-256), scheme `oneai://`; `importSharedNote` "Lưu vào ghi chú của tôi"; ✍️ app `SharedNoteScreen`, router giữ deep link qua đăng nhập | người vắng họp mở được không cần app |
