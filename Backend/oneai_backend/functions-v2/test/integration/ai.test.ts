@@ -4,6 +4,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpsError } from "firebase-functions/v2/https";
 import { chatHandler, generateActionItemsHandler, generateCalendarEventsHandler, generateChaptersHandler, generateFlashcardsHandler, generateKeyTermsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler, setActionItemDoneHandler } from "../../src/ai/handler.js";
+import { translateHandler } from "../../src/ai/translation.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -303,5 +304,40 @@ describe("AI daily cap (unitDeps: free = 3 calls/day)", () => {
     const deps = makeDeps(fakeLlm(async () => ({})));
     for (let i = 0; i < 5; i++) await chatHandler(u1, { client, minuteId: "m1", question: `${i}` }, deps);
     expect((await db.doc("users/u1/quota/2026-09-23").get()).data()?.aiCalls).toBe(5);
+  });
+});
+
+describe("translate (S11-04)", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("streams the transcript translation, caches it per language, and charges one AI call", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({}), ["bon", "jour"]);
+    const deps = makeDeps(llm);
+    const deltas: string[] = [];
+    const out = await translateHandler(u1, { client, minuteId: "m1", part: "transcript", languageCode: "fr" }, deps, (d) => deltas.push(d));
+    expect(out).toEqual({ part: "transcript", languageCode: "fr", text: "bonjour", cached: false });
+    expect(deltas).toEqual(["bon", "jour"]);
+    expect((await db.doc("users/u1/minutes/m1/translations/transcript_fr").get()).data()).toMatchObject({ text: "bonjour", languageCode: "fr" });
+    const again = await translateHandler(u1, { client, minuteId: "m1", part: "transcript", languageCode: "fr" }, deps);
+    expect(again.cached).toBe(true);
+    expect(llm.calls).toBe(1);
+    // another language is its own doc
+    await translateHandler(u1, { client, minuteId: "m1", part: "transcript", languageCode: "de" }, deps);
+    expect(llm.calls).toBe(2);
+  });
+
+  it("summary part translates the rendered summary; a note without summary is failed-precondition", async () => {
+    await seedReady();
+    await db.doc("users/u1/minutes/m1").update({ summary: { title: "Standup", text: "We synced.", icon: null, sections: [{ title: "A", bullets: ["• x"] }] } });
+    let seen = "";
+    const llm = fakeLlm(async () => ({}), ["ok"]);
+    const spy: LlmClient = { ...llm, async streamText(req, onDelta) { seen = req.prompt; return llm.streamText(req, onDelta); } };
+    const out = await translateHandler(u1, { client, minuteId: "m1", part: "summary", languageCode: "vi" }, makeDeps(spy));
+    expect(out.text).toBe("ok");
+    expect(seen).toContain("# Standup");
+    expect(seen).toContain("## A");
+    await db.doc("users/u1/minutes/m1").update({ summary: null });
+    await expect(translateHandler(u1, { client, minuteId: "m1", part: "summary", languageCode: "vi", force: true }, makeDeps(spy))).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "noSummary" } });
   });
 });

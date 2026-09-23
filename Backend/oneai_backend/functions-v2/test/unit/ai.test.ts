@@ -5,6 +5,7 @@ import { sseData } from "../../src/lib/llm/sse.js";
 import { unitDeps } from "../../src/lib/deps.js";
 import { transcriptWithTimes } from "../../src/ai/_artifacts.js";
 import { chatHandler, generateCalendarEventsHandler, generateChaptersHandler, generateQuizHandler, renameSpeakerHandler, setActionItemDoneHandler } from "../../src/ai/handler.js";
+import { chunkLines, summaryAsText, translateHandler, TranslateInput } from "../../src/ai/translation.js";
 import { ActionItemsData, CalendarEventsData, ChaptersData, KeyTermsData, MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
 import { ACTION_ITEMS_PROMPT, CALENDAR_EVENTS_PROMPT, CHAPTERS_PROMPT, CHAT_SYSTEM, KEY_TERMS_PROMPT, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
 import { fill } from "../../src/prompts/summarize.js";
@@ -149,5 +150,28 @@ describe("setActionItemDone", () => {
   it("ActionItemsData defaults done to false so model output never needs it", () => {
     const parsed = ActionItemsData.parse({ items: [{ id: "a1", text: "t", owner: null, due: null, quote: "q" }], decisions: [] });
     expect(parsed.items[0]?.done).toBe(false);
+  });
+});
+
+describe("translate (S11-04)", () => {
+  it("input: part is summary|transcript, languageCode required", () => {
+    expect(TranslateInput.parse({ client, minuteId: "m1", part: "summary", languageCode: "vi" }).force).toBe(false);
+    expect(() => TranslateInput.parse({ client, minuteId: "m1", part: "notes", languageCode: "vi" })).toThrow();
+    expect(() => TranslateInput.parse({ client, minuteId: "m1", part: "summary" })).toThrow();
+  });
+  it("requires auth before touching anything", async () => {
+    await expect(translateHandler(undefined, { client, minuteId: "m1", part: "summary", languageCode: "vi" }, unitDeps())).rejects.toMatchObject({ code: "unauthenticated" });
+  });
+  it("summaryAsText keeps headings and bullets on their own lines", () => {
+    const t = summaryAsText({ title: "T", text: "Body", icon: null, sections: [{ title: "A", bullets: ["• x", "    ◦ y"] }] });
+    expect(t.split("\n")).toEqual(["# T", "", "Body", "", "## A", "• x", "    ◦ y"]);
+  });
+  it("chunkLines splits on line boundaries under the cap and never drops text", () => {
+    const lines = Array.from({ length: 50 }, (_, i) => `speaker_${i % 2}: ${"word ".repeat(40)}${i}`);
+    const chunks = chunkLines(lines.join("\n"), 2000);
+    expect(chunks.length).toBeGreaterThan(1);
+    for (const c of chunks) expect(c.length).toBeLessThanOrEqual(2000);
+    expect(chunks.join("\n")).toBe(lines.join("\n"));
+    expect(chunkLines("x".repeat(10), 3)).toEqual(["x".repeat(10)]); // one over-long line stays whole
   });
 });

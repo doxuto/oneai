@@ -227,5 +227,7 @@
   "templateOneOnOne": "1:1",
   "templateInterview": "Entrevista",
   "templateLecture": "Clase",
-  "templateBrainstorm": "Lluvia de ideas"
+  "templateBrainstorm": "Lluvia de ideas",
+  "translate": "Traducir",
+  "copied": "Copiado"
 }

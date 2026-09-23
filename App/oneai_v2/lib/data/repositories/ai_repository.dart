@@ -16,6 +16,22 @@ final class ChatDone extends ChatEvent {
   final ChatAnswer answer;
 }
 
+enum TranslatePart { summary, transcript }
+
+sealed class TranslateEvent {
+  const TranslateEvent();
+}
+
+final class TranslateDelta extends TranslateEvent {
+  const TranslateDelta(this.text);
+  final String text;
+}
+
+final class TranslateDone extends TranslateEvent {
+  const TranslateDone(this.translation);
+  final Translation translation;
+}
+
 class AiRepository {
   AiRepository({required FunctionsClient functions}) : _fns = functions;
   final FunctionsClient _fns;
@@ -29,6 +45,21 @@ class AiRepository {
           yield ChatDelta(m['delta'] as String);
         } else if (m.containsKey('answer')) {
           yield ChatDone(ChatAnswer.fromJson(m));
+        }
+      }
+    }
+  }
+
+  /// S11-04: streams the translation of the summary or transcript; the final
+  /// event carries the full (cached) text. `TranslateDelta` / `TranslateDone`.
+  Stream<TranslateEvent> translate({required String minuteId, required TranslatePart part, required String languageCode, bool force = false}) async* {
+    await for (final ev in _fns.stream('translate', {'minuteId': minuteId, 'part': part.name, 'languageCode': languageCode, 'force': force})) {
+      if (ev is Map) {
+        final m = Map<String, dynamic>.from(ev);
+        if (m['delta'] is String) {
+          yield TranslateDelta(m['delta'] as String);
+        } else if (m['text'] is String) {
+          yield TranslateDone(Translation.fromJson(m));
         }
       }
     }

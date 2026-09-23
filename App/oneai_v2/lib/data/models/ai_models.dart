@@ -153,6 +153,21 @@ class ActionItems {
       ActionItems(items: [for (final it in items) it.id == itemId ? it.copyWith(done: done) : it], decisions: decisions);
 }
 
+/// S11-04 result of `translate`.
+class Translation {
+  const Translation({required this.part, required this.languageCode, required this.text, required this.cached});
+  factory Translation.fromJson(Map<String, dynamic> j) => Translation(
+        part: readString(j, 'part') ?? 'summary',
+        languageCode: readString(j, 'languageCode') ?? '',
+        text: readString(j, 'text') ?? '',
+        cached: readBool(j, 'cached'),
+      );
+  final String part;
+  final String languageCode;
+  final String text;
+  final bool cached;
+}
+
 class KeyTerm {
   const KeyTerm({required this.term, required this.definition, required this.quote});
   factory KeyTerm.fromJson(Map<String, dynamic> j) =>

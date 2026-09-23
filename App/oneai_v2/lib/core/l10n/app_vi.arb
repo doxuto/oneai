@@ -227,5 +227,7 @@
   "templateOneOnOne": "1:1",
   "templateInterview": "Phỏng vấn",
   "templateLecture": "Bài giảng",
-  "templateBrainstorm": "Brainstorm"
+  "templateBrainstorm": "Brainstorm",
+  "translate": "Dịch",
+  "copied": "Đã sao chép"
 }

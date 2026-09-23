@@ -621,5 +621,7 @@
   "templateOneOnOne": "1:1",
   "templateInterview": "Interview",
   "templateLecture": "Lecture",
-  "templateBrainstorm": "Brainstorm"
+  "templateBrainstorm": "Brainstorm",
+  "translate": "Translate",
+  "copied": "Copied"
 }

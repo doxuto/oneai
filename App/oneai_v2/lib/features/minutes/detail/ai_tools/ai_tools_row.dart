@@ -8,6 +8,7 @@ import 'package:one_ai/features/minutes/detail/ai_tools/flashcards_sheet.dart';
 import 'package:one_ai/features/minutes/detail/ai_tools/key_terms_sheet.dart';
 import 'package:one_ai/features/minutes/detail/ai_tools/mindmap_sheet.dart';
 import 'package:one_ai/features/minutes/detail/ai_tools/quiz_sheet.dart';
+import 'package:one_ai/features/minutes/detail/ai_tools/translation_sheet.dart';
 
 /// Entry points to the study tools. v1 had the APIs but no UI for them.
 class AiToolsRow extends StatelessWidget {
@@ -22,6 +23,7 @@ class AiToolsRow extends StatelessWidget {
       (l10n.flashcards, Icons.style_outlined, detail.hasArtifact(ArtifactKind.flashcards), () => FlashcardsSheet.show(context, detail.id)),
       (l10n.mindmap, Icons.account_tree_outlined, detail.hasArtifact(ArtifactKind.mindmap), () => MindmapSheet.show(context, detail.id)),
       (l10n.keyTerms, Icons.menu_book_outlined, detail.hasArtifact(ArtifactKind.keyTerms), () => KeyTermsSheet.show(context, detail.id)),
+      (l10n.translate, Icons.translate, false, () => TranslationSheet.show(context, detail.id)),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
