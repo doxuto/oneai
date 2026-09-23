@@ -29,6 +29,12 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      // Glossary (S11-10): readable by the owner for the Settings screen; written by callables.
+      match /glossary/{termId} {
+        allow get, list: if isOwner(uid);
+        allow write: if false;
+      }
+
       match /quota/{periodId} {
         allow get: if isOwner(uid);
         allow list, write: if false;

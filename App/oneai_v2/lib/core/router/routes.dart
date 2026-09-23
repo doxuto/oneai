@@ -13,4 +13,5 @@ abstract final class Routes {
   static const String uploadFile = '/uploadFile';
   static const String audioProcessing = '/audioProcessing';
   static const String settings = '/settings';
+  static const String glossary = '/settings/glossary';
 }

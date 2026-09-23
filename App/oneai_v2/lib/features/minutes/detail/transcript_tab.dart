@@ -15,6 +15,7 @@ import 'package:one_ai/features/ads/runtime/ad_hooks.dart';
 import 'package:one_ai/features/minutes/detail/audio_player_controller.dart';
 import 'package:one_ai/features/minutes/detail/minute_detail_controller.dart';
 import 'package:one_ai/features/minutes/detail/translate_toggle.dart';
+import 'package:one_ai/features/settings/glossary_screen.dart';
 import 'package:one_ai/data/repositories/ai_repository.dart';
 
 /// v1 Transcript tab (speaker rows with coloured avatars, timestamps, rename
@@ -262,8 +263,15 @@ class _SegmentRow extends ConsumerWidget {
         ),
         onConfirm: () async {
           Navigator.of(ctx).pop();
-          final ok = await ref.read(speakersProvider(minuteId).notifier).rename(segment.speakerId, controller.text);
-          if (!ok && context.mounted) AppSnack.show(context, context.l10n.failedToUpdateSpeaker);
+          final name = controller.text.trim();
+          final ok = await ref.read(speakersProvider(minuteId).notifier).rename(segment.speakerId, name);
+          if (!context.mounted) return;
+          if (!ok) {
+            AppSnack.show(context, context.l10n.failedToUpdateSpeaker);
+          } else if (name.isNotEmpty) {
+            // S11-10: a corrected name is worth remembering for the next recording.
+            await offerAddToGlossary(context, ref, name);
+          }
         },
       ),
     );

@@ -271,5 +271,14 @@
   "recordingInterrupted": "Bị ngắt — sẽ tiếp tục khi bạn quay lại",
   "unfinishedRecordingFound": "{count, plural, =1{Tìm thấy bản ghi dở dang (~1 phút)} other{Tìm thấy bản ghi dở dang (~{count} phút)}}",
   "recover": "Khôi phục",
-  "discard": "Bỏ"
+  "discard": "Bỏ",
+  "glossary": "Từ điển thuật ngữ",
+  "glossaryExplain": "Tên người, sản phẩm và thuật ngữ cần viết đúng. Được gửi kèm mọi bản ghi để transcript và ghi chú viết chính xác.",
+  "glossaryTermHint": "Thuật ngữ, ví dụ: VinFast",
+  "glossaryHintHint": "Gợi ý (tuỳ chọn), ví dụ: CFO của công ty",
+  "glossaryEmpty": "Chưa có thuật ngữ. Thêm những cái tên hay bị nghe nhầm.",
+  "deleteGlossaryTermConfirm": "Xoá \"{term}\" khỏi từ điển?",
+  "addToGlossaryPrompt": "Ghi nhớ \"{term}\" cho các bản ghi sau?",
+  "addedToGlossary": "Đã thêm \"{term}\" vào từ điển.",
+  "add": "Thêm"
 }

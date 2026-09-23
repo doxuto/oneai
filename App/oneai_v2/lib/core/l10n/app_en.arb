@@ -675,5 +675,17 @@
   "unfinishedRecordingFound": "{count, plural, =1{An unfinished recording (~1 min) was found} other{An unfinished recording (~{count} min) was found}}",
   "@unfinishedRecordingFound": {"placeholders": {"count": {"type": "int"}}},
   "recover": "Recover",
-  "discard": "Discard"
+  "discard": "Discard",
+  "glossary": "Glossary",
+  "glossaryExplain": "Names, products and jargon that must be spelled exactly. They are sent with every recording so the transcript and notes get them right.",
+  "glossaryTermHint": "Term, e.g. VinFast",
+  "glossaryHintHint": "Hint (optional), e.g. our CFO",
+  "glossaryEmpty": "No terms yet. Add the names people keep mishearing.",
+  "deleteGlossaryTermConfirm": "Remove \"{term}\" from the glossary?",
+  "@deleteGlossaryTermConfirm": {"placeholders": {"term": {"type": "String"}}},
+  "addToGlossaryPrompt": "Remember \"{term}\" for future recordings?",
+  "@addToGlossaryPrompt": {"placeholders": {"term": {"type": "String"}}},
+  "addedToGlossary": "\"{term}\" added to the glossary.",
+  "@addedToGlossary": {"placeholders": {"term": {"type": "String"}}},
+  "add": "Add"
 }

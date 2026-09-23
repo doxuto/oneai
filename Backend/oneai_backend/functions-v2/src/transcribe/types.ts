@@ -54,6 +54,8 @@ export interface JobDoc {
     audioLanguage: string;
     summaryLanguage: string;
     keywords: string[];
+    /** keywords + glossary, merged at start (S11-10). */
+    keyterms?: string[];
     description: string | null;
     template?: string;
     timezone: string;

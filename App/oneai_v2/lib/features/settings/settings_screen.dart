@@ -8,6 +8,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:one_ai/bootstrap.dart' show appConfigProvider;
 import 'package:one_ai/core/config/assets.dart';
 import 'package:one_ai/core/di/providers.dart';
+import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/l10n/l10n.dart';
 import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
@@ -81,6 +82,8 @@ class SettingsScreen extends ConsumerWidget {
                   _LanguageRow(label: l10n.summaryLanguage, selected: lang.summaryLanguage, choices: TranscriptionLanguage.summaryChoices, onChanged: (v) => ref.read(languageSettingsProvider.notifier).setSummaryLanguage(v)),
                   const _RowDivider(),
                   _IconRow(icon: Assets.tagsIcon, text: l10n.manageTags, onTap: () => TagManagerSheet.show(context)),
+                  const _RowDivider(),
+                  _IconRow(icon: Assets.editIcon, text: l10n.glossary, onTap: () => context.push(Routes.glossary)),
                   const _RowDivider(),
                   const _NotificationsRow(),
                 ]),

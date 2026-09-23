@@ -47,6 +47,10 @@ export { generateActionItems } from "./ai/generateActionItems.js";
 export { setActionItemDone } from "./ai/setActionItemDone.js";
 export { translate } from "./ai/translate.js";
 
+export { listGlossary } from "./glossary/listGlossary.js";
+export { upsertGlossaryTerm } from "./glossary/upsertGlossaryTerm.js";
+export { deleteGlossaryTerm } from "./glossary/deleteGlossaryTerm.js";
+
 export { createShareLink } from "./share/createShareLink.js";
 export { revokeShareLink } from "./share/revokeShareLink.js";
 export { sharePage } from "./share/sharePage.js";

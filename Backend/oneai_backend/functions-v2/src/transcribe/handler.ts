@@ -8,6 +8,7 @@ import { periodIdFor } from "../lib/time.js";
 import { parse } from "../lib/validate.js";
 import { minuteRef, type MinuteDoc } from "../minutes/_shared.js";
 import type { MinuteStatus } from "../minutes/types.js";
+import { glossaryTermsFor, mergeKeyterms } from "../glossary/handler.js";
 import { consumeQuota, refundQuota } from "../quota/quota.js";
 import { effectivePlan, type UserDoc } from "../users/_shared.js";
 import {
@@ -78,6 +79,9 @@ export async function startTranscriptionHandler(
         reason: "durationLimit", limitSeconds: limits.maxDurationSeconds,
       });
     }
+    // S11-10: the user's glossary rides along with the one-off keywords.
+    const keyterms = mergeKeyterms(input.keywords, await glossaryTermsFor(deps.db, uid));
+
     // Reserve the declared length (never less than a minute — the client's
     // number is a guess); the worker settles to the measured length. A PDF is
     // a flat charge.
@@ -108,6 +112,7 @@ export async function startTranscriptionHandler(
         quotaRefunded: false,
         options: {
           audioLanguage: input.audioLanguage, summaryLanguage: input.summaryLanguage, keywords: input.keywords,
+          keyterms,
           description: input.description ?? null, template: input.template, timezone: input.timezone,
         },
         createdAt: FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,

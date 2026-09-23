@@ -4,7 +4,7 @@
  * speaker turn — see OQ-16) and the JSON-schema doing the structural policing
  * so the prompt can spend its words on judgement, not on field order.
  *
- * Placeholders: {{summaryLanguage}} {{description}} {{now}} {{timezone}} {{transcript}} {{templateGuidance}}
+ * Placeholders: {{summaryLanguage}} {{description}} {{now}} {{timezone}} {{transcript}} {{templateGuidance}} {{keyterms}}
  */
 export const SUMMARIZE_SYSTEM = `You are a meticulous meeting and lecture summariser. You never invent facts that are not in the transcript. You write everything in the requested language, keeping proper nouns, acronyms and untranslatable terms in their original form.`;
 
@@ -30,6 +30,7 @@ RULES
 {{transcript}}
 '''
 • additional context from the user: '{{description}}'
+{{keyterms}}
 • now: {{now}}   timezone: {{timezone}}
 • summary language: {{summaryLanguage}}`;
 

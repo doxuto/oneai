@@ -111,6 +111,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
       const result = await deps.services.stt.transcribe({
         audio: bytes, contentType, fileName: minute.sourcePath.split("/").pop() ?? "audio",
         languageCode: sttLanguageCode(job.options.audioLanguage),
+        keyterms: job.options.keyterms ?? job.options.keywords,
       });
       transcript = result.transcript;
       stt = { vendor: result.vendor, model: result.model };
@@ -143,6 +144,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
       transcript: transcript.text, summaryLanguage: job.options.summaryLanguage,
       description: job.options.description, now: deps.now(), timezone: job.options.timezone,
       template: MinuteTemplate.safeParse(job.options.template).data ?? "auto",
+      keyterms: job.options.keyterms ?? job.options.keywords,
     });
 
     await assertNotCancelled();

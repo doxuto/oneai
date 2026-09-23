@@ -39,6 +39,8 @@ export interface SummarizeInput {
   timezone: string;
   /** S11-08; undefined/"auto" = generic guidance. */
   template?: MinuteTemplate | null;
+  /** Names / jargon to spell exactly (keywords + glossary). */
+  keyterms?: string[];
 }
 
 /** Transcripts longer than this are trimmed from the middle to protect the token budget (S4-07). */
@@ -59,6 +61,7 @@ export async function summarizeTranscript(
     transcript: trimTranscript(input.transcript),
     description: input.description ?? "",
     templateGuidance: templateGuidance(input.template),
+    keyterms: (input.keyterms ?? []).length ? `• spell these exactly: ${(input.keyterms ?? []).join("; ")}` : "",
     now: input.now.toISOString(),
     timezone: input.timezone,
     summaryLanguage: input.summaryLanguage,

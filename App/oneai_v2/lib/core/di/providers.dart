@@ -9,6 +9,7 @@ import 'package:one_ai/bootstrap.dart' show appConfigProvider;
 import 'package:one_ai/data/firebase/functions_client.dart';
 import 'package:one_ai/data/repositories/ai_repository.dart';
 import 'package:one_ai/data/repositories/minutes_repository.dart';
+import 'package:one_ai/data/repositories/glossary_repository.dart';
 import 'package:one_ai/data/repositories/tags_repository.dart';
 import 'package:one_ai/data/repositories/transcription_repository.dart';
 import 'package:one_ai/data/repositories/user_repository.dart';
@@ -50,6 +51,10 @@ final transcriptionRepositoryProvider = Provider<TranscriptionRepository>(
 
 final tagsRepositoryProvider = Provider<TagsRepository>(
   (ref) => TagsRepository(functions: ref.watch(functionsClientProvider), firestore: ref.watch(firestoreProvider)),
+);
+
+final glossaryRepositoryProvider = Provider<GlossaryRepository>(
+  (ref) => GlossaryRepository(functions: ref.watch(functionsClientProvider), firestore: ref.watch(firestoreProvider)),
 );
 
 final userRepositoryProvider = Provider<UserRepository>(

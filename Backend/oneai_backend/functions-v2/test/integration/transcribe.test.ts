@@ -209,6 +209,18 @@ describe("runPipeline", () => {
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("uploading");
   });
 
+  it("glossary terms ride along with the keywords into the job and the STT request (S11-10)", async () => {
+    await seed();
+    await db.doc("users/u1/glossary/g1").set({ term: "VinFast", hint: "company", createdAt: new Date("2026-09-01T00:00:00Z") });
+    let seenTerms: string[] | undefined;
+    const deps = makeDeps({ stt: async () => asResult(scribe) });
+    const spy: Deps = { ...deps, services: { ...deps.services, stt: { ...deps.services.stt, transcribe: async (req) => { seenTerms = req.keyterms; return asResult(scribe); } } } };
+    await startTranscriptionHandler(u1, { ...startInput, keywords: ["OKR"] }, spy);
+    expect((await db.doc(`transcriptionJobs/${REQ}`).get()).data()?.options.keyterms).toEqual(["OKR", "VinFast (company)"]);
+    expect(await runPipeline({ uid: "u1", minuteId: "m1", jobId: REQ }, spy, { attempt: 0, maxAttempts: 3 })).toBe("done");
+    expect(seenTerms).toEqual(["OKR", "VinFast (company)"]);
+  });
+
   it("a PDF is a flat charge (pdfChargeSeconds) and is not settled", async () => {
     await seed({ sourceType: "pdf", content: "%PDF-1.4 text" });
     const deps = makeDeps();

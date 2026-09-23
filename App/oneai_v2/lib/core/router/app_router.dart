@@ -7,6 +7,7 @@ import 'package:one_ai/features/auth/login_screen.dart';
 import 'package:one_ai/core/router/route_args.dart';
 import 'package:one_ai/features/minutes/detail/summary_screen.dart';
 import 'package:one_ai/features/minutes/home/home_screen.dart';
+import 'package:one_ai/features/settings/glossary_screen.dart';
 import 'package:one_ai/features/settings/settings_screen.dart';
 import 'package:one_ai/features/transcription/audio_processing_screen.dart';
 import 'package:one_ai/features/transcription/record_audio_screen.dart';
@@ -55,6 +56,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'settings',
             pageBuilder: (_, state) => _slide(state, const SettingsScreen()),
+            routes: [
+              GoRoute(path: 'glossary', pageBuilder: (_, state) => _slide(state, const GlossaryScreen())),
+            ],
           ),
         ],
       ),

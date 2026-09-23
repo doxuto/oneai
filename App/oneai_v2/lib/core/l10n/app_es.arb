@@ -271,5 +271,14 @@
   "recordingInterrupted": "Interrumpida: se reanudará cuando vuelvas",
   "unfinishedRecordingFound": "{count, plural, =1{Se encontró una grabación sin terminar (~1 min)} other{Se encontró una grabación sin terminar (~{count} min)}}",
   "recover": "Recuperar",
-  "discard": "Descartar"
+  "discard": "Descartar",
+  "glossary": "Glosario",
+  "glossaryExplain": "Nombres, productos y jerga que deben escribirse exactamente. Se envían con cada grabación para que la transcripción y las notas los escriban bien.",
+  "glossaryTermHint": "Término, p. ej. VinFast",
+  "glossaryHintHint": "Pista (opcional), p. ej. nuestro CFO",
+  "glossaryEmpty": "Aún no hay términos. Añade los nombres que suelen entenderse mal.",
+  "deleteGlossaryTermConfirm": "¿Quitar \"{term}\" del glosario?",
+  "addToGlossaryPrompt": "¿Recordar \"{term}\" para futuras grabaciones?",
+  "addedToGlossary": "\"{term}\" añadido al glosario.",
+  "add": "Añadir"
 }

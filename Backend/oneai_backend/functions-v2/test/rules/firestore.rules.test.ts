@@ -106,6 +106,11 @@ describe("server-only collections", () => {
     await assertFails(getDocs(collection(owner(), "users/u1/devices")));
     await assertFails(setDoc(doc(owner(), "users/u1/devices/d1"), { token: "x" }));
   });
+  it("glossary is readable by its owner only, never writable", async () => {
+    await assertSucceeds(getDocs(collection(owner(), "users/u1/glossary")));
+    await assertFails(getDocs(collection(other(), "users/u1/glossary")));
+    await assertFails(setDoc(doc(owner(), "users/u1/glossary/g1"), { term: "x" }));
+  });
   it("shares/{token} is server-only: the public page reads it with the Admin SDK, never a client", async () => {
     await assertFails(getDoc(doc(owner(), "shares/tok")));
     await assertFails(setDoc(doc(owner(), "shares/tok"), { uid: "u1", minuteId: "m1" }));
