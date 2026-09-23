@@ -52,6 +52,15 @@ class AiRepository {
   Future<Generated<Mindmap>> mindmap(String minuteId, {String languageCode = 'en', bool force = false}) async =>
       Generated.fromJson(await _fns.call('generateMindmap', _gen(minuteId, languageCode, force)), Mindmap.fromJson);
 
+  /// Events are already extracted at summarise time (`MinuteDetail.calendarEvents`);
+  /// call this only to regenerate, e.g. in another language. [timezone] is an
+  /// IANA name; omitted → the zone sent at startTranscription.
+  Future<Generated<CalendarEvents>> calendarEvents(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) async =>
+      Generated.fromJson(
+        await _fns.call('generateCalendarEvents', {..._gen(minuteId, languageCode, force), if (timezone != null) 'timezone': timezone}),
+        CalendarEvents.fromJson,
+      );
+
   Future<Generated<Speakers>> mapSpeakers(String minuteId, {bool force = false}) async =>
       Generated.fromJson(await _fns.call('mapSpeakers', {'minuteId': minuteId, 'force': force}), Speakers.fromJson);
 

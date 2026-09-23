@@ -90,6 +90,8 @@ class FakeAi implements AiRepository {
   @override
   Future<Generated<Mindmap>> mindmap(String minuteId, {String languageCode = 'en', bool force = false}) => throw UnimplementedError();
   @override
+  Future<Generated<CalendarEvents>> calendarEvents(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) => throw UnimplementedError();
+  @override
   Stream<ChatEvent> chat({required String minuteId, required String question, String languageCode = 'en'}) => throw UnimplementedError();
   @override
   Future<ChatPage> history(String minuteId, {int limit = 50, String? cursor}) => throw UnimplementedError();

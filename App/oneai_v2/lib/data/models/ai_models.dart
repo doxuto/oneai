@@ -1,5 +1,5 @@
 import 'package:one_ai/data/firebase/json_read.dart';
-import 'package:one_ai/data/models/minute_models.dart' show Speaker;
+import 'package:one_ai/data/models/minute_models.dart' show CalendarEvent, Speaker;
 
 enum ChatRole { user, assistant }
 
@@ -110,4 +110,11 @@ class Speakers {
   const Speakers({required this.speakers});
   factory Speakers.fromJson(Map<String, dynamic> j) => Speakers(speakers: readObjectList(j, 'speakers').map(Speaker.fromJson).toList());
   final List<Speaker> speakers;
+}
+
+class CalendarEvents {
+  const CalendarEvents({required this.events});
+  factory CalendarEvents.fromJson(Map<String, dynamic> j) =>
+      CalendarEvents(events: readObjectList(j, 'events').map(CalendarEvent.fromJson).toList());
+  final List<CalendarEvent> events;
 }

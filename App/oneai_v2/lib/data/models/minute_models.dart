@@ -181,6 +181,54 @@ class Speaker {
   final String label;
 }
 
+/// An event the summariser extracted; regenerate via `generateCalendarEvents`.
+class CalendarEvent {
+  const CalendarEvent({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.datetime,
+    required this.participants,
+    required this.rawText,
+  });
+  factory CalendarEvent.fromJson(Map<String, dynamic> j) => CalendarEvent(
+        id: readString(j, 'id') ?? '',
+        title: readString(j, 'title') ?? '',
+        description: readString(j, 'description') ?? '',
+        datetime: readString(j, 'datetime') ?? '',
+        participants: readStringList(j, 'participants'),
+        rawText: readString(j, 'rawText') ?? '',
+      );
+  final String id;
+  final String title;
+  final String description;
+
+  /// ISO-8601 when the model could resolve it, otherwise the wording as spoken.
+  final String datetime;
+  final List<String> participants;
+  final String rawText;
+
+  /// Parsed [datetime], or null when it is free text ("next Friday").
+  DateTime? get resolvedAt => DateTime.tryParse(datetime);
+}
+
+/// `artifacts/{kind}` docs the server may hold for a note.
+enum ArtifactKind {
+  shortQuestions,
+  quiz,
+  flashcards,
+  mindmap,
+  speakers,
+  calendarEvents;
+
+  static ArtifactKind? fromName(String name) {
+    for (final k in values) {
+      if (k.name == name) return k;
+    }
+    return null;
+  }
+}
+
 class MinuteFailure {
   const MinuteFailure({required this.code, required this.message});
   factory MinuteFailure.fromJson(Map<String, dynamic> j) =>
@@ -219,6 +267,8 @@ class MinuteDetail {
     required this.description,
     required this.keywords,
     required this.summaryLanguage,
+    this.calendarEvents = const [],
+    this.availableArtifacts = const {},
   });
 
   factory MinuteDetail.fromJson(Map<String, dynamic> j) {
@@ -235,6 +285,8 @@ class MinuteDetail {
       description: readString(j, 'description'),
       keywords: readStringList(j, 'keywords'),
       summaryLanguage: readString(j, 'summaryLanguage'),
+      calendarEvents: readObjectList(j, 'calendarEvents').map(CalendarEvent.fromJson).toList(),
+      availableArtifacts: readStringList(j, 'availableArtifacts').map(ArtifactKind.fromName).nonNulls.toSet(),
     );
   }
 
@@ -249,6 +301,15 @@ class MinuteDetail {
   final String? description;
   final List<String> keywords;
   final String? summaryLanguage;
+
+  /// Extracted at summarise time. Empty when nothing was scheduled.
+  final List<CalendarEvent> calendarEvents;
+
+  /// Which artifacts already exist server-side — show those tabs as ready
+  /// without a generate call.
+  final Set<ArtifactKind> availableArtifacts;
+
+  bool hasArtifact(ArtifactKind k) => availableArtifacts.contains(k);
 
   String get id => summaryInfo.id;
   MinuteStatus get status => summaryInfo.status;

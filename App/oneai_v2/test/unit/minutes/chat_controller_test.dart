@@ -39,6 +39,8 @@ class FakeAi implements AiRepository {
   @override
   Future<Generated<Mindmap>> mindmap(String minuteId, {String languageCode = 'en', bool force = false}) => throw UnimplementedError();
   @override
+  Future<Generated<CalendarEvents>> calendarEvents(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) => throw UnimplementedError();
+  @override
   Future<Generated<Speakers>> mapSpeakers(String minuteId, {bool force = false}) => throw UnimplementedError();
   @override
   Future<Speakers> renameSpeaker(String minuteId, {required String speakerId, required String name}) => throw UnimplementedError();

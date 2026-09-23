@@ -93,6 +93,16 @@ class MindmapController extends ArtifactController<Mindmap> {
   Future<Generated<Mindmap>> fetch({required bool force}) => ai.mindmap(minuteId, languageCode: languageCode, force: force);
 }
 
+/// Calendar events already come with the detail; this controller exists for
+/// an explicit "regenerate" — its first load is served from the cache the
+/// regenerate wrote, or falls back to a fresh generation.
+class CalendarEventsController extends ArtifactController<CalendarEvents> {
+  CalendarEventsController(super.minuteId);
+  @override
+  Future<Generated<CalendarEvents>> fetch({required bool force}) =>
+      ai.calendarEvents(minuteId, languageCode: languageCode, force: force);
+}
+
 /// Speaker names: LLM-guessed once, then user-renamed. Renames go to the
 /// server (no LLM call) and are pushed into the loaded detail too.
 class SpeakersController extends ArtifactController<Speakers> {
@@ -122,4 +132,6 @@ final quizProvider = AsyncNotifierProvider.autoDispose.family<QuizController, Ge
 final flashcardsProvider =
     AsyncNotifierProvider.autoDispose.family<FlashcardsController, Generated<Flashcards>, String>(FlashcardsController.new);
 final mindmapProvider = AsyncNotifierProvider.autoDispose.family<MindmapController, Generated<Mindmap>, String>(MindmapController.new);
+final calendarEventsProvider =
+    AsyncNotifierProvider.autoDispose.family<CalendarEventsController, Generated<CalendarEvents>, String>(CalendarEventsController.new);
 final speakersProvider = AsyncNotifierProvider.autoDispose.family<SpeakersController, Generated<Speakers>, String>(SpeakersController.new);
