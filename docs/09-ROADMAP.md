@@ -220,6 +220,9 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S8-10 | App Open bỏ qua 3 session đầu; Interstitial đếm completion (sàn 2) | không bao giờ 2 interstitial liền |
 | S8-11 | Banner refresh; Native ad trong danh sách (mặc định tắt) | `nativeRows`/`nativeChunks` khớp nhau, có test |
 | S8-12 | Paywall RevenueCat ở 4 điểm như v1 | |
+| S8-13 | **Gói & giá theo chuẩn ngành** (21-RESEARCH §4, Toan cấu hình RevenueCat/store): thêm gói **tuần** (~$4.99), trial **7 ngày** cho gói năm, gói năm mặc định trên paywall, giá địa phương VN, bật grace period + account hold (Play: 31% huỷ do lỗi thanh toán) | offering `default` có weekly/monthly/annual |
+| S8-14 | **Hạn mức minh bạch**: phút/credit còn lại ngay trên nút Ghi + sheet tạo note, cảnh báo "còn 5 phút" khi ghi, paywall + listing nêu rõ hạn mức free (than phiền #1 của ngành) | user không bao giờ "đụng tường" bất ngờ |
+| S8-15 | Chốt OQ-02/03/04 theo research: free 1 credit/ngày + 30 ph/bản (giữ), credit thưởng **không** sống qua đêm (ngành: minutes don't roll over), premium 50 bản/ngày × 4 h | .env không đổi |
 
 **Cổng ra:** ad hiện đúng tần suất trên cả 2 nền tảng; không client nào cộng được credit.
 
@@ -265,7 +268,7 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 
 | ID | Task | Xong khi |
 |---|---|---|
-| S11-01 | **Hỏi đáp xuyên nhiều note**: embedding mỗi note lúc ready, Firestore vector search `findNearest`, callable `askAll` streaming | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
+| S11-01 | **Hỏi đáp xuyên nhiều note** — **ưu tiên #1 của S11** (21-RESEARCH: đây là thứ tách leaders 2026 khỏi phần còn lại): embedding mỗi note lúc ready, Firestore vector search `findNearest`, callable `askAll` streaming, trích dẫn nhảy tới mốc audio | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
 | S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
 | S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có — ✍️ app: `Sm2` thuần + `ReviewStore` (per device) + chế độ Review trong FlashcardsSheet (Again/Hard/Good/Easy); nhắc push + sync server để sau | |
 | S11-04 | Dịch summary/transcript (`translations/{part}_{lang}`, streaming) — ✅ BE `translate`; ✍️ app `TranslationSheet` từ hàng Study tools | |
@@ -273,11 +276,28 @@ Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" 
 | S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
 | S11-07 | Ghi âm offline, tự upload khi có mạng — ✍️ `UploadQueue`: giữ flow sống sau khi rời màn, retry khi có mạng (connectivity_plus), lưu SharedPreferences để sống qua restart, banner ở Home | |
 | S11-08 | Meeting templates (standup / 1:1 / interview / lecture / brainstorm) → prompt summary theo kiểu — ✅ BE `template` + `TEMPLATE_GUIDANCE`; ✍️ app chips trong PromptLanguageSheet | |
+| S11-09 | **Ghi âm chống ngắt** (21-RESEARCH §6 #2): ghi theo chunk xuống đĩa, tự tiếp tục sau cuộc gọi / mất audio session, foreground service Android + notification, khôi phục sau crash ("đã lưu N phút"), cảnh báo pin/dung lượng | tắt máy giữa chừng vẫn còn bản ghi |
+| S11-10 | **Glossary "sửa một lần, nhớ mãi"**: `users/{uid}/glossary` (tên người, sản phẩm, thuật ngữ) → tự đưa vào `keywords` STT + prompt summarize; đổi tên speaker / sửa thuật ngữ đề nghị thêm vào glossary | BE S4-11 + app Settings › Glossary |
+| S11-11 | **Song ngữ trong note**: toggle "transcript VI + note EN" (và ngược) dùng `translate` đã có | không thêm BE |
+| S11-12 | **Consent UX**: thẻ "Đang ghi âm" chia sẻ 1 chạm (text/ảnh), badge cloud/on-device, câu "không dùng để huấn luyện" trong onboarding | |
+| S11-13 | **Benchmark tiếng Việt** (Ops, sau deploy dev): WER ElevenLabs vs Gemini trên 10 file VI bắc/trung/nam lẫn thuật ngữ EN → chọn `STT_VENDOR`; công bố "độ chính xác tiếng Việt" trên listing — không đối thủ nào làm | bảng số đo trong docs |
+| S11-06b | Share Extension mở rộng: nhận file từ Zalo/Drive/Files/Voice Memos; Android intent `audio/*`, `application/pdf` | |
 
 ## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
 
-Live transcription khi đang ghi (streaming STT), workspace/team + comment, nhận
-diện giọng xuyên cuộc họp, đồng bộ lịch Google/Outlook, cắt/ghép audio.
+| ID | Task | Vì sao chưa |
+|---|---|---|
+| S12-01 | Live transcription khi đang ghi (streaming STT) | XL; làm S12-06 trước thì được 80% giá trị |
+| S12-02 | Workspace / team + comment | XL — đổi data model |
+| S12-03 | Nhận diện giọng xuyên cuộc họp | XL, privacy |
+| S12-04 | Đồng bộ lịch Google/Outlook để tự ghi | L |
+| S12-05 | Cắt/ghép audio trước khi upload | M |
+| S12-06 | **Draft STT on-device** (Whisper-small / Gemini Nano) ngay khi ghi, offline; cloud "re-transcribe HD" là bước trả phí/rewarded — giải bài toán live + chi phí rewarded ở VN (eCPM $2–3) | L; cần đo pin/chất lượng VI on-device |
+| S12-07 | **Đồng bộ slide ↔ mốc thời gian** lecture (import PDF slide + audio, căn theo trang) | L; chỉ Notability/Goodnotes có, không VI |
+| S12-08 | **Connector**: xuất thẳng Notion / Google Docs; MCP server đọc note (Fathom, Plaud, Voicenotes đã có) | M–L |
+| S12-09 | Memory / cá nhân hoá cách tóm tắt theo user (Plaud Memory 07/2026) | L; cần S11-10 trước |
+
+**Không làm** (21-RESEARCH §6): phần cứng, bot vào họp online, agent tự hành động.
 
 ## Rủi ro
 

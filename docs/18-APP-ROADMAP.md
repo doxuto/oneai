@@ -18,6 +18,7 @@ thay BLoC bằng provider đã viết ở tầng logic.
 | A4 | Xem note: Summary / Transcript / Chat + AI tools | 3 tab, player + chương, speakers, chat stream, 7 artifact |
 | A5 | Settings, tag, share/xuất, xoá tài khoản | không còn mục nào của Settings v1 thiếu |
 | A6 | Monetization + push + chất lượng | ads runtime + UMP, paywall, quyền push, golden ≥30, a11y, perf |
+| A7 | Sau research đối thủ (24/09) | hạn mức minh bạch, ghi chống ngắt, consent, song ngữ, glossary UI |
 
 ## A1 — Khung app + Login
 
@@ -85,3 +86,14 @@ thay BLoC bằng provider đã viết ở tầng logic.
 
 A1 → A2 → A3 → A4 → A5 (viết trước, chưa compile) → khi có Flutter: build-request
 dọn lỗi theo từng sprint → A6 (cần SDK thật trên máy).
+
+## A7 — Bổ sung từ `21-COMPETITOR-RESEARCH.md` (24/09)
+
+| ID | Task | File | Ghi chú |
+|---|---|---|---|
+| A7-01 | Hạn mức minh bạch: pill "còn N credit · tối đa 30 phút" trên nút Ghi và trong `NewMinutesBottomSheet`; cảnh báo "còn 5 phút" trong RecordAudio; paywall nêu hạn mức free | `home_screen.dart`, `new_minutes_bottom_sheet.dart`, `record_audio_screen.dart`, `paywall.dart` | S8-14; BE đã có quota + maxDurationSeconds |
+| A7-02 | Ghi âm chống ngắt: chunk xuống đĩa, `audio_session` interruption → tự resume, foreground service Android (`record` + notification), khôi phục sau crash | `recorder_controller.dart`, PLATFORM-SETUP | S11-09 |
+| A7-03 | Consent: thẻ "Đang ghi âm" chia sẻ 1 chạm, badge cloud, câu "không dùng để huấn luyện" | `record_audio_screen.dart`, onboarding | S11-12 |
+| A7-04 | Song ngữ: toggle trong SummaryTab/TranscriptTab dùng `translationProvider` | `summary_tab.dart`, `transcript_tab.dart` | S11-11 |
+| A7-05 | Glossary UI: Settings › Glossary (CRUD), gợi ý thêm khi đổi tên speaker | `features/settings/glossary_screen.dart` | S11-10, chờ BE |
+| A7-06 | Gói tuần + trial 7 ngày trên paywall (RevenueCat offering), giá VN | `paywall.dart` | S8-13, Toan cấu hình |

@@ -80,3 +80,7 @@ cache, pipeline, listener) không.
 - S7: S7-03 mở rộng xuất Markdown/PDF có chương + action items; S7-09 ghim note.
 - **S11 mới (sau phát hành, 4 tuần)**: hỏi đáp xuyên note (vector), tìm kiếm, spaced repetition, dịch, share link, share extension, offline queue, templates.
 - **S12 (backlog)**: live transcription, team, voice profile, calendar sync.
+
+## 5. Bổ sung 24/09
+
+Góc nhìn đối thủ, giá và than phiền người dùng ở `21-COMPETITOR-RESEARCH.md`; các mục mới: S8-13..15, S11-09..13, S12-06..09, app A7.
