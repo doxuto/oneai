@@ -16,7 +16,7 @@ import type { MinuteDoc } from "./_shared.js";
 import { recountAfterMinuteWrite } from "./recount.js";
 
 export const onMinuteWritten = onDocumentWritten(
-  { document: "users/{uid}/minutes/{minuteId}", memory: "256MiB", timeoutSeconds: 60, secrets: [OPENAI_API_KEY, GEMINI_API_KEY] },
+  { document: "users/{uid}/minutes/{minuteId}", memory: "512MiB", timeoutSeconds: 120, secrets: [OPENAI_API_KEY, GEMINI_API_KEY] },
   async (event) => {
     const uid = event.params.uid;
     const before = event.data?.before.data();

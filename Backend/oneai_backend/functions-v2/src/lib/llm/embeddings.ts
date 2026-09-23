@@ -27,6 +27,21 @@ export interface EmbedderOptions {
 /** Inputs longer than this are cut — the models cap at ~2k tokens and the tail of a note adds little. */
 export const EMBED_MAX_CHARS = 8000;
 
+/**
+ * Gemini's batchEmbedContents takes at most 100 requests per call (OpenAI
+ * 2048); a chunked note (S11-01b) can have 200. Split, call in order, join.
+ */
+export const EMBED_BATCH_MAX = 100;
+
+function batched(fn: (texts: string[]) => Promise<number[][]>, max = EMBED_BATCH_MAX): (texts: string[]) => Promise<number[][]> {
+  return async (texts) => {
+    if (texts.length <= max) return fn(texts);
+    const out: number[][] = [];
+    for (let i = 0; i < texts.length; i += max) out.push(...await fn(texts.slice(i, i + max)));
+    return out;
+  };
+}
+
 function clip(texts: string[]): string[] {
   return texts.map((t) => (t.length > EMBED_MAX_CHARS ? t.slice(0, EMBED_MAX_CHARS) : t));
 }
@@ -64,7 +79,7 @@ export function geminiEmbedder(opts: EmbedderOptions): Embedder {
   return {
     vendor: "gemini",
     dimension: opts.dimension,
-    async embed(texts, task, signal) {
+    embed: (texts, task, signal) => batched(async (texts) => {
       if (texts.length === 0) return [];
       const body = {
         requests: clip(texts).map((text) => ({
@@ -80,7 +95,7 @@ export function geminiEmbedder(opts: EmbedderOptions): Embedder {
       const vectors = (json.embeddings ?? []).map((e) => e.values ?? []);
       if (vectors.length !== texts.length) throw new Error(`gemini embedding: ${vectors.length} vectors for ${texts.length} inputs`);
       return checkDims(vectors, opts.dimension, "gemini");
-    },
+    })(texts),
   };
 }
 
@@ -91,7 +106,7 @@ export function openAiEmbedder(opts: EmbedderOptions): Embedder {
   return {
     vendor: "openai",
     dimension: opts.dimension,
-    async embed(texts, _task, signal) {
+    embed: (texts, _task, signal) => batched(async (texts) => {
       if (texts.length === 0) return [];
       const json = (await post(fetchImpl, endpoint, {
         method: "POST",
@@ -102,7 +117,7 @@ export function openAiEmbedder(opts: EmbedderOptions): Embedder {
       const vectors = rows.map((r) => r.embedding ?? []);
       if (vectors.length !== texts.length) throw new Error(`openai embedding: ${vectors.length} vectors for ${texts.length} inputs`);
       return checkDims(vectors, opts.dimension, "openai");
-    },
+    })(texts),
   };
 }
 

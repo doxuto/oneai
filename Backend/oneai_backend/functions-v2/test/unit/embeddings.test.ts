@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cosine, EMBED_MAX_CHARS, geminiEmbedder, openAiEmbedder } from "../../src/lib/llm/embeddings.js";
+import { cosine, EMBED_BATCH_MAX, EMBED_MAX_CHARS, geminiEmbedder, openAiEmbedder } from "../../src/lib/llm/embeddings.js";
 
 function fakeFetch(reply: unknown, status = 200) {
   let captured: Record<string, unknown> | undefined;
@@ -55,4 +55,19 @@ describe("embedders (S11-01)", () => {
     expect(cosine([1, 0], [0, 1])).toBeCloseTo(0);
     expect(cosine([0, 0], [1, 1])).toBe(0);
   });
+
+  it("S11-01b: more than 100 inputs go out in ordered batches of ≤100 (Gemini's cap), vectors joined in order", async () => {
+    const sizes: number[] = [];
+    const fetchImpl: typeof fetch = async (_u, init) => {
+      const body = JSON.parse(String(init?.body)) as { requests: { content: { parts: { text: string }[] } }[] };
+      sizes.push(body.requests.length);
+      return new Response(JSON.stringify({ embeddings: body.requests.map((r) => ({ values: [Number(r.content.parts[0]!.text), 0] })) }));
+    };
+    const e = geminiEmbedder({ apiKey: "k", model: "m", dimension: 2, timeoutMs: 1000, fetchImpl });
+    const texts = Array.from({ length: 205 }, (_, i) => String(i));
+    const out = await e.embed(texts, "document");
+    expect(sizes).toEqual([EMBED_BATCH_MAX, EMBED_BATCH_MAX, 5]);
+    expect(out.map((v) => v[0])).toEqual(texts.map(Number));
+  });
 });
+
