@@ -78,6 +78,18 @@ Param không bí mật nằm trong `.env` (commit có chủ đích).
 
 Test: **172 unit** (chạy mọi nơi) + **140 integration/rules** (chạy qua `npm run test:integration` với emulator).
 
+## Load test (S10-02)
+
+```bash
+npm run load-test                 # USERS=100 CONTENTION=50 QUOTA=5 STT_MS=150 mặc định
+```
+
+Chạy trên emulator với vendor giả: (1) một user free bắn 50 start song song →
+đúng số lượt được nhận = `quota.used`; (2) 100 user premium start + pipeline
+song song → mỗi job gọi STT/LLM đúng 1 lần, 100 note `ready`, in p50/p95;
+(3) chạy lại toàn bộ job (redelivery) → 100% skip, 0 call vendor. Exit code ≠ 0
+khi một bất biến vỡ.
+
 ## Cấu trúc test
 
 ```

@@ -123,11 +123,18 @@ Chi tiết phần còn lại trong `09-ROADMAP.md`.
 | [x] | S10-03a | Migration v1→v2 + inventory CLI (`tools/migrate-v1.mjs inventory\|plan\|apply`), idempotent, dry-run mặc định | `src/tools/migrateV1.ts`, `tools/migrate-v1.mjs` | test seed dữ liệu hình v1 → migrate → đọc lại qua handler v2 |
 | [x] | S1-12 | `tools/seed-emulator.mjs` — user demo + note mọi trạng thái cho dev App | `functions-v2/tools/` | |
 | [x] | S10-06a | `scripts/deploy.sh` có chốt chặn + `docs/15-RUNBOOK.md` | | |
+| [x] | S10-05 | Alert as-code: `monitoring/apply.sh` (channel email, 8 log-based metric khớp tên `log.*` trong code, 9 policy JSON: pipeline failed, job reaped, STT 5xx, SSV forgery, RevenueCat unauthorized, index missing, FCM failed, error rate 5xx, worker p95) | `Backend/oneai_backend/monitoring/` | Toan chạy sau deploy dev; budget cần billing id |
+| [x] | S10-02 | Load test emulator: `npm run load-test` — 1 user 50 start song song = `quota.used`; 100 user start+pipeline song song, 1 STT + 1 LLM/job; redelivery 100% skip | `functions-v2/tools/load-test.mjs` | exit ≠ 0 khi bất biến vỡ |
+| [x] | S9-02 | Checklist parity BE v1→v2, 28 dòng, bằng chứng test từng dòng | `docs/16-PARITY-BACKEND.md` | 0 tính năng rơi ngoài 4 mục bỏ có chủ ý |
 | [~] | S8-06 | Dart `AdGate` + `AdLedger` + `AdsConfig` | `App/oneai_v2/lib/features/ads/` | 27 test viết sẵn — **chưa compile** (chờ Flutter) |
 
 ---
 
 ## Việc chỉ Toan làm được (chặn automation)
+
+> **23/09 — Toan: "hiện tại chưa thực hiện được, sẽ check và báo sau."** Mọi mục
+> dưới đây đang chờ; agent không chặn việc khác vì chúng. Khi Toan báo, cập nhật
+> cột trạng thái ở đây.
 
 | # | Việc | Mở khoá |
 |---|---|---|
@@ -139,4 +146,7 @@ Chi tiết phần còn lại trong `09-ROADMAP.md`.
 | T6 | Chốt OQ-01, OQ-02 | S3-00 dùng mặc định tạm nếu chưa chốt |
 | T7 | Revoke SOCKS proxy credential ở nhà cung cấp | bảo mật |
 | T8 | Upload APNs key (.p8) vào Firebase console → Cloud Messaging; bật Push Notifications + Background Modes (Remote notifications) trong Xcode | push iOS |
+| T10 | `cd Backend/oneai_backend/functions-v2 && sudo rm /usr/local/bin/firebase && npm i -D firebase-tools && npm run test:integration` (binary cũ là Intel — "Bad CPU type") — cần Java 11+ | 140 integration test |
+| T11 | Sau deploy dev: `PROJECT_ID=oneai-dev NOTIFY_EMAIL=… ./monitoring/apply.sh` | alert |
+| T12 | `npm run load-test` trên máy (emulator) — báo p95 | S10-02 |
 | T9 | (tuỳ chọn) đặt `STT_VENDOR=gemini` hoặc `STT_FALLBACK_VENDOR=gemini` trong `functions-v2/.env` rồi deploy — không cần sửa code | đổi vendor STT |

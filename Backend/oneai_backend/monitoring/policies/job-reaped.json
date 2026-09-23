@@ -1,0 +1,35 @@
+{
+  "displayName": "One AI \u2014 worker not finishing",
+  "documentation": {
+    "content": "The 15-minute reaper failed a stuck job. Look at `processTranscription` for OOM/timeout; check Cloud Tasks queue backlog.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "oneai_job_reaped > 0 in 900s",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/oneai_job_reaped\" AND resource.type=\"cloud_run_revision\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "notificationChannels": [
+    "__CHANNEL__"
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s"
+  }
+}

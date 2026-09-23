@@ -1,0 +1,35 @@
+{
+  "displayName": "One AI \u2014 RevenueCat wrong secret",
+  "documentation": {
+    "content": "Either the secret was rotated on one side only, or someone is probing. Compare Secret Manager vs RevenueCat dashboard.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "oneai_revenuecat_unauth > 0 in 300s",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/oneai_revenuecat_unauth\" AND resource.type=\"cloud_run_revision\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "300s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "notificationChannels": [
+    "__CHANNEL__"
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s"
+  }
+}

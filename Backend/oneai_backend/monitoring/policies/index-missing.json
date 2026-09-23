@@ -1,0 +1,35 @@
+{
+  "displayName": "One AI \u2014 Firestore index missing",
+  "documentation": {
+    "content": "listMinutes threw failed-precondition. `firebase deploy --only firestore:indexes`.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "oneai_index_missing > 0 in 300s",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/oneai_index_missing\" AND resource.type=\"cloud_run_revision\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "300s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "notificationChannels": [
+    "__CHANNEL__"
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s"
+  }
+}

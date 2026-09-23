@@ -1,0 +1,35 @@
+{
+  "displayName": "One AI \u2014 FCM send failing",
+  "documentation": {
+    "content": "FCM calls are throwing (not dead tokens \u2014 those are pruned silently). Check APNs key validity in Firebase console.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "oneai_push_failed > 3 in 900s",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/oneai_push_failed\" AND resource.type=\"cloud_run_revision\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 3,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "notificationChannels": [
+    "__CHANNEL__"
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s"
+  }
+}

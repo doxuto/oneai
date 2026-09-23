@@ -1,6 +1,6 @@
 {
   "name": "oneai-functions-v2",
-  "description": "One AI — Cloud Functions v2 (TypeScript)",
+  "description": "One AI \u2014 Cloud Functions v2 (TypeScript)",
   "private": true,
   "type": "module",
   "main": "lib/index.js",
@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "test:integration": "firebase emulators:exec --only firestore,auth,storage --project demo-oneai \"vitest run -c vitest.integration.config.ts\"",
     "serve": "npm run build && firebase emulators:start --only functions,firestore,auth,storage --project demo-oneai",
-    "logs": "firebase functions:log --only v2"
+    "logs": "firebase functions:log --only v2",
+    "load-test": "npm run build && firebase emulators:exec --only firestore,storage --project demo-oneai \"node tools/load-test.mjs\""
   },
   "dependencies": {
     "firebase-admin": "^13.3.0",

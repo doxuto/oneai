@@ -55,7 +55,7 @@ task kế tiếp (`12-AGENT-WORKFLOW.md`).
 | S0-07 | Chạy `flutter create` trong `App/oneai_v2/` theo README, chép `assets/` sang | `flutter analyze` xanh |
 | S0-08 | `flutterfire configure` cho 3 flavor | 3 file `firebase_options_*.dart`, đều gitignore |
 | S0-09 | Info.plist + AndroidManifest theo `13-CONFIG-INVENTORY.md` §6–8 | app chạy được trên máy thật |
-| S0-10 | GitHub Actions: lint + test cho `functions-v2` và `oneai_v2` | CI xanh |
+| S0-10 | GitHub Actions: lint + test cho `functions-v2` và `oneai_v2` | ✅ 23/09 (`.github/workflows/{backend,app}.yml`, chạy khi push lên GitHub) |
 
 **Cổng ra:** cả hai scaffold build được trên máy Toan; 4 tab watcher chạy.
 
@@ -72,7 +72,7 @@ Phần lớn đã dựng sẵn 22/09; sprint này hoàn thiện và deploy lên 
 | S1-03 | ~~`getMe`, `onUserCreated`, `onUserDeleted`~~ | ✅ |
 | S1-04 | ~~App: pubspec sạch, analysis_options strict, theme chép nguyên si, `ApiFailure` sealed, `FunctionsClient`, router~~ | ✅ 13 file |
 | S1-05 | Đặt secrets qua `firebase functions:secrets:set` | `getMe` chạy trên dev |
-| S1-06 | Emulator suite + seed data + rules unit test | `emulators:exec` chạy toàn bộ test |
+| S1-06 | Emulator suite + seed data + rules unit test | ✅ viết xong (140 test) — **chưa chạy được trên máy Toan**, xem T2 |
 | S1-07 | Bật App Check chế độ **monitor** (DeviceCheck / Play Integrity) | dashboard thấy request hợp lệ |
 | S1-08 | Nối `authStateProvider` vào `FirebaseAuth.authStateChanges()` | redirect login hoạt động thật |
 | S1-09 | App gọi `getMe` qua emulator, hiện kết quả ra màn placeholder | **M1** |
@@ -107,13 +107,13 @@ Phần lớn đã dựng sẵn 22/09; sprint này hoàn thiện và deploy lên 
 |---|---|---|
 | S3-01 | `startTranscription` — trừ quota trong `runTransaction` rồi enqueue task | 20 request song song, quota 1 → đúng 1 cái qua |
 | S3-02 | `processTranscription` (`onTaskDispatched`, 2GiB/540s, retry 3) | file 100MB không OOM |
-| S3-03 | Adapter ElevenLabs, timeout **nhỏ hơn** budget function, map 429/5xx | |
+| S3-03 | Adapter ElevenLabs, timeout **nhỏ hơn** budget function, map 429/5xx — ✅ ➕ **Gemini STT** + đổi vendor bằng `STT_VENDOR`, fallback | |
 | S3-04 | `convertTranscript` → `startSeconds`/`endSeconds` số; bảng ISO-639-3 một module | |
 | S3-05 | Summarize: prompt load bằng `__dirname` | |
 | S3-06 | Máy trạng thái + hoàn quota khi thất bại vĩnh viễn | kill task giữa chừng, quota về đúng |
 | S3-07 | `cancelTranscription` | huỷ khi `queued`/`transcribing`, hoàn quota |
 | S3-08 | Nhánh PDF | PDF 20MB ra summary đúng nội dung |
-| S3-09 | `sweepOrphanFiles` hằng ngày | file mồ côi + minute kẹt `uploading` >24h bị dọn |
+| S3-09 | `sweepOrphanFiles` hằng ngày — ✅ ➕ `reapStaleJobs` 15 phút, trần `maxActiveJobs`/user | file mồ côi + minute kẹt `uploading` >24h bị dọn |
 | S3-10 | Idempotency `requestId` + `ref.create()` | gọi 2 lần cùng id → 1 job |
 
 **Cổng ra (M2):** upload audio thật → `status:"ready"` + summary + transcript.
@@ -202,7 +202,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 |---|---|---|
 | S8-01 | Quota `users/{uid}/quota/{period}` + `resetDailyQuota` — chờ OQ-02, OQ-03 | reset đúng 00:00 giờ VN |
 | S8-02 | `revenueCatWebhook`: so secret constant-time, verify uid, `set(merge)`, `planExpiresAt` | `Bearer undefined` → 403 |
-| S8-03 | Kiểm hạn premium lúc dùng — chờ OQ-04 | webhook miss không cho premium vĩnh viễn |
+| S8-03 | Kiểm hạn premium lúc dùng — ✅ `effectivePlan(planExpiresAt)` ở mọi đường đọc | webhook miss không cho premium vĩnh viễn |
 | S8-04 | `adRewardSsv` + verify ECDSA P-256 + cache key 24h | 5 test bắt buộc (`08` §5) xanh |
 | S8-05 | Bật SSV trên rewarded unit trong AdMob console | ad thật cộng đúng credit |
 | S8-06 | Dart `AdGate` **thuần** + `AdLedger` | ≥30 unit test, phủ đủ 12 `AdRefusal` |
@@ -222,10 +222,10 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | ID | Task | Xong khi |
 |---|---|---|
 | S9-01 | **Đối chiếu từng mục `02-AUDIT-APP.md` §3 và §5** với app mới | bảng checklist 100% |
-| S9-02 | Đối chiếu từng endpoint `01-AUDIT-BACKEND-V1.md` §1 với callable v2 | không tính năng nào rơi |
+| S9-02 | Đối chiếu từng endpoint `01-AUDIT-BACKEND-V1.md` §1 với callable v2 — ✅ `16-PARITY-BACKEND.md` (28 dòng, 0 rơi) | không tính năng nào rơi |
 | S9-03 | Accessibility: touch target ≥44pt, semantics, contrast AA | audit sạch |
 | S9-04 | Perf: cold start < 2s trên iPhone 12 | |
-| S9-05 | `integration_test` luồng chính trên CI + emulator | xanh |
+| S9-05 | `integration_test` luồng chính trên CI + emulator — ✅ BE (job `integration` trong CI); App chờ Flutter | xanh |
 | S9-06 | Crashlytics/Sentry alert + crash-free tracking | dashboard chạy |
 | S9-07 | Chốt **toàn bộ** `11-OPEN-QUESTIONS.md` | 0 mục `CHƯA CHỐT` |
 | S9-08 | Code freeze | **M5** |
@@ -237,11 +237,11 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | ID | Task | Xong khi |
 |---|---|---|
 | S10-01 | Deploy staging + smoke test đầy đủ | 0 lỗi |
-| S10-02 | Load test 100 transcribe đồng thời | không OOM, chi phí đo được |
-| S10-03 | Migration dữ liệu v1 → v2 — **chờ OQ-01** | dry-run trên bản sao staging |
+| S10-02 | Load test 100 transcribe đồng thời — ✅ `npm run load-test` (emulator, vendor giả: contention quota, 100 job song song, redelivery); phần chi phí/OOM thật đo trên staging | không OOM, chi phí đo được |
+| S10-03 | Migration dữ liệu v1 → v2 — ✅ tool `migrate-v1.mjs inventory\|plan\|apply`; **chờ OQ-01** để chạy | dry-run trên bản sao staging |
 | S10-04 | App Check chuyển sang **enforce** | traffic hợp lệ không bị chặn |
-| S10-05 | Alert: error rate, p95, chi phí/ngày | bắn được khi test thủ công |
-| S10-06 | Runbook sự cố + rollback từng function | đã diễn tập 1 lần |
+| S10-05 | Alert: error rate, p95, chi phí/ngày — ✅ as-code `monitoring/apply.sh` (8 log-metric + 9 policy); Toan chạy sau deploy, budget cần billing id | bắn được khi test thủ công |
+| S10-06 | Runbook sự cố + rollback từng function — ✅ `15-RUNBOOK.md`; diễn tập chờ deploy | đã diễn tập 1 lần |
 | S10-07 | Terms + Privacy cập nhật theo UMP | duyệt xong |
 | S10-08 | App Store + Play Store listing, privacy labels, Data Safety | nộp được |
 | S10-09 | Deploy `functions:v2` lên prod (v1 vẫn sống) | |

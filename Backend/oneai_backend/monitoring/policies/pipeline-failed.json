@@ -1,0 +1,35 @@
+{
+  "displayName": "One AI \u2014 transcriptions failing",
+  "documentation": {
+    "content": "More than 5 permanent pipeline failures in 15 min. Check `pipeline.error` logs for the `code`; STT/LLM outage \u2192 consider `STT_FALLBACK_VENDOR`. Credits are already refunded.",
+    "mimeType": "text/markdown"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "oneai_pipeline_failed > 5 in 900s",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/oneai_pipeline_failed\" AND resource.type=\"cloud_run_revision\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 5,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "notificationChannels": [
+    "__CHANNEL__"
+  ],
+  "alertStrategy": {
+    "autoClose": "1800s"
+  }
+}
