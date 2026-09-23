@@ -82,7 +82,9 @@ describe("wire shapes", () => {
         "keywords": [
           "k",
         ],
+        "sourceExpiresAt": null,
         "sourcePath": "users/u1/minutes/m1/source/a.pdf",
+        "sourceState": "available",
         "sourceType": "pdf",
         "speakers": [
           {

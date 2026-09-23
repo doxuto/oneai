@@ -37,6 +37,14 @@ if [[ $ONLY_RULES -eq 0 ]]; then
   done
 fi
 
+# Bucket lifecycle = backstop cho retention (functions xoá theo plan; rule này xoá mọi source > 180 ngày).
+BUCKET="$(node -e 'const p=process.argv[1]; console.log(p + ".appspot.com")' "$PROJECT")"
+if command -v gsutil >/dev/null 2>&1; then
+  gsutil lifecycle set storage.lifecycle.json "gs://$BUCKET" && echo "→ lifecycle đã áp lên gs://$BUCKET"
+else
+  echo "⚠ không có gsutil: chạy tay  gsutil lifecycle set storage.lifecycle.json gs://$BUCKET"
+fi
+
 if [[ $ONLY_RULES -eq 1 ]]; then
   firebase deploy --only firestore:rules,firestore:indexes,storage -P "$ALIAS"
 else

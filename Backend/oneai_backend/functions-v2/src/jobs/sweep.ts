@@ -7,6 +7,7 @@
  *   3. Storage prefixes with no note doc — e.g. a delete whose Storage step
  *      failed; remove the files.
  *   4. finished transcriptionJobs older than 7 days.
+ *   5. source audio/PDF past the plan's retention window (retention.ts).
  * Pure over Deps so it runs against the emulator in tests.
  */
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
@@ -14,18 +15,20 @@ import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
 import { minutePrefix } from "../minutes/_shared.js";
 import { failJob } from "../transcribe/pipeline.js";
+import { expireSources } from "./retention.js";
 
 export interface SweepReport {
   abandonedUploads: number;
   stuckJobs: number;
   orphanPrefixes: number;
   oldJobs: number;
+  expiredSources: number;
 }
 
 const H = 60 * 60 * 1000;
 
 export async function sweep(deps: Deps, now = deps.now()): Promise<SweepReport> {
-  const report: SweepReport = { abandonedUploads: 0, stuckJobs: 0, orphanPrefixes: 0, oldJobs: 0 };
+  const report: SweepReport = { abandonedUploads: 0, stuckJobs: 0, orphanPrefixes: 0, oldJobs: 0, expiredSources: 0 };
 
   // 1. abandoned uploads (> 24 h)
   {
@@ -102,6 +105,9 @@ export async function sweep(deps: Deps, now = deps.now()): Promise<SweepReport> 
       report.oldJobs = snap.size;
     }
   }
+
+  // 5. source files past their retention (plan-based; see retention.ts)
+  report.expiredSources = (await expireSources(deps, now)).expired;
 
   log.info("sweep.done", { ...report });
   return report;

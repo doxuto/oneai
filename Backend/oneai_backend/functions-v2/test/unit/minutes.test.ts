@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { describe, expect, it } from "vitest";
 import { unitDeps } from "../../src/lib/deps.js";
+import { sourceExpiryFor } from "../../src/jobs/retention.js";
 import {
   contentTypeMatches,
   safeFileName,
@@ -195,6 +196,19 @@ describe("mappers", () => {
     });
     expect(d.failure).toEqual({ code: "stt_timeout", message: "took too long" });
     expect(toMinuteDetail("m1", {}, { transcript: null, speakers: [] }).failure).toBeNull();
+  });
+
+  it("sourceState is derived: none / available / expired", () => {
+    expect(toMinuteDetail("m1", {}, { transcript: null, speakers: [] }).sourceState).toBe("none");
+    expect(toMinuteDetail("m1", { sourcePath: "p" }, { transcript: null, speakers: [] }).sourceState).toBe("available");
+    expect(toMinuteDetail("m1", { sourcePath: null, sourceState: "expired" }, { transcript: null, speakers: [] })).toMatchObject({ sourceState: "expired", sourcePath: null, sourceExpiresAt: null });
+  });
+
+  it("sourceExpiryFor: by days, -1 = never", () => {
+    const t = new Date("2026-09-23T00:00:00Z");
+    expect(sourceExpiryFor(t, 7)?.toISOString()).toBe("2026-09-30T00:00:00.000Z");
+    expect(sourceExpiryFor(t, 0)?.toISOString()).toBe(t.toISOString());
+    expect(sourceExpiryFor(t, -1)).toBeNull();
   });
 
   it("toMinuteDetail defaults calendarEvents and availableArtifacts to empty", () => {

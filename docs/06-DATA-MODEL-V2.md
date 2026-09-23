@@ -83,6 +83,10 @@ khiến nhánh 3/ngày không bao giờ chạy tới, và reward bị xoá sạc
 tiếng vượt ngưỡng đó. v1 ghi cả `metadata/transcription` lẫn field
 `transcription` trên doc gốc — vừa trùng vừa rủi ro.
 
+**Retention:** `sourceState` (`available`|`expired`), `sourceExpiresAt`
+(`Timestamp|null`), `sourceExpiredAt`. Index collection-group
+`(sourceState, sourceExpiresAt)` cho bước xoá hằng ngày. Xem `05` §2.7b.
+
 ### `users/{uid}/minutes/{minuteId}/artifacts/{kind}`
 
 | Field | Type |

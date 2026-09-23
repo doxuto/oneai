@@ -7,7 +7,7 @@
  *   cancelled at any check-point ⇒ stop quietly, no writes
  */
 import { HttpsError } from "firebase-functions/v2/https";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { summarizeTranscript } from "../ai/summarize.js";
 import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
@@ -15,6 +15,7 @@ import { previewOf } from "../lib/stt/convert.js";
 import { sttLanguageCode } from "../lib/stt/languages.js";
 import { minuteRef, transcriptPath, type MinuteDoc } from "../minutes/_shared.js";
 import type { Transcript } from "../minutes/types.js";
+import { sourceExpiryFor } from "../jobs/retention.js";
 import { notifyMinuteResult } from "../push/notify.js";
 import { refundQuota } from "../quota/quota.js";
 import { effectivePlan, type UserDoc } from "../users/_shared.js";
@@ -122,10 +123,14 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
     await assertNotCancelled();
 
     // ---- ready ----------------------------------------------------------
+    const expiresAt = sourceExpiryFor(deps.now(), limits.sourceRetentionDays);
     const batch = deps.db.batch();
     batch.update(mRef, {
       status: "ready", statusUpdatedAt: FieldValue.serverTimestamp(), failure: null,
       title: s.title, iconEmoji: s.iconEmoji, contentKind: s.contentKind, summary: s.summary,
+      // Retention clock starts now; the daily sweep removes the bytes later.
+      sourceState: "available",
+      sourceExpiresAt: expiresAt === null ? null : Timestamp.fromDate(expiresAt),
       updatedAt: FieldValue.serverTimestamp(),
     });
     if (s.calendarEvents.length > 0) {

@@ -135,6 +135,8 @@ describe("runPipeline", () => {
     const m = (await db.doc("users/u1/minutes/m1").get()).data()!;
     expect(m).toMatchObject({ status: "ready", title: "Standup", iconEmoji: "📝", contentKind: "team_meeting", durationSeconds: 3.9, languageCode: "eng", transcriptPath: "users/u1/minutes/m1/transcript.json", stt: { vendor: "fake", model: "fake-1" } });
     expect(m.transcriptPreview).toContain("Hello everyone");
+    expect(m.sourceState).toBe("available");
+    expect(m.sourceExpiresAt.toDate().toISOString()).toBe("2026-09-30T03:00:00.000Z"); // free plan: 7 days after ready
     expect(m.summary.sections[0].bullets).toEqual(["• We synced."]);
 
     const [buf] = await bucket.file("users/u1/minutes/m1/transcript.json").download();

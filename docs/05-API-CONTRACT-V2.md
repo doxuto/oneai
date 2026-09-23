@@ -122,6 +122,8 @@ interface MinuteDetail extends MinuteSummary {
   summary: Summary | null;
   transcript: Transcript | null;
   sourcePath: string | null;         // path Storage; client tự lấy download URL bằng auth của mình
+  sourceState: "none" | "available" | "expired";   // "expired": audio gốc đã bị xoá theo retention, transcript/summary còn
+  sourceExpiresAt: string | null;    // khi nào audio gốc bị xoá; null = giữ vô hạn (retention -1)
   speakers: { id: string; label: string }[];
   failure: { code: string; message: string } | null;
   description: string | null;
@@ -260,6 +262,19 @@ bao giờ** đọc/ghi `devices/` trực tiếp (rules chặn).
 `reason:"tooManyActiveJobs"` khi user đã có ≥ `maxActiveJobs` job queued/running
 (free 1, premium 3 — param `FREE_MAX_ACTIVE_JOBS`/`PREMIUM_MAX_ACTIVE_JOBS`),
 kiểm tra **trước** khi trừ quota.
+
+### 2.7b Retention file gốc (chống đầy Storage)
+
+File âm thanh/PDF gốc là object nặng duy nhất một note sở hữu (transcript vài KB).
+Khi note `ready`, server đóng dấu `sourceExpiresAt = now + retention` theo plan
+(`FREE_SOURCE_RETENTION_DAYS=7`, `PREMIUM_SOURCE_RETENTION_DAYS=90`, `-1` = giữ
+mãi). Bước 5 của `sweepOrphanFiles` (hằng ngày) xoá `source/` đã quá hạn và đặt
+`sourceState:"expired"`, `sourcePath:null` — note, transcript, summary, artifact
+**không đổi**; app ẩn player và hiện "Audio gốc đã hết hạn lưu trữ". Trước khi
+xoá server đọc lại plan **hiện tại** của chủ note: user vừa lên premium được kéo
+hạn theo cửa sổ 90 ngày, không mất audio theo lịch cũ. Backstop độc lập plan:
+`storage.lifecycle.json` (xoá mọi source > 180 ngày, abort multipart > 2 ngày),
+`deploy.sh` áp bằng `gsutil lifecycle set`. Upload bỏ dở > 24h đã bị dọn ở bước 1.
 
 ### 2.8 Speech-to-text — đổi vendor bằng config
 

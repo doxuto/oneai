@@ -1,0 +1,16 @@
+{
+  "rule": [
+    {
+      "action": { "type": "Delete" },
+      "condition": {
+        "age": 180,
+        "matchesPrefix": ["users/"],
+        "matchesSuffix": [".m4a", ".mp3", ".wav", ".aac", ".ogg", ".flac", ".webm", ".mp4", ".pdf"]
+      }
+    },
+    {
+      "action": { "type": "AbortIncompleteMultipartUpload" },
+      "condition": { "age": 2 }
+    }
+  ]
+}

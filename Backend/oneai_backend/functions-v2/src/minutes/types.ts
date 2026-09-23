@@ -135,6 +135,10 @@ export interface MinuteDetail extends MinuteSummary {
   transcript: Transcript | null;
   /** Storage path of the source file; the client resolves a download URL with its own auth. */
   sourcePath: string | null;
+  /** `none` before upload, `available` while the bytes exist, `expired` after retention removed them. */
+  sourceState: "none" | "available" | "expired";
+  /** When the source bytes will be (or were) removed. Null = kept indefinitely. */
+  sourceExpiresAt: string | null;
   speakers: Speaker[];
   failure: MinuteFailure | null;
   description: string | null;

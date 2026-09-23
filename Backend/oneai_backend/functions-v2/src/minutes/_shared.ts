@@ -25,6 +25,9 @@ export interface MinuteDoc {
   failure?: { code?: string; message?: string } | null;
   durationSeconds?: number | null;
   sourcePath?: string | null;
+  /** "available" while the bytes exist; "expired" once retention removed them. */
+  sourceState?: string | null;
+  sourceExpiresAt?: Timestamp | null;
   sourceContentType?: string | null;
   sourceSizeBytes?: number | null;
   languageCode?: string | null;
@@ -204,6 +207,8 @@ export function toMinuteDetail(
     summary: toSummary(d.summary),
     transcript: extras.transcript,
     sourcePath: str(d.sourcePath),
+    sourceState: d.sourceState === "expired" ? "expired" : d.sourcePath ? "available" : "none",
+    sourceExpiresAt: toIso(d.sourceExpiresAt ?? null),
     speakers: extras.speakers,
     failure:
       d.failure && typeof d.failure === "object"
