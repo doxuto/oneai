@@ -613,5 +613,6 @@
   "searchNotes": "Search notes",
   "pinNote": "Pin",
   "unpinNote": "Unpin",
-  "noSearchResults": "No notes match your search."
+  "noSearchResults": "No notes match your search.",
+  "earnCreditBlurb": "Watch a short ad while you wait and get 1 free credit for your next note."
 }

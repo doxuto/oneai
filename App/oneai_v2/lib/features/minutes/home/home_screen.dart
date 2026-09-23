@@ -14,6 +14,7 @@ import 'package:one_ai/core/widgets/state_views.dart';
 import 'package:one_ai/data/models/tag_models.dart';
 import 'package:one_ai/features/billing/entitlement.dart';
 import 'package:one_ai/features/billing/paywall.dart';
+import 'package:one_ai/features/credits/credits_provider.dart';
 import 'package:one_ai/features/credits/premium_button.dart';
 import 'package:one_ai/features/minutes/detail/feedback_dialog.dart';
 import 'package:one_ai/features/minutes/home/home_controller.dart';
@@ -68,11 +69,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: switch (minutes) {
                   AsyncData(:final value) when value.isEmpty && ref.watch(searchQueryProvider).isNotEmpty => const _NoSearchResults(),
                   AsyncData(:final value) when value.isEmpty => const _EmptyNotes(),
-                  AsyncData(:final value) => ListView.builder(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(bottom: 80), // clear the FAB
-                      itemCount: value.length,
-                      itemBuilder: (_, i) => Padding(padding: const EdgeInsets.only(bottom: 16), child: MinuteItemCard(item: value[i])),
+                  AsyncData(:final value) => RefreshIndicator(
+                      // The list is live; pull-to-refresh re-subscribes (network
+                      // hiccup recovery) and refetches the quota pill, as v1 did.
+                      onRefresh: () async {
+                        ref.invalidate(minutesListProvider);
+                        ref.invalidate(quotaProvider);
+                        await ref.read(minutesListProvider.future);
+                      },
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 80), // clear the FAB
+                        itemCount: value.length,
+                        itemBuilder: (_, i) => Padding(padding: const EdgeInsets.only(bottom: 16), child: MinuteItemCard(item: value[i])),
+                      ),
                     ),
                   AsyncError(:final error) => ErrorState(error: error, onRetry: () => ref.invalidate(minutesListProvider)),
                   _ => const LoadingState(),

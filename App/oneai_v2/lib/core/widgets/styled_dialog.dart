@@ -17,6 +17,7 @@ class StyledDialog extends StatelessWidget {
     this.cancelLabel,
     this.onCancel,
     this.destructive = false,
+    this.titleIcon,
   });
 
   final String title;
@@ -26,10 +27,18 @@ class StyledDialog extends StatelessWidget {
   final String? cancelLabel;
   final VoidCallback? onCancel;
   final bool destructive;
+  /// v1 showed an 18×18 icon before some titles (the recording exit warning).
+  final Widget? titleIcon;
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: Text(title, textAlign: TextAlign.center, style: context.textTheme.titleLarge),
+        title: titleIcon == null
+            ? Text(title, textAlign: TextAlign.center, style: context.textTheme.titleLarge)
+            : Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+                titleIcon!,
+                const SizedBox(width: 8),
+                Flexible(child: Text(title, textAlign: TextAlign.center, style: context.textTheme.titleLarge)),
+              ]),
         content: content,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
@@ -81,8 +90,8 @@ class StyledDialog extends StatelessWidget {
 double dialogWidth(BuildContext context) {
   final w = MediaQuery.of(context).size.width;
   if (w < 600) return w * 0.9;
-  if (w < 1200) return w * 0.6;
-  return 500;
+  if (w < 1200) return w * 0.8;
+  return w * 0.6;
 }
 
 /// v1's outlined text field inside dialogs.

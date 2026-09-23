@@ -27,6 +27,11 @@ trong commit. Khi chốt xong: đổi trạng thái, ghi ngày, ghi quyết đ�
 | OQ-14 | Nguồn timezone: header hay body? | S4 | **CHƯA CHỐT** |
 | OQ-15 | Có làm push notification? | S8 | ✅ **ĐÃ LÀM BE 23/09**: push khi job xong/hỏng; App đăng ký token chờ Flutter |
 | OQ-16 | Section tóm tắt theo chủ đề hay theo lượt nói? | S4 | **CHƯA CHỐT** — đang dùng mặc định tạm |
+| OQ-17 | Home >100 note: bỏ paging (stream cắt 100) hay thêm "Load more" bằng `listMinutes(cursor)`? | S5 | **CHƯA CHỐT** — mặc định tạm: 100 note mới nhất (20-PARITY-APP Home #13) |
+| OQ-18 | Hết credit khi transcribe: mở paywall thẳng (v2) hay dialog "Premium Required" trước (v1)? | S6 | **CHƯA CHỐT** — mặc định tạm: paywall thẳng (Processing #4) |
+| OQ-19 | Xử lý xong: luôn nút "Show Results" (v2) hay tự chuyển sang summary cho premium/không ad (v1)? | S6 | **CHƯA CHỐT** — mặc định tạm: luôn nút (Processing #6) |
+| OQ-20 | Feedback dialog: bản gọn `StyledDialog` (v2) hay port đủ v1 (footer email, snackbar cảm ơn)? | S7 | **CHƯA CHỐT** — mặc định tạm: bản gọn (Widget #12) |
+| OQ-21 | Banner: chỉ tab Summary (RC mặc định) hay cả 3 tab như v1; anchored adaptive hay inline ≤60? Gate từ chối rewarded: im lặng hay toast? | S8 | **CHƯA CHỐT** — đổi được bằng Remote Config, không cần release (Ads #8/#12) |
 
 ---
 
@@ -268,3 +273,12 @@ section đầu là Overview, rồi mỗi chủ đề một section theo thứ t�
 **Mặc định tạm:** theo chủ đề. Nếu Toan muốn giữ per-turn để làm tính năng
 "nhảy tới đoạn transcript", nói lại — khi đó cần thêm `segmentIndex` vào
 section và sửa prompt. → S4-08.
+
+---
+
+### OQ-17 → OQ-21 — Lệch parity app cần quyết (từ `20-PARITY-APP.md`)
+
+Mỗi mục đều đã có **mặc định tạm** đang chạy trong code; Toan chỉ cần trả lời
+"giữ" hay "đổi về v1". Chi tiết từng mục ở `20-PARITY-APP.md` mục "Cần Toan quyết".
+OQ-21 (banner placement/size, toast khi gate từ chối) chỉ là tham số `ads_config`
+trong Remote Config → đổi lúc nào cũng được, không chặn release.

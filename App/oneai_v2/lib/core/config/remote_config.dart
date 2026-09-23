@@ -15,7 +15,7 @@ class RemoteConfigService {
   static const defaults = <String, dynamic>{
     'ads_config': '{"enabled":false}',
     'ad_units': '{}',
-    'popup_intro_basic_enabled': false,
+    'popup_intro_basic_enabled': true, // v1 default; an empty text still hides it
     'popup_intro_basic_frequency_hours': 0,
     'popup_intro_basic_text': '',
   };
@@ -31,6 +31,15 @@ class RemoteConfigService {
     } on Object catch (e) {
       dev.log('remote config fetch failed; using cache/defaults', name: 'config', error: e);
     }
+    // v1 re-activated on console changes; keep that so an ads kill-switch
+    // lands without waiting for the 1h fetch interval or a restart.
+    rc.onConfigUpdated.listen((_) async {
+      try {
+        await rc.activate();
+      } on Object catch (e) {
+        dev.log('remote config activate failed', name: 'config', error: e);
+      }
+    }, onError: (Object e) => dev.log('remote config update stream error', name: 'config', error: e));
     return RemoteConfigService(rc);
   }
 

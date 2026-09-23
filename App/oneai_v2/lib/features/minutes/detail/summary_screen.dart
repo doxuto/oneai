@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,7 @@ import 'package:one_ai/features/minutes/detail/minute_detail_controller.dart';
 import 'package:one_ai/features/minutes/detail/summary_tab.dart';
 import 'package:one_ai/features/minutes/detail/transcript_tab.dart';
 import 'package:one_ai/features/minutes/detail/transcript_tab_selector.dart';
+import 'package:one_ai/core/widgets/app_snack.dart';
 import 'package:one_ai/features/minutes/share/share_hooks.dart';
 
 /// Port of v1 TranscriptionSummaryScreen: "Back" app bar with share menu,
@@ -136,7 +138,19 @@ class _ShareMenu extends ConsumerWidget {
     final l10n = context.l10n;
     return PopupMenuButton<ShareOption>(
       onSelected: (o) async {
-        await ref.read(minuteSharerProvider).share(context, detail, o);
+        // v1 blocked with "Preparing content..." while the PDF was built or
+        // the audio downloaded; the share sheet then opens on top.
+        final nav = Navigator.of(context, rootNavigator: true);
+        unawaited(showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => PopScope(canPop: false, child: AlertDialog(content: Row(mainAxisSize: MainAxisSize.min, children: [const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)), const SizedBox(width: 16), Text(l10n.preparingContent)]))),
+        ));
+        try {
+          await ref.read(minuteSharerProvider).share(context, detail, o);
+        } finally {
+          if (nav.canPop()) nav.pop();
+        }
         await ref.read(interstitialHookProvider).maybeShow(AdPlacement.afterShare);
       },
       tooltip: l10n.share,
@@ -183,6 +197,9 @@ class _PlayerFab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(audioPlayerProvider(minuteId));
     final ctl = ref.read(audioPlayerProvider(minuteId).notifier);
+    ref.listen(audioPlayerProvider(minuteId), (prev, next) {
+      if (next.phase == PlayerPhase.failed && prev?.phase != PlayerPhase.failed) AppSnack.show(context, context.l10n.audioIsNotReady);
+    });
     if (!p.expanded || p.phase != PlayerPhase.ready) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 100),
@@ -227,11 +244,7 @@ class _PlayerFab extends ConsumerWidget {
                 children: [
                   Text(_mmss(p.position), style: const TextStyle(fontSize: 12, color: Colors.black54)),
                   Expanded(
-                    child: Slider(
-                      value: posMs,
-                      max: maxMs == 0 ? 1 : maxMs,
-                      onChanged: (v) => ctl.seek(Duration(milliseconds: v.toInt())),
-                    ),
+                    child: _SeekSlider(value: posMs, max: maxMs == 0 ? 1 : maxMs, onSeek: (ms) => ctl.seek(Duration(milliseconds: ms))),
                   ),
                   Text(_mmss(p.duration), style: const TextStyle(fontSize: 12, color: Colors.black54)),
                 ],
@@ -244,4 +257,29 @@ class _PlayerFab extends ConsumerWidget {
   }
 
   static String _mmss(Duration d) => '${d.inMinutes.remainder(60).toString().padLeft(2, '0')}:${d.inSeconds.remainder(60).toString().padLeft(2, '0')}';
+}
+
+/// v1 tracked the drag locally and seeked once on release, so scrubbing
+/// does not fire a seek per pixel.
+class _SeekSlider extends StatefulWidget {
+  const _SeekSlider({required this.value, required this.max, required this.onSeek});
+  final double value;
+  final double max;
+  final ValueChanged<int> onSeek;
+  @override
+  State<_SeekSlider> createState() => _SeekSliderState();
+}
+
+class _SeekSliderState extends State<_SeekSlider> {
+  double? _dragging;
+  @override
+  Widget build(BuildContext context) => Slider(
+        value: (_dragging ?? widget.value).clamp(0.0, widget.max),
+        max: widget.max,
+        onChanged: (v) => setState(() => _dragging = v),
+        onChangeEnd: (v) {
+          setState(() => _dragging = null);
+          widget.onSeek(v.toInt());
+        },
+      );
 }

@@ -104,8 +104,10 @@ class SettingsScreen extends ConsumerWidget {
                   _IconRow(icon: Assets.policyIcon, text: l10n.privacyPolicy, onTap: () => _open(context, config.privacyUrl)),
                   const _RowDivider(),
                   _IconRow(icon: Assets.termsIcon, text: l10n.termsOfService, onTap: () => _open(context, config.termsUrl)),
-                  const _RowDivider(),
-                  _IconRow(icon: Assets.policyIcon, text: l10n.privacyOptions, onTap: () => ref.read(privacyOptionsHookProvider)(context)),
+                  if (ref.watch(privacyOptionsRequiredProvider).valueOrNull ?? false) ...[
+                    const _RowDivider(),
+                    _IconRow(icon: Assets.policyIcon, text: l10n.privacyOptions, onTap: () => ref.read(privacyOptionsHookProvider)(context)),
+                  ],
                 ]),
                 _SectionLabel(l10n.sectionAccount),
                 _Card([

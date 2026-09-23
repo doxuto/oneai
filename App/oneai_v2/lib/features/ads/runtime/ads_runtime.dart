@@ -51,6 +51,10 @@ class AdsRuntime with WidgetsBindingObserver implements InterstitialHook, Reward
   bool _ready = false;
   bool _showing = false;
   DateTime? _backgroundedAt;
+  /// Cold start (docs/08 §6): the first app-open ad of a session is shown as
+  /// soon as it loads — never blocking first paint — subject to the gate
+  /// (skipFirstSessions, caps, cooldown). Cleared after the first attempt.
+  bool _coldStartPending = true;
 
   AdsConfig get config => _config;
   AdUnits get units => _units;
@@ -208,9 +212,15 @@ class AdsRuntime with WidgetsBindingObserver implements InterstitialHook, Reward
           _loadingAppOpen = false;
           if (!canServe) return ad.dispose();
           _appOpen = ad;
+          if (_coldStartPending) {
+            _coldStartPending = false;
+            // Treat the cold start as "long enough in background".
+            unawaited(_maybeShowAppOpen(_config.appOpen.minimumBackgroundSeconds));
+          }
         },
         onAdFailedToLoad: (e) {
           _loadingAppOpen = false;
+          _coldStartPending = false;
           dev.log('app open load failed', name: 'ads', error: e.message);
         },
       ),
@@ -329,6 +339,7 @@ class AdsRuntime with WidgetsBindingObserver implements InterstitialHook, Reward
   // ---- Privacy options --------------------------------------------------
 
   Future<void> showPrivacyOptions(BuildContext context) => _consent.showPrivacyOptions(context);
+  Future<bool> get privacyOptionsRequired => _consent.privacyOptionsRequired;
 }
 
 /// App-wide singleton. Watched once from [OneAiApp]; screens reach it only
@@ -346,6 +357,7 @@ List<Override> adsOverrides() => [
       interstitialHookProvider.overrideWith((ref) => ref.watch(adsRuntimeProvider)),
       rewardedHookProvider.overrideWith((ref) => ref.watch(adsRuntimeProvider)),
       privacyOptionsHookProvider.overrideWith((ref) => ref.watch(adsRuntimeProvider).showPrivacyOptions),
+      privacyOptionsRequiredProvider.overrideWith((ref) => ref.watch(adsRuntimeProvider).privacyOptionsRequired),
       bannerBuilderProvider.overrideWith((ref) => (_, placement) => BannerAdWidget(placement: placement)),
     ];
 
@@ -363,6 +375,7 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
   BannerAd? _ad;
   bool _loaded = false;
   bool _requested = false;
+  Timer? _refresh;
 
   @override
   void didChangeDependencies() {
@@ -396,10 +409,16 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
     );
     _ad = ad;
     await ad.load();
+    // ads_config.banner.refreshSeconds (docs/08 §3): reload in place; a
+    // no-fill on refresh keeps the previous creative rather than collapsing.
+    final every = rt.config.banner.refreshSeconds;
+    _refresh?.cancel();
+    if (every > 0) _refresh = Timer.periodic(Duration(seconds: every), (_) => _ad?.load());
   }
 
   @override
   void dispose() {
+    _refresh?.cancel();
     _ad?.dispose();
     super.dispose();
   }

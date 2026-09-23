@@ -36,7 +36,12 @@ class OneAiApp extends ConsumerWidget {
       title: config.appShortName,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      builder: (_, child) => SplashGate(child: child ?? const SizedBox.shrink()),
+      // v1 wrapped the whole app so a tap outside a field closes the keyboard.
+      builder: (_, child) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: SplashGate(child: child ?? const SizedBox.shrink()),
+      ),
       theme: AppTheme.light,
       // Dark mode stays off until OQ-08 is decided. v1 defined a dark palette
       // but hardcoded `theme: lightTheme`, so it never ran; turning it on now

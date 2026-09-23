@@ -297,7 +297,7 @@ class _RewardCard extends ConsumerWidget {
             gapH12,
             Text(l10n.earnFreeCreditWhileWaiting, textAlign: TextAlign.center, style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             gapH12,
-            Text(l10n.processingExplanation, textAlign: TextAlign.center, style: context.textTheme.bodyMedium),
+            Text(l10n.earnCreditBlurb, textAlign: TextAlign.center, style: context.textTheme.bodyMedium),
             gapH12,
             SizedBox(
               height: 52,

@@ -49,6 +49,7 @@ class _RecordAudioScreenState extends ConsumerState<RecordAudioScreen> with Sing
         barrierDismissible: false,
         builder: (ctx) => StyledDialog(
           title: ctx.l10n.warning,
+          titleIcon: SvgPicture.asset(Assets.warningTriangleIcon, width: 18, height: 18, colorFilter: const ColorFilter.mode(Color(0xFFF8C307), BlendMode.srcIn)),
           confirmLabel: ctx.l10n.exit,
           destructive: true,
           content: Text(ctx.l10n.exitRecordingWarning, textAlign: TextAlign.center, style: ctx.textTheme.bodyMedium),

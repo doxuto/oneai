@@ -58,6 +58,10 @@ abstract final class AdPlacement {
 
 /// Settings → "Privacy options" (UMP). No-op until A6 overrides it.
 final privacyOptionsHookProvider = Provider<Future<void> Function(BuildContext)>((_) => (_) async {});
+
+/// Whether UMP says a privacy-options entry point must be shown (GDPR
+/// regions). v1 hid the row otherwise; false until A6 overrides it.
+final privacyOptionsRequiredProvider = FutureProvider<bool>((_) async => false);
 typedef BannerBuilder = Widget Function(BuildContext context, String placement);
 final bannerBuilderProvider = Provider<BannerBuilder>((_) => (_, __) => const SizedBox.shrink());
 
