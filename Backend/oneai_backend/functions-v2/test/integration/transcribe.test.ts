@@ -6,7 +6,8 @@ import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SummarizeOutput } from "../../src/ai/summarize.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
-import type { ElevenLabsResponse } from "../../src/lib/stt/types.js";
+import { convertScribe } from "../../src/lib/stt/convert.js";
+import type { ElevenLabsResponse, SttResult } from "../../src/lib/stt/types.js";
 import { HttpsError } from "firebase-functions/v2/https";
 import { cancelTranscriptionHandler, startTranscriptionHandler } from "../../src/transcribe/handler.js";
 import { runPipeline } from "../../src/transcribe/pipeline.js";
@@ -15,6 +16,7 @@ import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
 const db = testDb();
 const bucket = getStorage().bucket("demo-oneai.appspot.com");
 const scribe = JSON.parse(readFileSync(fileURLToPath(new URL("../fixtures/scribe-small.json", import.meta.url)), "utf8")) as ElevenLabsResponse;
+const asResult = (r: ElevenLabsResponse): SttResult => ({ transcript: convertScribe(r), vendor: "fake", model: "fake-1" });
 const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
 const u1 = { uid: "u1", signInProvider: "google.com" };
 const REQ = "3f2f1b9e-7a4a-4c1e-9d3a-2b7f0c9a1d11";
@@ -26,13 +28,13 @@ const goodSummary = SummarizeOutput.parse({
   calendarEvents: [{ id: "e1", title: "Review", description: "d", datetime: "2026-09-24T10:00:00+07:00", participants: [], rawText: "review tomorrow at 10" }],
 });
 
-function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<ElevenLabsResponse>; llm?: () => Promise<unknown>; duration?: number | null; failEnqueue?: boolean } = {}): Deps {
+function makeDeps(over: { enqueued?: unknown[]; stt?: () => Promise<SttResult>; llm?: () => Promise<unknown>; duration?: number | null; failEnqueue?: boolean } = {}): Deps {
   const enqueued = over.enqueued ?? [];
   return unitDeps({
     db, bucket: bucket as Deps["bucket"], now: fixedNow(),
     services: {
       enqueue: async (_q, p) => { if (over.failEnqueue) throw new Error("queue down"); enqueued.push(p); },
-      stt: { transcribe: over.stt ?? (async () => scribe) },
+      stt: { vendor: "fake", model: "fake", transcribe: over.stt ?? (async () => asResult(scribe)) },
       llmHeavy: { vendor: "openai", streamText: async () => { throw new Error("unused"); }, generateJson: async () => ({ data: (await (over.llm ?? (async () => goodSummary))()) as never, model: "fake", tokens: { input: 1, output: 1 } }) },
       audioDurationSeconds: async () => over.duration === undefined ? 3.9 : over.duration,
       pdfText: async (b) => Buffer.from(b).toString("utf8"),
@@ -127,7 +129,7 @@ describe("runPipeline", () => {
     expect(out).toBe("done");
 
     const m = (await db.doc("users/u1/minutes/m1").get()).data()!;
-    expect(m).toMatchObject({ status: "ready", title: "Standup", iconEmoji: "📝", contentKind: "team_meeting", durationSeconds: 3.9, languageCode: "eng", transcriptPath: "users/u1/minutes/m1/transcript.json" });
+    expect(m).toMatchObject({ status: "ready", title: "Standup", iconEmoji: "📝", contentKind: "team_meeting", durationSeconds: 3.9, languageCode: "eng", transcriptPath: "users/u1/minutes/m1/transcript.json", stt: { vendor: "fake", model: "fake-1" } });
     expect(m.transcriptPreview).toContain("Hello everyone");
     expect(m.summary.sections[0].bullets).toEqual(["• We synced."]);
 
@@ -152,7 +154,7 @@ describe("runPipeline", () => {
   it("measured duration over the free cap: failed with durationLimit, quota refunded, vendor never called", async () => {
     await seed();
     let sttCalls = 0;
-    const deps = makeDeps({ duration: 1801, stt: async () => { sttCalls++; return scribe; } });
+    const deps = makeDeps({ duration: 1801, stt: async () => { sttCalls++; return asResult(scribe); } });
     const out = await runPipeline(await started(deps), deps, { attempt: 0, maxAttempts: 3 });
     expect(out).toBe("failed");
     expect(sttCalls).toBe(0);
@@ -219,7 +221,7 @@ describe("runPipeline", () => {
 
   it("cancel mid-flight: the worker stops at the next check-point without writing ready", async () => {
     await seed();
-    const deps = makeDeps({ stt: async () => { await cancelTranscriptionHandler(u1, { client, minuteId: "m1" }, deps); return scribe; } });
+    const deps = makeDeps({ stt: async () => { await cancelTranscriptionHandler(u1, { client, minuteId: "m1" }, deps); return asResult(scribe); } });
     const payload = await started(deps);
     expect(await runPipeline(payload, deps, { attempt: 0, maxAttempts: 3 })).toBe("skipped");
     expect((await db.doc("users/u1/minutes/m1").get()).data()?.status).toBe("cancelled");

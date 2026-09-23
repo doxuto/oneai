@@ -29,6 +29,9 @@ export interface MinuteDoc {
   sourceSizeBytes?: number | null;
   languageCode?: string | null;
   languageProbability?: number | null;
+  /** Vendor/model that produced the transcript. */
+  stt?: { vendor?: string; model?: string } | null;
+  timezone?: string | null;
   summaryLanguage?: string | null;
   keywords?: string[];
   description?: string | null;

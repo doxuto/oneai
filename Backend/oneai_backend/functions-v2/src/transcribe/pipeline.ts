@@ -11,7 +11,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { summarizeTranscript } from "../ai/summarize.js";
 import type { Deps } from "../lib/deps.js";
 import { log } from "../lib/logging.js";
-import { convertScribe, previewOf } from "../lib/stt/convert.js";
+import { previewOf } from "../lib/stt/convert.js";
 import { sttLanguageCode } from "../lib/stt/languages.js";
 import { minuteRef, transcriptPath, type MinuteDoc } from "../minutes/_shared.js";
 import type { Transcript } from "../minutes/types.js";
@@ -69,6 +69,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
 
     let transcript: Transcript;
     let durationSeconds: number | null = null;
+    let stt: { vendor: string; model: string } | null = null;
 
     if (minute.sourceType === "pdf") {
       const text = await deps.services.pdfText(bytes);
@@ -81,11 +82,12 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
           reason: "durationLimit", limitSeconds: limits.maxDurationSeconds, actualSeconds: Math.round(durationSeconds),
         });
       }
-      const raw = await deps.services.stt.transcribe({
+      const result = await deps.services.stt.transcribe({
         audio: bytes, contentType, fileName: minute.sourcePath.split("/").pop() ?? "audio",
         languageCode: sttLanguageCode(job.options.audioLanguage),
       });
-      transcript = convertScribe(raw);
+      transcript = result.transcript;
+      stt = { vendor: result.vendor, model: result.model };
       // Measured from the transcript when the container told us nothing.
       durationSeconds ??= transcript.durationSeconds || null;
       if (durationSeconds !== null && durationSeconds > limits.maxDurationSeconds) {
@@ -108,6 +110,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
       status: "summarizing", statusUpdatedAt: FieldValue.serverTimestamp(),
       transcriptPath: tPath, transcriptPreview: previewOf(transcript.text),
       durationSeconds, languageCode: transcript.languageCode, languageProbability: transcript.languageProbability,
+      stt, // which vendor/model produced this transcript — lets us compare vendors later
     });
 
     const s = await summarizeTranscript(deps.services.llmHeavy, {
@@ -133,7 +136,7 @@ export async function runPipeline(payload: TaskPayload, deps: Deps, opts: RunOpt
     await batch.commit();
 
     log.info("pipeline.done", { uid, minuteId, jobId, ms: Date.now() - t0, plan, sourceType: minute.sourceType ?? null,
-      durationSeconds, model: s.model, tokensIn: s.tokens.input, tokensOut: s.tokens.output });
+      durationSeconds, stt: stt ? `${stt.vendor}/${stt.model}` : null, model: s.model, tokensIn: s.tokens.input, tokensOut: s.tokens.output });
     return "done";
   } catch (err) {
     if (err instanceof Cancelled) {
