@@ -231,7 +231,7 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 |---|---|---|
 | S9-01 | **Đối chiếu từng mục `02-AUDIT-APP.md` §3 và §5** với app mới | bảng checklist 100% |
 | S9-02 | Đối chiếu từng endpoint `01-AUDIT-BACKEND-V1.md` §1 với callable v2 — ✅ `16-PARITY-BACKEND.md` (28 dòng, 0 rơi) | không tính năng nào rơi |
-| S9-03 | Accessibility: touch target ≥44pt, semantics, contrast AA | audit sạch |
+| S9-03 | Accessibility: touch target ≥44pt, semantics, contrast AA — ✍️ tooltip/Semantics pass + `expectAccessible` trong widget test | audit sạch |
 | S9-04 | Perf: cold start < 2s trên iPhone 12 | |
 | S9-05 | `integration_test` luồng chính trên CI + emulator — ✅ BE (job `integration` trong CI); App chờ Flutter | xanh |
 | S9-06 | Crashlytics/Sentry alert + crash-free tracking | dashboard chạy |
