@@ -216,17 +216,20 @@ class Chapters {
 /// A note the ask-all answer cited. The answer text carries `[[note:id]]`
 /// markers in the same order; the app strips them and shows these as chips.
 class AskAllSource {
-  const AskAllSource({required this.minuteId, required this.title, this.iconEmoji, this.createdAt});
+  const AskAllSource({required this.minuteId, required this.title, this.iconEmoji, this.createdAt, this.startSeconds});
   factory AskAllSource.fromJson(Map<String, dynamic> j) => AskAllSource(
         minuteId: readRequiredString(j, 'minuteId'),
         title: readString(j, 'title') ?? '',
         iconEmoji: readString(j, 'iconEmoji'),
         createdAt: readDateTime(j, 'createdAt'),
+        startSeconds: readDouble(j, 'startSeconds'),
       );
   final String minuteId;
   final String title;
   final String? iconEmoji;
   final DateTime? createdAt;
+  /// S11-01b: the moment in the recording the claim came from, when known.
+  final double? startSeconds;
 }
 
 class AskAllAnswer {

@@ -105,4 +105,34 @@ describe("S11-01/02 — embeddings, semantic search, ask across notes", () => {
     expect(r2.stored).toBe(1);
     expect((await backfill(deps)).stored).toBe(0);
   });
+
+  it("S11-01b: a note with a transcript gets time-stamped chunks; askAll cites the moment and returns startSeconds", async () => {
+    const emb = fakeEmbedder();
+    const llm = fakeLlm("Friday [[note:ship@45]].");
+    const deps = makeDeps(llm, emb);
+    await seed("ship", "Release plan", "We ship Friday.");
+    const transcript = { durationSeconds: 90, languageCode: "en", languageProbability: 1, text: "…", segments: [
+      { startSeconds: 0, endSeconds: 30, text: "Let us talk about hiring a candidate.", speakerId: "speaker_0", speakerLabel: "Ana" },
+      { startSeconds: 45, endSeconds: 80, text: "We ship on Friday, release is go.", speakerId: "speaker_1", speakerLabel: "Bob" },
+    ] };
+    await bucket.file("users/u1/minutes/ship/transcript.json").save(JSON.stringify(transcript), { resumable: false });
+    await db.doc("users/u1/minutes/ship").update({ transcriptPath: "users/u1/minutes/ship/transcript.json" });
+    expect(await embedMinute(deps, "u1", "ship")).toBe("stored");
+    expect(emb.calls).toBe(2); // note + one batch for the chunks
+    const chunks = await db.collection("users/u1/minutes/ship/chunks").orderBy("order").get();
+    expect(chunks.docs.map((d) => d.data().startSeconds)).toEqual([0, 45]);
+    expect((await db.doc("users/u1/minutes/ship").get()).data()?.chunkCount).toBe(2);
+
+    const out = await askAllHandler(u1, { client, question: "when do we ship?" }, deps);
+    expect(llm.lastSystem).toContain("[t=45] Bob: We ship on Friday, release is go.");
+    expect(llm.lastSystem).not.toContain("[t=0]"); // the hiring chunk is not near the question
+    expect(out.sources).toEqual([{ minuteId: "ship", title: "Release plan", iconEmoji: null, createdAt: "2026-09-18T09:00:00.000Z", startSeconds: 45 }]);
+
+    // re-embed after the transcript changes replaces the chunks
+    await db.doc("users/u1/minutes/ship").update({ summary: summary("changed") });
+    await bucket.file("users/u1/minutes/ship/transcript.json").save(JSON.stringify({ ...transcript, segments: transcript.segments.slice(1) }), { resumable: false });
+    expect(await embedMinute(deps, "u1", "ship")).toBe("stored");
+    expect((await db.collection("users/u1/minutes/ship/chunks").get()).size).toBe(1);
+  });
 });
+

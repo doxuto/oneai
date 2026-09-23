@@ -45,7 +45,7 @@ const Object _keep = Object();
 /// `[[note:abc]]` markers are for the app, not the reader: drop them and tidy
 /// the whitespace they leave behind ("Friday [[note:a]]." → "Friday.").
 String stripCitations(String text) =>
-    text.replaceAll(RegExp(r'\s*\[\[note:[A-Za-z0-9_-]+\]\]'), '').replaceAll(RegExp(r' +([.,;:!?])'), r'$1').trim();
+    text.replaceAll(RegExp(r'\s*\[\[note:[A-Za-z0-9_-]+(?:@\d+)?\]\]'), '').replaceAll(RegExp(r' +([.,;:!?])'), r'$1').trim();
 
 /// The last [maxTurns] finished turns, oldest first, as the server wants them.
 List<Map<String, String>> historyFor(List<AskAllEntry> messages, {int maxTurns = 8}) {

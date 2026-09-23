@@ -57,9 +57,26 @@ class _State extends ConsumerState<TranscriptionSummaryScreen> {
     if (mounted) context.pop();
   }
 
+  bool _seeked = false;
+
+  /// A citation from "Ask your notes" lands on the transcript at its moment:
+  /// once the note is here and playable, open the player there.
+  void _seekToCitation(MinuteDetail d) {
+    final at = widget.args.seekSeconds;
+    if (_seeked || at == null || !d.canPlaySource) return;
+    _seeked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final p = ref.read(audioPlayerProvider(_id).notifier);
+      await p.open(d.sourcePath!);
+      await p.seekSeconds(at);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final detail = ref.watch(minuteDetailProvider(_id));
+    if (detail.valueOrNull case final d?) _seekToCitation(d);
     final l10n = context.l10n;
     return PopScope(
       canPop: false,

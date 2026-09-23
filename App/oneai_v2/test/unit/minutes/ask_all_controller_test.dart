@@ -4,7 +4,7 @@ import 'package:one_ai/features/minutes/ask/ask_all_controller.dart';
 
 void main() {
   test('stripCitations removes [[note:id]] markers and the space before punctuation', () {
-    expect(stripCitations('We ship Friday [[note:abc]]. Ana owns QA [[note:x_1]] [[note:abc]].'), 'We ship Friday. Ana owns QA.');
+    expect(stripCitations('We ship Friday [[note:abc]]. Ana owns QA [[note:x_1]] [[note:abc@12]].'), 'We ship Friday. Ana owns QA.');
     expect(stripCitations('plain text'), 'plain text');
     expect(stripCitations('[[note:a]]'), '');
   });
@@ -36,8 +36,10 @@ void main() {
   });
 
   test('AskAllAnswer / SearchHit parse the callable payloads', () {
-    final a = AskAllAnswer.fromJson({'answer': 'Friday [[note:m1]].', 'sources': [{'minuteId': 'm1', 'title': 'Standup', 'iconEmoji': '📝', 'createdAt': '2026-09-18T09:00:00.000Z'}]});
+    final a = AskAllAnswer.fromJson({'answer': 'Friday [[note:m1@45]].', 'sources': [{'minuteId': 'm1', 'title': 'Standup', 'iconEmoji': '📝', 'createdAt': '2026-09-18T09:00:00.000Z', 'startSeconds': 45}]});
     expect(a.sources.single.minuteId, 'm1');
+    expect(a.sources.single.startSeconds, 45);
+    expect(stripCitations('Friday [[note:m1@45]].'), 'Friday.');
     expect(a.sources.single.createdAt?.year, 2026);
     final h = SearchHit.fromJson({'minuteId': 'm2', 'title': 'T', 'score': 0.91});
     expect(h.score, 0.91);

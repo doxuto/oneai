@@ -8,10 +8,12 @@ class AudioProcessingArgs {
 }
 
 class SummaryArgs {
-  const SummaryArgs({required this.minuteId, this.initialTab = 0});
+  const SummaryArgs({required this.minuteId, this.initialTab = 0, this.seekSeconds});
   final String minuteId;
   /// 0 summary · 1 transcript · 2 chat
   final int initialTab;
+  /// S11-01b: open the player at this moment (an ask-all citation).
+  final double? seekSeconds;
 
   /// From a notification tap or a `/transcriptionSummary?minuteId=` link.
   static SummaryArgs? from(Object? extra, Map<String, String> query) {

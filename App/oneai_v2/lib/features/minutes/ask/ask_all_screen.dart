@@ -10,6 +10,7 @@ import 'package:one_ai/core/router/routes.dart';
 import 'package:one_ai/core/theme/gaps.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
 import 'package:one_ai/core/widgets/app_snack.dart';
+import 'package:one_ai/core/widgets/format.dart';
 import 'package:one_ai/data/models/ai_models.dart';
 import 'package:one_ai/features/minutes/ask/ask_all_controller.dart';
 import 'package:one_ai/features/tags/tag_chip.dart';
@@ -84,7 +85,7 @@ class _AskAllScreenState extends ConsumerState<AskAllScreen> {
                     ),
                   for (final m in state.messages)
                     if (!(m.role == ChatRole.assistant && m.text.isEmpty))
-                      _Bubble(entry: m, onSource: (s) => context.push(Routes.transcriptionSummary, extra: SummaryArgs(minuteId: s.minuteId))),
+                      _Bubble(entry: m, onSource: (s) => context.push(Routes.transcriptionSummary, extra: SummaryArgs(minuteId: s.minuteId, initialTab: s.startSeconds == null ? 0 : 1, seekSeconds: s.startSeconds))),
                   if (showTyping) Padding(padding: const EdgeInsets.all(16), child: Text('…', style: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.primary))),
                   if (state.failedQuestion != null && !state.sending)
                     Center(child: TextButton(onPressed: () => ref.read(askAllControllerProvider.notifier).retryLast(), child: Text(l10n.retry))),
@@ -198,7 +199,7 @@ class _Bubble extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   for (final s in entry.sources)
-                    TagChip(label: '${s.iconEmoji ?? '📝'} ${s.title.isEmpty ? context.l10n.untitled : s.title}', onTap: () => onSource(s)),
+                    TagChip(label: '${s.iconEmoji ?? '📝'} ${s.title.isEmpty ? context.l10n.untitled : s.title}${s.startSeconds == null ? '' : ' · ${formatClock(s.startSeconds!)}'}', onTap: () => onSource(s)),
                 ],
               ),
             ),

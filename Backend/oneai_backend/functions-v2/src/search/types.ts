@@ -21,6 +21,6 @@ export const AskAllInput = withClient({
 }).strict();
 export type AskAllInput = z.infer<typeof AskAllInput>;
 
-export interface AskAllSource { minuteId: string; title: string; iconEmoji: string | null; createdAt: string | null }
+export interface AskAllSource { minuteId: string; title: string; iconEmoji: string | null; createdAt: string | null; /** S11-01b: the moment cited, when the claim came from a transcript passage. */ startSeconds?: number }
 export interface AskAllOutput { answer: string; sources: AskAllSource[] }
 export type { ChatTurn };
