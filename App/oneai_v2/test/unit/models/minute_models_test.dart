@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:one_ai/data/models/ai_models.dart';
 import 'package:one_ai/data/models/minute_models.dart';
 
 void main() {
@@ -35,6 +36,31 @@ void main() {
       expect(d.availableArtifacts, {ArtifactKind.quiz, ArtifactKind.calendarEvents});
       expect(d.hasArtifact(ArtifactKind.quiz), isTrue);
       expect(d.hasArtifact(ArtifactKind.mindmap), isFalse);
+    });
+
+    test('source state, expiry and talk time', () {
+      final d = MinuteDetail.fromJson({...j, 'sourcePath': 'p', 'sourceState': 'available', 'sourceExpiresAt': '2026-09-30T03:00:00.000Z', 'talkTime': [
+        {'speakerId': 'speaker_0', 'label': 'Ana', 'seconds': 12.5, 'share': 1, 'turns': 1},
+      ]});
+      expect(d.canPlaySource, isTrue);
+      expect(d.sourceExpiresAt, DateTime.parse('2026-09-30T03:00:00.000Z'));
+      expect(d.talkTime.single.share, 1.0);
+      final e = MinuteDetail.fromJson({...j, 'sourcePath': null, 'sourceState': 'expired'});
+      expect(e.sourceState, SourceState.expired);
+      expect(e.canPlaySource, isFalse);
+      final legacy = MinuteDetail.fromJson({...j, 'sourcePath': 'p'}..remove('sourceState'));
+      expect(legacy.sourceState, SourceState.available);
+    });
+
+    test('chapters.at picks the playing chapter', () {
+      final c = Chapters.fromJson({'chapters': [
+        {'title': 'A', 'startSeconds': 0, 'endSeconds': 10, 'summary': ''},
+        {'title': 'B', 'startSeconds': 10, 'endSeconds': 20, 'summary': ''},
+      ]});
+      expect(c.at(0)?.title, 'A');
+      expect(c.at(10)?.title, 'B');
+      expect(c.at(25)?.title, 'B');
+      expect(const Chapters(chapters: []).at(3), isNull);
     });
 
     test('older server responses without the new fields still parse', () {

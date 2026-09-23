@@ -43,6 +43,9 @@ export { generateQuiz } from "./ai/generateQuiz.js";
 export { generateFlashcards } from "./ai/generateFlashcards.js";
 export { generateMindmap } from "./ai/generateMindmap.js";
 export { generateCalendarEvents } from "./ai/generateCalendarEvents.js";
+export { generateActionItems } from "./ai/generateActionItems.js";
+export { generateKeyTerms } from "./ai/generateKeyTerms.js";
+export { generateChapters } from "./ai/generateChapters.js";
 
 // ---- push ----
 export { registerDevice } from "./push/registerDevice.js";

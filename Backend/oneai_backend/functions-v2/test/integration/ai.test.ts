@@ -3,7 +3,7 @@ import { getStorage } from "firebase-admin/storage";
 import { Timestamp } from "firebase-admin/firestore";
 import { beforeEach, describe, expect, it } from "vitest";
 import { HttpsError } from "firebase-functions/v2/https";
-import { chatHandler, generateCalendarEventsHandler, generateFlashcardsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { chatHandler, generateActionItemsHandler, generateCalendarEventsHandler, generateChaptersHandler, generateFlashcardsHandler, generateKeyTermsHandler, generateMindmapHandler, generateQuizHandler, generateShortQuestionsHandler, listChatMessagesHandler, mapSpeakersHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
 import { unitDeps, type Deps } from "../../src/lib/deps.js";
 import type { LlmClient } from "../../src/lib/llm/types.js";
 import { clearFirestore, fixedNow, testDb } from "../helpers/emulator.js";
@@ -140,6 +140,49 @@ describe("calendarEvents", () => {
     const spy: LlmClient = { ...llm, async generateJson(req) { seenPrompt = req.prompt; return llm.generateJson(req); } };
     await generateCalendarEventsHandler(u1, { client, minuteId: "m1", timezone: "Europe/Berlin" }, makeDeps(spy));
     expect(seenPrompt).toContain("Europe/Berlin");
+  });
+});
+
+describe("actionItems / keyTerms / chapters", () => {
+  beforeEach(async () => { await clearFirestore(); const [f] = await bucket.getFiles({ prefix: "users/" }); await Promise.all(f.map((x) => x.delete())); });
+
+  it("action items use the stored timezone and cache under their own kind", async () => {
+    await seedReady();
+    await db.doc("users/u1/minutes/m1").update({ timezone: "Asia/Ho_Chi_Minh" });
+    let seen = "";
+    const llm = fakeLlm(async () => ({ items: [{ id: "a1", text: "Thank Ana", owner: "speaker_1", due: null, quote: "thanks Ana" }], decisions: ["Ana leads"] }));
+    const spy: LlmClient = { ...llm, async generateJson(req) { seen = req.prompt; return llm.generateJson(req); } };
+    const out = await generateActionItemsHandler(u1, { client, minuteId: "m1", languageCode: "vi" }, makeDeps(spy));
+    expect(out.data.items[0]?.text).toBe("Thank Ana");
+    expect(out.data.decisions).toEqual(["Ana leads"]);
+    expect(seen).toContain("Asia/Ho_Chi_Minh");
+    expect(seen).toContain("'vi'");
+    expect((await db.doc("users/u1/minutes/m1/artifacts/actionItems").get()).exists).toBe(true);
+    expect((await generateActionItemsHandler(u1, { client, minuteId: "m1", languageCode: "vi" }, makeDeps(spy))).cached).toBe(true);
+    expect(llm.calls).toBe(1);
+  });
+
+  it("key terms go through the shared generator", async () => {
+    await seedReady();
+    const llm = fakeLlm(async () => ({ terms: [{ term: "Ana", definition: "A person", quote: "I'm Ana" }] }));
+    const out = await generateKeyTermsHandler(u1, { client, minuteId: "m1" }, makeDeps(llm));
+    expect(out).toEqual({ data: { terms: [{ term: "Ana", definition: "A person", quote: "I'm Ana" }] }, cached: false });
+  });
+
+  it("chapters get a timestamped transcript and are clamped to the recording; a PDF is refused", async () => {
+    await seedReady();
+    let seen = "";
+    const llm = fakeLlm(async () => ({ chapters: [{ title: "Intro", startSeconds: -1, endSeconds: 4, summary: "hi" }, { title: "Reply", startSeconds: 5, endSeconds: 99, summary: "" }] }));
+    const spy: LlmClient = { ...llm, async generateJson(req) { seen = req.prompt; return llm.generateJson(req); } };
+    const out = await generateChaptersHandler(u1, { client, minuteId: "m1" }, makeDeps(spy));
+    expect(seen).toContain("[0.0-4.0] speaker_0: Hi, I'm Ana.");
+    expect(out.data.chapters).toEqual([
+      { title: "Intro", startSeconds: 0, endSeconds: 4, summary: "hi" },
+      { title: "Reply", startSeconds: 5, endSeconds: 10, summary: "" },
+    ]);
+
+    await seedReady("pdf", { durationSeconds: 0, languageCode: null, languageProbability: null, text: "doc", segments: [{ startSeconds: 0, endSeconds: 0, text: "doc", speakerId: "document", speakerLabel: "Document" }] });
+    await expect(generateChaptersHandler(u1, { client, minuteId: "pdf" }, makeDeps(spy))).rejects.toMatchObject({ code: "failed-precondition", details: { reason: "noTimeline" } });
   });
 });
 

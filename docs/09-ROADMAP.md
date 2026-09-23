@@ -24,6 +24,7 @@ dưới đây giữ nguyên cho phía App; phía backend còn lại chỉ là vi
 | **S8** | Monetization: quota + ads + SSV | 2 tuần | 13/01 → 26/01 | ✅ BE (quota, webhook, SSV, trần AI call/ngày) · 🔶 App: AdGate/AdLedger, credit gate, entitlement, chờ SSV viết sẵn — còn SDK runtime + UMP + paywall UI |
 | **S9** | Parity sweep + chất lượng | 2 tuần | 27/01 → 09/02 | ⬜ |
 | **S10** | Phát hành | 2 tuần | 10/02 → 23/02/27 | ⬜ |
+| **S11** | Sau phát hành: tìm lại & ôn tập | 4 tuần | sau M6 | ⬜ đã nghiên cứu (`17`) |
 
 **Mốc**
 
@@ -115,6 +116,7 @@ Phần lớn đã dựng sẵn 22/09; sprint này hoàn thiện và deploy lên 
 | S3-08 | Nhánh PDF | PDF 20MB ra summary đúng nội dung |
 | S3-09 | `sweepOrphanFiles` hằng ngày — ✅ ➕ `reapStaleJobs` 15 phút, trần `maxActiveJobs`/user | file mồ côi + minute kẹt `uploading` >24h bị dọn |
 | S3-10 | Idempotency `requestId` + `ref.create()` | gọi 2 lần cùng id → 1 job |
+| S3-13 | **Retention audio gốc** theo plan (7/90 ngày), sweep hằng ngày, `sourceState`, lifecycle bucket backstop — ✅ 23/09 | Storage không phình; transcript/summary còn nguyên |
 
 **Cổng ra (M2):** upload audio thật → `status:"ready"` + summary + transcript.
 
@@ -132,6 +134,7 @@ Phần lớn đã dựng sẵn 22/09; sprint này hoàn thiện và deploy lên 
 | S4-06 | `calendarEvents` validate shape | không spread nguyên body |
 | S4-07 | Cost control: giới hạn token, `maxInstances`, log `model` + `tokenCount` | dashboard chi phí |
 | S4-08 | Prompt: gộp trùng, mỗi prompt ≥1 test — **chờ OQ-05** | |
+| S4-09 | **Action items + decisions, chapters có mốc thời gian, key terms, talk-time** (`17-FEATURE-RESEARCH.md` §2.1) — ✅ 23/09 | 3 callable + `talkTime` trong `getMinute`, cache như các artifact khác |
 
 **Cổng ra:** 6 tính năng AI chạy trên dev, không cái nào cache được kết quả rỗng.
 
@@ -174,6 +177,10 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S6-09 | Audio player trong tab Transcript | |
 | S6-10 | `QuotaFailure` → dialog "Premium Required" — ✍️ `creditGateDecide` + `NewMinuteFailed.isOutOfCredits` | test: hết quota → paywall hiện |
 | S6-11 | Golden + widget test cho toàn bộ màn mới | ≥30 golden tổng |
+| S6-12 | Tab **Việc cần làm** (action items, decisions, tick xong) | tick lưu local; xuất Reminders |
+| S6-13 | **Thanh chương** trên player, tua theo chương, highlight chương đang phát | dùng `chapters` |
+| S6-14 | **Thêm vào Lịch** từ `calendarEvents` (EventKit / Calendar intent) | |
+| S6-15 | Cảnh báo **audio gốc hết hạn sau N ngày** + nút tải về; trạng thái `expired` ẩn player | từ `sourceExpiresAt` |
 
 **Cổng ra (M4):** ghi âm → transcribe → xem summary → chat, tất cả trên BE mới.
 
@@ -185,12 +192,13 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 |---|---|---|
 | S7-01 | Quản lý tag: tạo, sửa, xoá, lọc — ✍️ lọc (`SelectedTagIds`) xong; CRUD sheet còn | |
 | S7-02 | Màn Settings đầy đủ mục như v1 — ✍️ `LanguageSettings` (audio/summary, key v1) xong; còn màn | golden xanh |
-| S7-03 | Xuất PDF + text, share | file mở được, nội dung đúng |
+| S7-03 | Xuất PDF + **Markdown**, có chương + action items, share sheet (Notion/Docs qua share) | file mở được, nội dung đúng |
 | S7-04 | l10n: **mọi** chuỗi qua ARB ngay từ đầu, không hardcode | grep literal tiếng Anh trong widget = 0 |
 | S7-05 | `en` + `es` + **`vi`** đủ key — chờ OQ-12 | |
 | S7-06 | Xoá tài khoản + xoá dữ liệu — ✅ BE `deleteAccount`; ✍️ `AuthController.deleteAccount` | |
 | S7-07 | Sentry + AppsFlyer, debug flag tắt ở prod | |
-| S7-08 | Tìm kiếm client-side — chờ OQ-07 | |
+| S7-08 | Tìm kiếm client-side (title + `transcriptPreview`) — bước 1 của OQ-07 | |
+| S7-09 | Ghim / yêu thích note (`updateMinute.pinned`) | |
 
 **Cổng ra:** không còn màn nào là placeholder.
 
@@ -250,6 +258,26 @@ Sprint dài nhất — đây là trái tim sản phẩm.
 | S10-12 | Xoá `App/oneai/`, `firebase functions:delete` codebase `default` | **M7**, sớm nhất M6+30 ngày |
 
 ---
+
+## S11 — Sau phát hành: tìm lại & ôn tập · 4 tuần sau M6
+
+Từ `17-FEATURE-RESEARCH.md` §2.3 — lấp khoảng trống "sau vài ngày" của cả hai use case.
+
+| ID | Task | Xong khi |
+|---|---|---|
+| S11-01 | **Hỏi đáp xuyên nhiều note**: embedding mỗi note lúc ready, Firestore vector search `findNearest`, callable `askAll` streaming | "tuần trước chốt gì về X" trả đúng note + trích dẫn |
+| S11-02 | Tìm kiếm toàn văn dùng chính embedding trên (thay client-side) | |
+| S11-03 | **Ôn tập flashcard theo lịch** (SM-2), nhắc qua push đã có | |
+| S11-04 | Dịch summary/transcript (`translation_{lang}`, streaming) | |
+| S11-05 | **Share link chỉ đọc** (`createShareLink`, `shares/{token}`, trang Hosting), thu hồi được | người vắng họp mở được không cần app |
+| S11-06 | Share Extension iOS (Voice Memos, Files) + Android intent | |
+| S11-07 | Ghi âm offline, tự upload khi có mạng | |
+| S11-08 | Meeting templates (standup / 1:1 / interview) → prompt summary theo kiểu | |
+
+## S12 — Backlog dài hạn (chỉ khi có tín hiệu từ user)
+
+Live transcription khi đang ghi (streaming STT), workspace/team + comment, nhận
+diện giọng xuyên cuộc họp, đồng bộ lịch Google/Outlook, cắt/ghép audio.
 
 ## Rủi ro
 

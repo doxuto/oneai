@@ -58,6 +58,41 @@ export const MindmapData = z.object({
 });
 export type MindmapData = z.infer<typeof MindmapData>;
 
+export const ActionItemsData = z.object({
+  items: z.array(z.object({
+    id: z.string().min(1).max(16),
+    text: z.string().min(1).max(300),
+    /** Person named in the transcript, or null. */
+    owner: z.string().max(80).nullable(),
+    /** ISO-8601 date when stated ("by Friday" resolved with now/timezone), else null. */
+    due: z.string().max(40).nullable(),
+    /** The words it came from — lets the UI jump to the spot. */
+    quote: z.string().max(300),
+  })).max(30),
+  decisions: z.array(z.string().min(1).max(300)).max(20),
+});
+export type ActionItemsData = z.infer<typeof ActionItemsData>;
+
+export const KeyTermsData = z.object({
+  terms: z.array(z.object({
+    term: z.string().min(1).max(80),
+    definition: z.string().min(1).max(400),
+    /** Verbatim phrase where it is first used, or "". */
+    quote: z.string().max(200),
+  })).max(30),
+});
+export type KeyTermsData = z.infer<typeof KeyTermsData>;
+
+export const ChaptersData = z.object({
+  chapters: z.array(z.object({
+    title: z.string().min(1).max(120),
+    startSeconds: z.number().min(0),
+    endSeconds: z.number().min(0),
+    summary: z.string().max(400),
+  })).min(1).max(40),
+}).refine((c) => c.chapters.every((ch) => ch.endSeconds >= ch.startSeconds), "chapter ends before it starts");
+export type ChaptersData = z.infer<typeof ChaptersData>;
+
 export const CalendarEventsData = z.object({ events: z.array(CalendarEvent).max(20) });
 export type CalendarEventsData = z.infer<typeof CalendarEventsData>;
 

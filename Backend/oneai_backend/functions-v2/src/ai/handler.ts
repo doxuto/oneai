@@ -10,12 +10,12 @@ import { toIso } from "../lib/time.js";
 import { parse } from "../lib/validate.js";
 import { loadOwnedMinute } from "../minutes/_shared.js";
 import {
-  CALENDAR_EVENTS_PROMPT, CHAT_CONTEXT, CHAT_SYSTEM, FLASHCARDS_PROMPT, MAP_SPEAKERS_PROMPT, MAP_SPEAKERS_SYSTEM, MINDMAP_PROMPT, QUIZ_PROMPT, SHORT_QUESTIONS_PROMPT,
+  ACTION_ITEMS_PROMPT, CALENDAR_EVENTS_PROMPT, CHAPTERS_PROMPT, CHAT_CONTEXT, KEY_TERMS_PROMPT, CHAT_SYSTEM, FLASHCARDS_PROMPT, MAP_SPEAKERS_PROMPT, MAP_SPEAKERS_SYSTEM, MINDMAP_PROMPT, QUIZ_PROMPT, SHORT_QUESTIONS_PROMPT,
 } from "../prompts/ai.js";
 import { fill } from "../prompts/summarize.js";
-import { artifactRef, chargeAiCall, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker } from "./_artifacts.js";
+import { artifactRef, chargeAiCall, generateArtifact, loadReadyTranscript, promptTranscript, transcriptBySpeaker, transcriptWithTimes } from "./_artifacts.js";
 import {
-  CalendarEventsData, ChatInput, FlashcardsData, GenerateCalendarEventsInput, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData,
+  ActionItemsData, CalendarEventsData, ChaptersData, ChatInput, FlashcardsData, KeyTermsData, GenerateCalendarEventsInput, GenerateInput, ListChatMessagesInput, MapSpeakersInput, MindmapData, QuizData,
   RenameSpeakerInput, ShortQuestionsData, SpeakersData,
   type ChatMessage, type ChatOutput, type GenerateOutput, type ListChatMessagesOutput,
 } from "./types.js";
@@ -24,7 +24,7 @@ import {
 
 type Gen<T> = (caller: Caller | undefined, raw: unknown, deps: Deps) => Promise<GenerateOutput<T>>;
 
-function makeGenerator<T>(kind: "shortQuestions" | "quiz" | "flashcards" | "mindmap", schema: ZodType<T, ZodTypeDef, unknown>, template: string, maxOutputTokens: number): Gen<T> {
+function makeGenerator<T>(kind: "shortQuestions" | "quiz" | "flashcards" | "mindmap" | "keyTerms", schema: ZodType<T, ZodTypeDef, unknown>, template: string, maxOutputTokens: number): Gen<T> {
   return async (caller, raw, deps) => {
     const startedAt = Date.now();
     const { uid } = requireCaller(caller);
@@ -45,6 +45,61 @@ export const generateShortQuestionsHandler = makeGenerator<ShortQuestionsData>("
 export const generateQuizHandler = makeGenerator<QuizData>("quiz", QuizData, QUIZ_PROMPT, 2500);
 export const generateFlashcardsHandler = makeGenerator<FlashcardsData>("flashcards", FlashcardsData, FLASHCARDS_PROMPT, 2500);
 export const generateMindmapHandler = makeGenerator<MindmapData>("mindmap", MindmapData, MINDMAP_PROMPT, 3000);
+export const generateKeyTermsHandler = makeGenerator<KeyTermsData>("keyTerms", KeyTermsData, KEY_TERMS_PROMPT, 2500);
+
+// ---------------------------------------------------------------- action items (needs a clock, like calendar events)
+
+export async function generateActionItemsHandler(caller: Caller | undefined, raw: unknown, deps: Deps): Promise<GenerateOutput<ActionItemsData>> {
+  const startedAt = Date.now();
+  const { uid } = requireCaller(caller);
+  const input = parse(GenerateCalendarEventsInput, raw, deps.minClientVersion);
+  try {
+    const loaded = await loadReadyTranscript(deps, uid, input.minuteId);
+    const storedTz = loaded.minuteDoc.timezone;
+    const timezone = input.timezone ?? (typeof storedTz === "string" && storedTz ? storedTz : "UTC");
+    const prompt = fill(ACTION_ITEMS_PROMPT, {
+      transcript: promptTranscript(loaded.transcript), languageCode: input.languageCode, now: deps.now().toISOString(), timezone,
+    });
+    const out = await generateArtifact<ActionItemsData>({
+      deps, llm: deps.services.llm, uid, loaded, kind: "actionItems", schema: ActionItemsData, prompt, maxOutputTokens: 3000, force: input.force,
+    });
+    logDone("ai.actionItems", startedAt, { uid, minuteId: input.minuteId, cached: out.cached, items: out.data.items.length, decisions: out.data.decisions.length });
+    return out;
+  } catch (err) {
+    return rethrow(err, "ai.actionItems.failed", { uid, minuteId: input.minuteId });
+  }
+}
+
+// ---------------------------------------------------------------- chapters (timestamped transcript, clamped to the recording)
+
+export async function generateChaptersHandler(caller: Caller | undefined, raw: unknown, deps: Deps): Promise<GenerateOutput<ChaptersData>> {
+  const startedAt = Date.now();
+  const { uid } = requireCaller(caller);
+  const input = parse(GenerateInput, raw, deps.minClientVersion);
+  try {
+    const loaded = await loadReadyTranscript(deps, uid, input.minuteId);
+    if (loaded.transcript.segments.every((s) => s.speakerId === "document")) {
+      throw new HttpsError("failed-precondition", "A PDF has no timeline to chapter", { reason: "noTimeline" });
+    }
+    const duration = loaded.transcript.durationSeconds;
+    const prompt = fill(CHAPTERS_PROMPT, { transcript: transcriptWithTimes(loaded.transcript), languageCode: input.languageCode });
+    // Clamp the model's times to the recording; the schema already rejects end < start.
+    const schema = ChaptersData.transform((c) => ({
+      chapters: c.chapters.map((ch) => ({
+        ...ch,
+        startSeconds: Math.min(Math.max(0, ch.startSeconds), duration),
+        endSeconds: Math.min(Math.max(ch.startSeconds, ch.endSeconds), duration),
+      })),
+    }));
+    const out = await generateArtifact<ChaptersData>({
+      deps, llm: deps.services.llm, uid, loaded, kind: "chapters", schema, prompt, maxOutputTokens: 2500, force: input.force,
+    });
+    logDone("ai.chapters", startedAt, { uid, minuteId: input.minuteId, cached: out.cached, chapters: out.data.chapters.length });
+    return out;
+  } catch (err) {
+    return rethrow(err, "ai.chapters.failed", { uid, minuteId: input.minuteId });
+  }
+}
 
 // ---------------------------------------------------------------- calendar events
 

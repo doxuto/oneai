@@ -40,6 +40,36 @@ now: {{now}}   timezone: {{timezone}}
 Transcript:
 {{transcript}}`;
 
+export const ACTION_ITEMS_PROMPT = `From the transcript, extract (1) action items — concrete things someone committed to do — and (2) decisions that were made. Rules:
+- An action item needs a verb and an object ("send the deck to Ana"). No vague intentions, no questions.
+- owner: the person named as responsible, exactly as named in the transcript; null when nobody was named.
+- due: resolve "by Friday", "next week" to an ISO-8601 date using now and timezone; null when no time was given.
+- quote: the transcript words the item came from, verbatim, ≤ 300 characters.
+- decisions: one sentence each, only things explicitly agreed. Nothing agreed → empty list.
+- ids are short and unique (a1, a2, …). Write text and decisions in language code '{{languageCode}}'; keep names as spoken.
+
+now: {{now}}   timezone: {{timezone}}
+
+Transcript:
+'''
+{{transcript}}
+'''`;
+
+export const KEY_TERMS_PROMPT = `From the transcript, list the technical terms, jargon, acronyms, named concepts and proper nouns a listener might not know. For each: the term as used, a one- or two-sentence definition in the transcript's context (not a dictionary definition), and the verbatim phrase where it first appears. Skip everyday words. 5 to 20 terms, most important first. Write definitions in language code '{{languageCode}}'; keep terms as spoken.
+
+Transcript:
+'''
+{{transcript}}
+'''`;
+
+export const CHAPTERS_PROMPT = `Split this timestamped transcript into chapters by topic, like YouTube chapters. Each line below is "[start-end] speaker: text" in seconds. Rules:
+- 3 to 12 chapters for most recordings; a very short one may have 1. Chapters cover the whole recording in order, without overlap: each chapter's startSeconds is a line's start time and endSeconds is the last line's end of that chapter.
+- title: ≤ 8 words, specific to what is discussed. summary: one sentence.
+- Write titles and summaries in language code '{{languageCode}}'.
+
+Transcript:
+{{transcript}}`;
+
 export const MAP_SPEAKERS_SYSTEM = `You map diarised speaker ids (speaker_0, speaker_1, …) to real names, and you never guess.`;
 
 export const MAP_SPEAKERS_PROMPT = `Rules:

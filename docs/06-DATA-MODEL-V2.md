@@ -12,7 +12,7 @@ như v1 (`01-AUDIT-BACKEND-V1.md` §2).
 users/{uid}
   ├─ minutes/{minuteId}
   │    ├─ chat/{messageId}
-  │    └─ artifacts/{kind}          kind ∈ quiz|flashcards|mindmap|shortQuestions|speakers|calendarEvents
+  │    └─ artifacts/{kind}          kind ∈ quiz|flashcards|mindmap|shortQuestions|speakers|calendarEvents|actionItems|keyTerms|chapters
   ├─ tags/{tagId}
   └─ quota/{periodId}               periodId = "2026-09-22" (ngày, Asia/Ho_Chi_Minh)
 
@@ -91,7 +91,7 @@ tiếng vượt ngưỡng đó. v1 ghi cả `metadata/transcription` lẫn field
 
 | Field | Type |
 |---|---|
-| `kind` | `"quiz"\|"flashcards"\|"mindmap"\|"shortQuestions"\|"speakers"\|"calendarEvents"` |
+| `kind` | `"quiz"\|"flashcards"\|"mindmap"\|"shortQuestions"\|"speakers"\|"calendarEvents"\|"actionItems"\|"keyTerms"\|"chapters"` |
 | `data` | map, shape tuỳ `kind` |
 | `model` | `string` — model nào sinh ra |
 | `generatedAt` | `Timestamp` |

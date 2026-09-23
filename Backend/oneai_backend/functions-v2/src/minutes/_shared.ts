@@ -11,6 +11,7 @@ import {
   type MinuteSummary,
   type Speaker,
   type Summary,
+  type TalkTime,
   type Transcript,
 } from "./types.js";
 
@@ -196,6 +197,30 @@ export function presentArtifactKinds(ids: Iterable<string>): ArtifactKind[] {
   return ARTIFACT_KINDS.filter((k) => set.has(k));
 }
 
+/** Who spoke how much. Pure over the transcript; a PDF (single "document" segment) yields []. */
+export function talkTimeOf(transcript: Transcript | null, speakers: Speaker[]): TalkTime[] {
+  if (!transcript || transcript.segments.length === 0) return [];
+  if (transcript.segments.every((s) => s.speakerId === "document")) return [];
+  const acc = new Map<string, { seconds: number; turns: number; label: string }>();
+  for (const seg of transcript.segments) {
+    const cur = acc.get(seg.speakerId) ?? { seconds: 0, turns: 0, label: seg.speakerLabel };
+    cur.seconds += Math.max(0, seg.endSeconds - seg.startSeconds);
+    cur.turns += 1;
+    acc.set(seg.speakerId, cur);
+  }
+  const total = [...acc.values()].reduce((t, v) => t + v.seconds, 0);
+  const labelOf = (id: string, fallback: string) => speakers.find((s) => s.id === id)?.label ?? fallback;
+  return [...acc.entries()]
+    .map(([speakerId, v]) => ({
+      speakerId,
+      label: labelOf(speakerId, v.label),
+      seconds: Math.round(v.seconds * 10) / 10,
+      share: total > 0 ? Math.round((v.seconds / total) * 1000) / 1000 : 0,
+      turns: v.turns,
+    }))
+    .sort((a, b) => b.seconds - a.seconds);
+}
+
 export function toMinuteDetail(
   id: string,
   raw: DocumentData | undefined,
@@ -219,5 +244,6 @@ export function toMinuteDetail(
     summaryLanguage: str(d.summaryLanguage),
     calendarEvents: extras.calendarEvents ?? [],
     availableArtifacts: extras.availableArtifacts ?? [],
+    talkTime: talkTimeOf(extras.transcript, extras.speakers),
   };
 }

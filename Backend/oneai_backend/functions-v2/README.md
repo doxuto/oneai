@@ -63,7 +63,7 @@ firebase functions:secrets:set REVENUECAT_WEBHOOK_SECRET
 
 Param không bí mật nằm trong `.env` (commit có chủ đích).
 
-## Đã có — 33 function, parity đầy đủ với v1 (trừ YouTube)
+## Đã có — 36 function, parity đầy đủ với v1 (trừ YouTube)
 
 | Nhóm | Function | Loại |
 |---|---|---|
@@ -71,12 +71,12 @@ Param không bí mật nằm trong `.env` (commit có chủ đích).
 | minutes | `createMinute` · `listMinutes` · `getMinute` · `updateMinute` · `deleteMinute` · `onMinuteWritten` | callable ×5 · Firestore trigger |
 | tags | `createTag` · `listTags` · `updateTag` · `deleteTag` | callable |
 | transcribe | `startTranscription` · `cancelTranscription` · `processTranscription` | callable ×2 · task worker (2GiB/540s) |
-| ai | `chat` (streaming) · `listChatMessages` · `generateShortQuestions` · `generateQuiz` · `generateFlashcards` · `generateMindmap` · `generateCalendarEvents` · `mapSpeakers` · `renameSpeaker` | callable |
+| ai | `chat` (streaming) · `listChatMessages` · `generateShortQuestions` · `generateQuiz` · `generateFlashcards` · `generateMindmap` · `generateCalendarEvents` · `generateActionItems` · `generateKeyTerms` · `generateChapters` · `mapSpeakers` · `renameSpeaker` | callable |
 | jobs | `sweepOrphanFiles` · `reapStaleJobs` | schedule 03:00 VN · mỗi 15 phút |
 | push | `registerDevice` · `unregisterDevice` · `updateNotificationPrefs` | callable |
 | billing / ads | `revenueCatWebhook` · `adRewardSsv` | onRequest (webhook) |
 
-Test: **172 unit** (chạy mọi nơi) + **140 integration/rules** (chạy qua `npm run test:integration` với emulator).
+Test: **178 unit** (chạy mọi nơi) + **147 integration/rules** (chạy qua `npm run test:integration` với emulator).
 
 ## Load test (S10-02)
 

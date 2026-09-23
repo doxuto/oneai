@@ -219,7 +219,10 @@ enum ArtifactKind {
   flashcards,
   mindmap,
   speakers,
-  calendarEvents;
+  calendarEvents,
+  actionItems,
+  keyTerms,
+  chapters;
 
   static ArtifactKind? fromName(String name) {
     for (final k in values) {
@@ -227,6 +230,39 @@ enum ArtifactKind {
     }
     return null;
   }
+}
+
+/// `none` before upload, `available` while the bytes exist, `expired` once
+/// retention removed them (transcript and summary stay).
+enum SourceState {
+  none,
+  available,
+  expired;
+
+  static SourceState from(Map<String, dynamic> j, String k) => readEnum(
+        j,
+        k,
+        const {'none': SourceState.none, 'available': SourceState.available, 'expired': SourceState.expired},
+        SourceState.none,
+      );
+}
+
+/// Per-speaker talk time, computed server-side from the transcript.
+class TalkTime {
+  const TalkTime({required this.speakerId, required this.label, required this.seconds, required this.share, required this.turns});
+  factory TalkTime.fromJson(Map<String, dynamic> j) => TalkTime(
+        speakerId: readString(j, 'speakerId') ?? '',
+        label: readString(j, 'label') ?? '',
+        seconds: readDouble(j, 'seconds') ?? 0,
+        share: readDouble(j, 'share') ?? 0,
+        turns: readInt(j, 'turns') ?? 0,
+      );
+  final String speakerId;
+  final String label;
+  final double seconds;
+  /// 0..1
+  final double share;
+  final int turns;
 }
 
 class MinuteFailure {
@@ -269,6 +305,9 @@ class MinuteDetail {
     required this.summaryLanguage,
     this.calendarEvents = const [],
     this.availableArtifacts = const {},
+    this.sourceState = SourceState.none,
+    this.sourceExpiresAt,
+    this.talkTime = const [],
   });
 
   factory MinuteDetail.fromJson(Map<String, dynamic> j) {
@@ -287,6 +326,9 @@ class MinuteDetail {
       summaryLanguage: readString(j, 'summaryLanguage'),
       calendarEvents: readObjectList(j, 'calendarEvents').map(CalendarEvent.fromJson).toList(),
       availableArtifacts: readStringList(j, 'availableArtifacts').map(ArtifactKind.fromName).nonNulls.toSet(),
+      sourceState: j.containsKey('sourceState') ? SourceState.from(j, 'sourceState') : (readString(j, 'sourcePath') == null ? SourceState.none : SourceState.available),
+      sourceExpiresAt: readDateTime(j, 'sourceExpiresAt'),
+      talkTime: readObjectList(j, 'talkTime').map(TalkTime.fromJson).toList(),
     );
   }
 
@@ -310,6 +352,16 @@ class MinuteDetail {
   final Set<ArtifactKind> availableArtifacts;
 
   bool hasArtifact(ArtifactKind k) => availableArtifacts.contains(k);
+
+  /// Whether the original audio/PDF can still be played or downloaded.
+  final SourceState sourceState;
+
+  /// When retention will remove the source bytes; null = kept indefinitely.
+  final DateTime? sourceExpiresAt;
+  bool get canPlaySource => sourceState == SourceState.available && sourcePath != null;
+
+  /// Who spoke how much. Empty for PDFs.
+  final List<TalkTime> talkTime;
 
   String get id => summaryInfo.id;
   MinuteStatus get status => summaryInfo.status;

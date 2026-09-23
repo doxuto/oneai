@@ -155,6 +155,7 @@ describe("getMinute", () => {
     expect(minute.keywords).toEqual(["k1"]);
     expect(minute.availableArtifacts).toEqual(["speakers"]);
     expect(minute.calendarEvents).toEqual([]);
+    expect(minute.talkTime).toEqual([{ speakerId: "speaker_0", label: "Ana", seconds: 12.5, share: 1, turns: 1 }]);
   });
 
   it("surfaces calendar events written at summarise time and lists every present artifact kind", async () => {

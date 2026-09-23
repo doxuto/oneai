@@ -118,3 +118,74 @@ class CalendarEvents {
       CalendarEvents(events: readObjectList(j, 'events').map(CalendarEvent.fromJson).toList());
   final List<CalendarEvent> events;
 }
+
+class ActionItem {
+  const ActionItem({required this.id, required this.text, required this.owner, required this.due, required this.quote});
+  factory ActionItem.fromJson(Map<String, dynamic> j) => ActionItem(
+        id: readString(j, 'id') ?? '',
+        text: readString(j, 'text') ?? '',
+        owner: readString(j, 'owner'),
+        due: readString(j, 'due'),
+        quote: readString(j, 'quote') ?? '',
+      );
+  final String id;
+  final String text;
+  final String? owner;
+  /// ISO-8601 date when the model could resolve one.
+  final String? due;
+  final String quote;
+  DateTime? get dueAt => due == null ? null : DateTime.tryParse(due!);
+}
+
+class ActionItems {
+  const ActionItems({required this.items, required this.decisions});
+  factory ActionItems.fromJson(Map<String, dynamic> j) => ActionItems(
+        items: readObjectList(j, 'items').map(ActionItem.fromJson).toList(),
+        decisions: readStringList(j, 'decisions'),
+      );
+  final List<ActionItem> items;
+  final List<String> decisions;
+}
+
+class KeyTerm {
+  const KeyTerm({required this.term, required this.definition, required this.quote});
+  factory KeyTerm.fromJson(Map<String, dynamic> j) =>
+      KeyTerm(term: readString(j, 'term') ?? '', definition: readString(j, 'definition') ?? '', quote: readString(j, 'quote') ?? '');
+  final String term;
+  final String definition;
+  final String quote;
+}
+
+class KeyTerms {
+  const KeyTerms({required this.terms});
+  factory KeyTerms.fromJson(Map<String, dynamic> j) => KeyTerms(terms: readObjectList(j, 'terms').map(KeyTerm.fromJson).toList());
+  final List<KeyTerm> terms;
+}
+
+class Chapter {
+  const Chapter({required this.title, required this.startSeconds, required this.endSeconds, required this.summary});
+  factory Chapter.fromJson(Map<String, dynamic> j) => Chapter(
+        title: readString(j, 'title') ?? '',
+        startSeconds: readDouble(j, 'startSeconds') ?? 0,
+        endSeconds: readDouble(j, 'endSeconds') ?? 0,
+        summary: readString(j, 'summary') ?? '',
+      );
+  final String title;
+  final double startSeconds;
+  final double endSeconds;
+  final String summary;
+}
+
+class Chapters {
+  const Chapters({required this.chapters});
+  factory Chapters.fromJson(Map<String, dynamic> j) => Chapters(chapters: readObjectList(j, 'chapters').map(Chapter.fromJson).toList());
+  final List<Chapter> chapters;
+
+  /// The chapter playing at [seconds], for the "now playing" highlight.
+  Chapter? at(double seconds) {
+    for (final c in chapters) {
+      if (seconds >= c.startSeconds && seconds < c.endSeconds) return c;
+    }
+    return chapters.isNotEmpty && seconds >= chapters.last.startSeconds ? chapters.last : null;
+  }
+}

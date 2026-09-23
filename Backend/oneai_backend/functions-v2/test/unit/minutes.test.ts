@@ -8,6 +8,7 @@ import {
   toMinuteDetail,
   toCalendarEvents,
   presentArtifactKinds,
+  talkTimeOf,
   toMinuteSummary,
   toSpeakers,
   toSummary,
@@ -209,6 +210,20 @@ describe("mappers", () => {
     expect(sourceExpiryFor(t, 7)?.toISOString()).toBe("2026-09-30T00:00:00.000Z");
     expect(sourceExpiryFor(t, 0)?.toISOString()).toBe(t.toISOString());
     expect(sourceExpiryFor(t, -1)).toBeNull();
+  });
+
+  it("talkTimeOf sums per speaker, honours renames, sorts by time, and is empty for PDFs", () => {
+    const t = { durationSeconds: 10, languageCode: "eng", languageProbability: null, text: "x", segments: [
+      { startSeconds: 0, endSeconds: 4, text: "a", speakerId: "speaker_0", speakerLabel: "Speaker 1" },
+      { startSeconds: 4, endSeconds: 5, text: "b", speakerId: "speaker_1", speakerLabel: "Speaker 2" },
+      { startSeconds: 5, endSeconds: 10, text: "c", speakerId: "speaker_1", speakerLabel: "Speaker 2" },
+    ] };
+    expect(talkTimeOf(t, [{ id: "speaker_1", label: "Ana" }])).toEqual([
+      { speakerId: "speaker_1", label: "Ana", seconds: 6, share: 0.6, turns: 2 },
+      { speakerId: "speaker_0", label: "Speaker 1", seconds: 4, share: 0.4, turns: 1 },
+    ]);
+    expect(talkTimeOf(null, [])).toEqual([]);
+    expect(talkTimeOf({ ...t, segments: [{ startSeconds: 0, endSeconds: 0, text: "doc", speakerId: "document", speakerLabel: "Document" }] }, [])).toEqual([]);
   });
 
   it("toMinuteDetail defaults calendarEvents and availableArtifacts to empty", () => {

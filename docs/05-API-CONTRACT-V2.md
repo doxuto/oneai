@@ -130,8 +130,9 @@ interface MinuteDetail extends MinuteSummary {
   keywords: string[];
   summaryLanguage: string | null;
   calendarEvents: CalendarEvent[];   // rút lúc summarize; sinh lại bằng generateCalendarEvents
-  availableArtifacts: ("shortQuestions"|"quiz"|"flashcards"|"mindmap"|"speakers"|"calendarEvents")[];
+  availableArtifacts: ("shortQuestions"|"quiz"|"flashcards"|"mindmap"|"speakers"|"calendarEvents"|"actionItems"|"keyTerms"|"chapters")[];
                                      // artifact đã tồn tại — app hiện tab mà không cần gọi generate*
+  talkTime: { speakerId, label, seconds, share: 0..1, turns }[];   // tính từ transcript, không gọi LLM; [] với PDF
 }
 
 interface CalendarEvent {
@@ -185,6 +186,9 @@ là stub hardcode "Demo Meeting" (audit §1).
 | `generateFlashcards` | như trên | `{data: {items: {question, answer}[]}, cached}` |
 | `generateMindmap` | như trên | `{data: {root: {id, title, icon, children: [{id, title, children: [{id, title, children: [{id,title}]}]}]}}, cached}` — sâu tối đa 4 |
 | `generateCalendarEvents` | `{client, minuteId, languageCode ="en", force =false, timezone?: IANA}` | `{data: {events: CalendarEvent[]}, cached}` — `timezone` mặc định là zone đã gửi ở `startTranscription`, rồi UTC. Sự kiện đã được rút sẵn lúc summarize và nằm trong `getMinute().calendarEvents`; gọi cái này chỉ khi muốn sinh lại (đổi ngôn ngữ) |
+| `generateActionItems` | như `generateCalendarEvents` (có `timezone?`) | `{data: {items: {id, text, owner\|null, due: ISO\|null, quote}[], decisions: string[]}, cached}` — họp: ai làm gì đến khi nào, đã chốt gì |
+| `generateKeyTerms` | `{client, minuteId, languageCode ="en", force =false}` | `{data: {terms: {term, definition, quote}[]}, cached}` — glossary theo ngữ cảnh |
+| `generateChapters` | như trên | `{data: {chapters: {title, startSeconds, endSeconds, summary}[]}, cached}` — chương theo chủ đề, mốc thời gian clamp về độ dài thật; PDF → `failed-precondition reason:"noTimeline"` |
 | `mapSpeakers` | `{client, minuteId, force =false}` | `{data: {speakers: {id, label}[]}, cached}` — mọi `speaker_N` có mặt đúng 1 lần |
 | `renameSpeaker` | `{client, minuteId, speakerId: /^speaker_\d+$/, name ≤60}` | `{data: {speakers}, cached:false}` — không gọi LLM |
 

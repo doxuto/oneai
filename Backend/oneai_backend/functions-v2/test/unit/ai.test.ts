@@ -3,9 +3,10 @@ import { openAiClient } from "../../src/lib/llm/openai.js";
 import { geminiClient } from "../../src/lib/llm/gemini.js";
 import { sseData } from "../../src/lib/llm/sse.js";
 import { unitDeps } from "../../src/lib/deps.js";
-import { chatHandler, generateCalendarEventsHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
-import { CalendarEventsData, MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
-import { CALENDAR_EVENTS_PROMPT, CHAT_SYSTEM, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
+import { transcriptWithTimes } from "../../src/ai/_artifacts.js";
+import { chatHandler, generateCalendarEventsHandler, generateChaptersHandler, generateQuizHandler, renameSpeakerHandler } from "../../src/ai/handler.js";
+import { ActionItemsData, CalendarEventsData, ChaptersData, KeyTermsData, MindmapData, QuizData, SpeakersData } from "../../src/ai/types.js";
+import { ACTION_ITEMS_PROMPT, CALENDAR_EVENTS_PROMPT, CHAPTERS_PROMPT, CHAT_SYSTEM, KEY_TERMS_PROMPT, MAP_SPEAKERS_PROMPT, QUIZ_PROMPT } from "../../src/prompts/ai.js";
 import { fill } from "../../src/prompts/summarize.js";
 
 const client = { appVersion: "2.0.0", build: 1, platform: "ios" as const };
@@ -82,6 +83,13 @@ describe("schemas", () => {
     const ev = { id: "e1", title: "t", description: "d", datetime: "2026-09-25T10:00:00+07:00", participants: [], rawText: "r" };
     expect(CalendarEventsData.safeParse({ events: Array.from({ length: 21 }, () => ev) }).success).toBe(false);
   });
+  it("ActionItemsData allows null owner/due and an empty decisions list; ChaptersData rejects end < start", () => {
+    expect(ActionItemsData.safeParse({ items: [{ id: "a1", text: "Send deck", owner: null, due: null, quote: "send the deck" }], decisions: [] }).success).toBe(true);
+    expect(ActionItemsData.safeParse({ items: [{ id: "a1", text: "", owner: null, due: null, quote: "" }], decisions: [] }).success).toBe(false);
+    expect(KeyTermsData.safeParse({ terms: [{ term: "TCA", definition: "d", quote: "" }] }).success).toBe(true);
+    expect(ChaptersData.safeParse({ chapters: [{ title: "t", startSeconds: 5, endSeconds: 2, summary: "" }] }).success).toBe(false);
+    expect(ChaptersData.safeParse({ chapters: [] }).success).toBe(false);
+  });
   it("SpeakersData only accepts speaker_N ids", () => {
     expect(SpeakersData.safeParse({ speakers: [{ id: "bob", label: "Bob" }] }).success).toBe(false);
     expect(SpeakersData.safeParse({ speakers: [{ id: "speaker_2", label: "Bob" }] }).success).toBe(true);
@@ -96,6 +104,16 @@ describe("prompts", () => {
     const cal = fill(CALENDAR_EVENTS_PROMPT, { transcript: "t", languageCode: "vi", now: "2026-09-23T10:00:00.000Z", timezone: "Asia/Ho_Chi_Minh" });
     expect(cal).not.toContain("{{");
     expect(cal).toContain("Asia/Ho_Chi_Minh");
+    expect(fill(ACTION_ITEMS_PROMPT, { transcript: "t", languageCode: "en", now: "n", timezone: "UTC" })).not.toContain("{{");
+    expect(fill(KEY_TERMS_PROMPT, { transcript: "t", languageCode: "en" })).not.toContain("{{");
+    expect(fill(CHAPTERS_PROMPT, { transcript: "t", languageCode: "en" })).not.toContain("{{");
+  });
+  it("transcriptWithTimes renders one timestamped line per segment", () => {
+    const t = { durationSeconds: 5, languageCode: null, languageProbability: null, text: "a b", segments: [
+      { startSeconds: 0, endSeconds: 1.25, text: "a", speakerId: "speaker_0", speakerLabel: "S1" },
+      { startSeconds: 1.25, endSeconds: 5, text: "b", speakerId: "speaker_1", speakerLabel: "S2" },
+    ] };
+    expect(transcriptWithTimes(t)).toBe("[0.0-1.3] speaker_0: a\n[1.3-5.0] speaker_1: b");
   });
 });
 
@@ -109,6 +127,9 @@ describe("handlers — validation", () => {
   });
   it("generateCalendarEvents: timezone must be IANA when given", async () => {
     await expect(generateCalendarEventsHandler(caller, { client, minuteId: "m1", timezone: "GMT+7" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
+  });
+  it("generateChapters: unknown keys rejected like every generator", async () => {
+    await expect(generateChaptersHandler(caller, { client, minuteId: "m1", timezone: "UTC" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });
   });
   it("renameSpeaker: speakerId must be speaker_N (v1 accepted any string as a Firestore field name)", async () => {
     await expect(renameSpeakerHandler(caller, { client, minuteId: "m1", speakerId: "__proto__", name: "x" }, deps)).rejects.toMatchObject({ code: "invalid-argument" });

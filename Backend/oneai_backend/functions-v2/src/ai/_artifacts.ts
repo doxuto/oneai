@@ -94,6 +94,11 @@ export function transcriptBySpeaker(t: Transcript): string {
   return trimTranscript(t.segments.map((s) => `${s.speakerId}: ${s.text}`).join("\n"));
 }
 
+/** "[0.0-4.2] speaker_0: Hello everyone." — what chaptering needs. */
+export function transcriptWithTimes(t: Transcript): string {
+  return trimTranscript(t.segments.map((s) => `[${s.startSeconds.toFixed(1)}-${s.endSeconds.toFixed(1)}] ${s.speakerId}: ${s.text}`).join("\n"));
+}
+
 /** One model call against the caller's daily AI cap. Throws resource-exhausted at the cap. */
 export async function chargeAiCall(deps: Deps, uid: string): Promise<void> {
   const now = deps.now();

@@ -127,7 +127,7 @@ export interface CalendarEvent {
   rawText: string;
 }
 
-export const ARTIFACT_KINDS = ["shortQuestions", "quiz", "flashcards", "mindmap", "speakers", "calendarEvents"] as const;
+export const ARTIFACT_KINDS = ["shortQuestions", "quiz", "flashcards", "mindmap", "speakers", "calendarEvents", "actionItems", "keyTerms", "chapters"] as const;
 export type ArtifactKind = (typeof ARTIFACT_KINDS)[number];
 
 export interface MinuteDetail extends MinuteSummary {
@@ -148,6 +148,18 @@ export interface MinuteDetail extends MinuteSummary {
   calendarEvents: CalendarEvent[];
   /** Which `artifacts/{kind}` docs exist, so the app can show tabs without a generate call. */
   availableArtifacts: ArtifactKind[];
+  /** Per-speaker talk time, computed from the transcript (no model call). Empty for PDFs. */
+  talkTime: TalkTime[];
+}
+
+export interface TalkTime {
+  speakerId: string;
+  /** Label at the time of reading (honours renames). */
+  label: string;
+  seconds: number;
+  /** 0..1 share of all speech. */
+  share: number;
+  turns: number;
 }
 
 export interface CreateMinuteOutput {

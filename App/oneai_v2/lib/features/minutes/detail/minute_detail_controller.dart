@@ -93,6 +93,24 @@ class MindmapController extends ArtifactController<Mindmap> {
   Future<Generated<Mindmap>> fetch({required bool force}) => ai.mindmap(minuteId, languageCode: languageCode, force: force);
 }
 
+class ActionItemsController extends ArtifactController<ActionItems> {
+  ActionItemsController(super.minuteId);
+  @override
+  Future<Generated<ActionItems>> fetch({required bool force}) => ai.actionItems(minuteId, languageCode: languageCode, force: force);
+}
+
+class KeyTermsController extends ArtifactController<KeyTerms> {
+  KeyTermsController(super.minuteId);
+  @override
+  Future<Generated<KeyTerms>> fetch({required bool force}) => ai.keyTerms(minuteId, languageCode: languageCode, force: force);
+}
+
+class ChaptersController extends ArtifactController<Chapters> {
+  ChaptersController(super.minuteId);
+  @override
+  Future<Generated<Chapters>> fetch({required bool force}) => ai.chapters(minuteId, languageCode: languageCode, force: force);
+}
+
 /// Calendar events already come with the detail; this controller exists for
 /// an explicit "regenerate" — its first load is served from the cache the
 /// regenerate wrote, or falls back to a fresh generation.
@@ -132,6 +150,10 @@ final quizProvider = AsyncNotifierProvider.autoDispose.family<QuizController, Ge
 final flashcardsProvider =
     AsyncNotifierProvider.autoDispose.family<FlashcardsController, Generated<Flashcards>, String>(FlashcardsController.new);
 final mindmapProvider = AsyncNotifierProvider.autoDispose.family<MindmapController, Generated<Mindmap>, String>(MindmapController.new);
+final actionItemsProvider =
+    AsyncNotifierProvider.autoDispose.family<ActionItemsController, Generated<ActionItems>, String>(ActionItemsController.new);
+final keyTermsProvider = AsyncNotifierProvider.autoDispose.family<KeyTermsController, Generated<KeyTerms>, String>(KeyTermsController.new);
+final chaptersProvider = AsyncNotifierProvider.autoDispose.family<ChaptersController, Generated<Chapters>, String>(ChaptersController.new);
 final calendarEventsProvider =
     AsyncNotifierProvider.autoDispose.family<CalendarEventsController, Generated<CalendarEvents>, String>(CalendarEventsController.new);
 final speakersProvider = AsyncNotifierProvider.autoDispose.family<SpeakersController, Generated<Speakers>, String>(SpeakersController.new);

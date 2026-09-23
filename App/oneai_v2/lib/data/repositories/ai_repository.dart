@@ -61,6 +61,21 @@ class AiRepository {
         CalendarEvents.fromJson,
       );
 
+  /// Action items + decisions (meetings). Same timezone rule as calendar events.
+  Future<Generated<ActionItems>> actionItems(String minuteId, {String languageCode = 'en', bool force = false, String? timezone}) async =>
+      Generated.fromJson(
+        await _fns.call('generateActionItems', {..._gen(minuteId, languageCode, force), if (timezone != null) 'timezone': timezone}),
+        ActionItems.fromJson,
+      );
+
+  /// Glossary of jargon and named concepts (lectures).
+  Future<Generated<KeyTerms>> keyTerms(String minuteId, {String languageCode = 'en', bool force = false}) async =>
+      Generated.fromJson(await _fns.call('generateKeyTerms', _gen(minuteId, languageCode, force)), KeyTerms.fromJson);
+
+  /// Topic chapters with timestamps; refused for PDFs (`PreconditionFailure`, reason `noTimeline`).
+  Future<Generated<Chapters>> chapters(String minuteId, {String languageCode = 'en', bool force = false}) async =>
+      Generated.fromJson(await _fns.call('generateChapters', _gen(minuteId, languageCode, force)), Chapters.fromJson);
+
   Future<Generated<Speakers>> mapSpeakers(String minuteId, {bool force = false}) async =>
       Generated.fromJson(await _fns.call('mapSpeakers', {'minuteId': minuteId, 'force': force}), Speakers.fromJson);
 

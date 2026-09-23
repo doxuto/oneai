@@ -108,6 +108,15 @@ describe("wire shapes", () => {
         },
         "summaryLanguage": "en",
         "tagIds": [],
+        "talkTime": [
+          {
+            "label": "Ana",
+            "seconds": 1,
+            "share": 1,
+            "speakerId": "speaker_0",
+            "turns": 1,
+          },
+        ],
         "title": "Standup",
         "transcript": {
           "durationSeconds": 1,
