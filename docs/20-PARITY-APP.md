@@ -231,7 +231,7 @@ xanh/đỏ) gom về `core/widgets/styled_dialog.dart` → `StyledDialog`.
 
 Còn lại ⚠️ = 4 việc chờ quyết (+2 câu về banner/toast) ở mục dưới.
 
-## Cần Toan quyết
+## Cần Toan quyết — **đã chốt 24/09** (xem `11-OPEN-QUESTIONS.md` OQ-17..21): Load more ✔ đã làm · dialog Premium Required ✔ đã làm · tự chuyển summary ✔ đã làm · feedback giữ bản gọn · banner/toast giữ mặc định
 
 - **Home #13** — bỏ paging: user có >100 note không thấy note cũ (stream cắt 100). Chấp nhận hay thêm "Load more" bằng `listMinutes(cursor)`?
 - **Processing #4** — 402 hết credit: mở paywall thẳng (v2) hay giữ dialog "Premium Required" (v1)?

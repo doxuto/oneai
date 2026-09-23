@@ -136,6 +136,7 @@ không mock `firebase-admin`, chỉ đổi `db` bằng emulator.
 | [x] | S6-12a | BE: `setActionItemDone {minuteId,itemId,done}` — tick nằm trong artifact, không gọi model/không quota; `ActionItemsData.items[].done` | `ai/{types,handler,setActionItemDone}.ts`, 3 unit + 2 integration | `force` sinh lại xoá tick (ghi trong contract) |
 | [~] | S6-12b | App: tick action item optimistic → server (thay SharedPreferences), rollback + snack khi lỗi | `minute_detail_controller.dart` (`ActionItemsController.setDone`), `summary_tab.dart`, 2 test | chưa compile |
 | [~] | S10-07/08 | Store compliance: bảng dữ liệu thu thập theo SDK, App Privacy labels, Play Data safety, điều khoản Terms/Privacy, trang xoá tài khoản, listing, checklist nộp | `docs/19-STORE-COMPLIANCE.md` | **[Toan]** điền console + đăng web (T13) |
+| [~] | OQ-17/18/19 | Toan chốt 24/09 → làm: Load more (cửa sổ live +100, `minutesWindowProvider`, nút cuối list, 1 test), dialog Premium Required trước paywall, tự chuyển summary khi premium/không ad | `home/{home_controller,home_screen}.dart`, `audio_processing_screen.dart` | chưa compile |
 | [~] | S9-01 | Parity app v1 → v2 màn-theo-màn (138 dòng); 13 lệch đã sửa (pull-to-refresh, intro popup default, icon cảnh báo, blurb reward, dialog preparing, snack audio lỗi, seek onChangeEnd, ẩn Privacy options, keyboard dismiss, dialogWidth, app-open cold start, banner refresh, RC live update) | `docs/20-PARITY-APP.md` + 9 file app | 4 mục chờ Toan quyết (OQ-16..19) |
 
 ## S5–S7 — App (chặn bởi `flutter create` + watcher)

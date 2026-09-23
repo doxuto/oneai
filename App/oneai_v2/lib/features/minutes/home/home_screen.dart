@@ -10,6 +10,7 @@ import 'package:one_ai/core/theme/app_colors.dart';
 import 'package:one_ai/core/theme/gaps.dart';
 import 'package:one_ai/core/theme/theme_context.dart';
 import 'package:one_ai/core/widgets/app_snack.dart';
+import 'package:one_ai/core/widgets/loading_dots.dart';
 import 'package:one_ai/core/widgets/state_views.dart';
 import 'package:one_ai/data/models/tag_models.dart';
 import 'package:one_ai/features/billing/entitlement.dart';
@@ -80,8 +81,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.only(bottom: 80), // clear the FAB
-                        itemCount: value.length,
-                        itemBuilder: (_, i) => Padding(padding: const EdgeInsets.only(bottom: 16), child: MinuteItemCard(item: value[i])),
+                        itemCount: value.length + 1,
+                        itemBuilder: (_, i) => i < value.length
+                            ? Padding(padding: const EdgeInsets.only(bottom: 16), child: MinuteItemCard(item: value[i]))
+                            : const _LoadMore(),
                       ),
                     ),
                   AsyncError(:final error) => ErrorState(error: error, onRetry: () => ref.invalidate(minutesListProvider)),
@@ -189,6 +192,28 @@ class _SearchFieldState extends ConsumerState<_SearchField> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
         ),
       ),
+    );
+  }
+}
+
+/// Last row of the list: "Load more" while the live window is full (OQ-17).
+/// Hidden while a search/tag filter is active — the filter runs over the
+/// loaded window only, and growing it from here would surprise.
+class _LoadMore extends ConsumerWidget {
+  const _LoadMore();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasMore = ref.watch(hasMoreMinutesProvider);
+    final filtering = ref.watch(searchQueryProvider).isNotEmpty || ref.watch(selectedTagIdsProvider).isNotEmpty;
+    if (!hasMore || filtering) return const SizedBox.shrink();
+    final loading = ref.watch(minutesListProvider).isLoading;
+    return Center(
+      child: loading
+          ? const Padding(padding: EdgeInsets.all(8), child: LoadingDots())
+          : TextButton(
+              onPressed: () { HapticFeedback.lightImpact(); ref.read(minutesWindowProvider.notifier).grow(); },
+              child: Text(context.l10n.loadMoreNotes, style: const TextStyle(color: AppColors.brandBlueAlt)),
+            ),
     );
   }
 }

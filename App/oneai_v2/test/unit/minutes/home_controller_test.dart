@@ -34,8 +34,12 @@ class FakeMinutes implements MinutesRepository {
   Object? deleteError;
   Object? updateError;
 
+  final limits = <int>[];
   @override
-  Stream<List<MinuteSummary>> watchList(String uid, {int limit = 100}) => list.stream;
+  Stream<List<MinuteSummary>> watchList(String uid, {int limit = 100}) {
+    limits.add(limit);
+    return list.stream;
+  }
   @override
   Future<void> delete(String minuteId) async {
     calls.add('delete:$minuteId');
@@ -143,6 +147,24 @@ void main() {
     test('combines with the tag filter', () {
       final tagged = [m('a', tags: ['t1'], title: 'Họp'), m('b', title: 'Họp')];
       expect(filterMinutes(tagged, {'t1'}, query: 'hop').map((x) => x.id), ['a']);
+    });
+  });
+
+  group('load more (OQ-17)', () {
+    test('a full window means more; grow re-subscribes with a bigger limit', () async {
+      final h = Harness();
+      h.container.listen(hasMoreMinutesProvider, (_, __) {});
+      await Future<void>.delayed(Duration.zero);
+      h.minutes.list.add([for (var i = 0; i < 100; i++) m('n$i')]);
+      await Future<void>.delayed(Duration.zero);
+      expect(h.container.read(hasMoreMinutesProvider), isTrue);
+      expect(h.minutes.limits, [100]);
+      h.container.read(minutesWindowProvider.notifier).grow();
+      await Future<void>.delayed(Duration.zero);
+      expect(h.minutes.limits, [100, 200]);
+      h.minutes.list.add([for (var i = 0; i < 150; i++) m('n$i')]);
+      await Future<void>.delayed(Duration.zero);
+      expect(h.container.read(hasMoreMinutesProvider), isFalse, reason: '150 < 200 → nothing older');
     });
   });
 

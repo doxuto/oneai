@@ -220,5 +220,6 @@
   "pinNote": "Ghim",
   "unpinNote": "Bỏ ghim",
   "noSearchResults": "Không có ghi chú nào khớp.",
-  "earnCreditBlurb": "Xem một quảng cáo ngắn trong lúc chờ để nhận 1 credit miễn phí cho ghi chú tiếp theo."
+  "earnCreditBlurb": "Xem một quảng cáo ngắn trong lúc chờ để nhận 1 credit miễn phí cho ghi chú tiếp theo.",
+  "loadMoreNotes": "Tải thêm ghi chú"
 }

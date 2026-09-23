@@ -63,6 +63,26 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
     );
   }
 
+  /// OQ-18 (v1 behaviour): a "Premium Required" dialog first; "Go Premium"
+  /// opens the paywall, "Cancel" leaves the failure card with its retry.
+  Future<void> _premiumRequired() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StyledDialog(
+        title: ctx.l10n.premiumRequired,
+        content: Text(ctx.l10n.noFreeCreditsLeft, textAlign: TextAlign.center, style: ctx.textTheme.bodyMedium),
+        cancelLabel: ctx.l10n.cancel,
+        confirmLabel: ctx.l10n.goPremium,
+        onCancel: () => Navigator.of(ctx).pop(),
+        onConfirm: () async {
+          Navigator.of(ctx).pop();
+          await ref.read(paywallProvider).present();
+        },
+      ),
+    );
+  }
+
   Future<void> _showResults(String minuteId) async {
     await context.pushReplacement(Routes.transcriptionSummary, extra: SummaryArgs(minuteId: minuteId));
   }
@@ -105,10 +125,15 @@ class _AudioProcessingScreenState extends ConsumerState<AudioProcessingScreen> {
     final l10n = context.l10n;
 
     ref.listen(newMinuteFlowProvider(_req), (prev, next) {
-      if (next is NewMinuteReady && prev is! NewMinuteReady) _celebrateIfFirst();
-      if (next is NewMinuteFailed && next.isOutOfCredits) {
-        ref.read(paywallProvider).present();
+      if (next is NewMinuteReady && prev is! NewMinuteReady) {
+        _celebrateIfFirst();
+        // OQ-19 (v1 behaviour): premium users, or anyone with no rewarded ad
+        // on screen, go straight to the note; otherwise the "Show Results"
+        // button stays so the ad card is not yanked away mid-view.
+        final adOnScreen = !premium && ref.read(rewardedHookProvider).isReady;
+        if (!adOnScreen) Future<void>.delayed(const Duration(milliseconds: 200), () { if (mounted) _showResults(next.id); });
       }
+      if (next is NewMinuteFailed && next.isOutOfCredits) _premiumRequired();
     });
 
     return PopScope(

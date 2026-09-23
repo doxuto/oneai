@@ -614,5 +614,6 @@
   "pinNote": "Pin",
   "unpinNote": "Unpin",
   "noSearchResults": "No notes match your search.",
-  "earnCreditBlurb": "Watch a short ad while you wait and get 1 free credit for your next note."
+  "earnCreditBlurb": "Watch a short ad while you wait and get 1 free credit for your next note.",
+  "loadMoreNotes": "Load more notes"
 }

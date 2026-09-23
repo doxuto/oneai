@@ -220,5 +220,6 @@
   "pinNote": "Fijar",
   "unpinNote": "Desfijar",
   "noSearchResults": "Ninguna nota coincide con tu búsqueda.",
-  "earnCreditBlurb": "Mira un anuncio corto mientras esperas y recibe 1 crédito gratis para tu próxima nota."
+  "earnCreditBlurb": "Mira un anuncio corto mientras esperas y recibe 1 crédito gratis para tu próxima nota.",
+  "loadMoreNotes": "Cargar más notas"
 }

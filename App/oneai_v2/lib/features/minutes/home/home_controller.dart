@@ -9,9 +9,27 @@ import 'package:one_ai/data/models/tag_models.dart';
 
 /// Newest first, live. A note created on another device or a status change
 /// from the worker appears without a refresh (v1 polled and paginated).
+/// The window grows by [MinutesWindow.page] on "Load more" (OQ-17): the whole
+/// window stays one live query, so older notes get status updates too.
 final minutesListProvider = StreamProvider<List<MinuteSummary>>(
-  (ref) => ref.watch(minutesRepositoryProvider).watchList(ref.watch(currentUidProvider)),
+  (ref) => ref.watch(minutesRepositoryProvider).watchList(ref.watch(currentUidProvider), limit: ref.watch(minutesWindowProvider)),
 );
+
+final minutesWindowProvider = NotifierProvider<MinutesWindow, int>(MinutesWindow.new);
+
+class MinutesWindow extends Notifier<int> {
+  static const page = 100;
+  @override
+  int build() => page;
+  void grow() => state += page;
+  void reset() => state = page;
+}
+
+/// True when the stream returned a full window, i.e. there may be more.
+final hasMoreMinutesProvider = Provider<bool>((ref) {
+  final n = ref.watch(minutesListProvider).valueOrNull?.length ?? 0;
+  return n >= ref.watch(minutesWindowProvider);
+});
 
 final tagsListProvider = StreamProvider<List<Tag>>(
   (ref) => ref.watch(tagsRepositoryProvider).watch(ref.watch(currentUidProvider)),
